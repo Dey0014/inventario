@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Página</title>
+</head>
+<body>
+    <object id="svg-object" class="object" type="image/svg+xml" data="{% static 'myapp/images/SOTANO3.svg' %}" width="100" height="100">
+        Your browser does not support SVG
+    </object>
+    <object id="svg-object2" class="object" type="image/svg+xml" data="{% static 'myapp/images/SOTANO2.svg' %}" width="100" height="100">
+        Your browser does not support SVG
+    </object>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var objects = document.querySelectorAll('.object');
+            objects.forEach(function(obj) {
+                obj.addEventListener('load', function() {
+                    var svgDoc = obj.contentDocument;
+                    var links = svgDoc.querySelectorAll('a');
+                    links.forEach(function(link) {
+                        link.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            window.location.href = link.getAttribute('href');
+                        });
+                    });
+                });
+            });
+        });
+    </script>
+    <style>
+        a {
+                    transition: all 0.3s ease;
+                }
+                a:hover {
+                    fill: yellow; /* Cambia el color según tus necesidades */
+                    stroke: yellow; /* Cambia el color según tus necesidades */
+                }
+    </style>
+</body>
+</html>

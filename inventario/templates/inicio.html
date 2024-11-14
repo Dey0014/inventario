@@ -1,0 +1,139 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio</title>
+  <link rel="stylesheet" href="{% static 'select2/css/select2.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static '@sweetalert2/theme-borderless/borderless.css' %}" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+</head>
+
+<body class="inicio">
+  <div class="navbar-container">
+    <nav class="navbar navbar-expand-lg navbar-dark colornav fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}" aria-label="Home">
+          <img src="{% static 'img/logo_funda.png' %}" alt="Logo de la Empresa" class="logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a href="#" id="inbox-link" style="position: relative;">
+                <div class="notification-icon" id="inbox-icon">
+                    <i class="bi bi-inbox" style="font-size: 2rem; cursor: pointer;"></i>
+                    {% if cantidad_solicitudes > 0 %}
+                        <span class="badge bg-danger" >
+                            {{ cantidad_solicitudes }}
+                        </span>  <!-- Muestra la cantidad de solicitudes -->
+                    {% endif %}
+                    <div class="notification-dot {% if cantidad_solicitudes > 0 %}has-requests{% endif %}"></div>
+                </div>
+            </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'user_action_log' %}">log</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                aria-label="Prueba Desplegable 1">usuarios</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'registrar_usuario' %}">Registrar Usuario</a></li>
+                <li><a class="dropdown-item" href="{% url 'users_list' %}">Lista de Usuarios</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                aria-label="Prueba Desplegable 1">Entregas</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'prestar_material' %}">control de Entregas</a></li>
+                <li><a class="dropdown-item" href="{% url 'prestamo_list' %}">Lista de entregas</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                aria-label="Prueba Desplegable 2">Material</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'agregar_material' %}">Agregar Material</a></li>
+                <li><a class="dropdown-item" href="{% url 'agregar_cantidad_material' %}">Cantidad Material</a></li>
+                <li><a class="dropdown-item" href="{% url 'material_list' %}">Lista de Materiales</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link nav-link" aria-label="Cerrar sesión">
+                  Cerrar sesión <i class="bi bi-door-closed"></i>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <!-- ----- content start ----- -->
+  <div id="contenido" class="card content-container mt-4">
+    {% block content %} {% endblock %}
+  </div>
+  
+  <!-- ----- content end ----- -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var contenidoDiv = document.getElementById("contenido");
+      if (contenidoDiv.innerHTML.trim() === "") {
+        contenidoDiv.classList.add("hidden");
+      }
+    });
+  </script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const solicitudesPendientes = JSON.parse('{{ solicitudes_pendientes|escapejs }}');  // Convertimos el JSON de Django a objeto JS
+      const inboxIcon = document.getElementById('inbox-icon');
+  
+      // Si hay solicitudes, al hacer clic mostramos el SweetAlert
+      inboxIcon.addEventListener('click', function() {
+        if (solicitudesPendientes.length > 0) {
+          let solicitudesHTML = '<ul style="text-align:left;">';
+          solicitudesPendientes.forEach(function(solicitud) {
+            solicitudesHTML += `<a href=""><li id="${solicitud.id}"> ${solicitud.persona__nombre} - ${solicitud.material_solicitado__descripcion}</li></a>`;
+          });
+          solicitudesHTML += '</ul>';
+  
+          Swal.fire({
+            title: 'Solicitudes Pendientes',
+            html: solicitudesHTML,
+            icon: 'info'
+          });
+        } else {
+          Swal.fire({
+            title: 'Sin Solicitudes',
+            text: 'No tienes solicitudes pendientes',
+            icon: 'success'
+          });
+        }
+      });
+    });
+  </script>
+
+  <script src="{% static 'sweetalert2/dist/sweetalert2.min.js' %}"></script>
+  <script src="{% static 'jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'select2/js/select2.min.js' %}"></script>
+  <script src="{% static 'js/js.js' %}"></script>
+</body>
+
+</html>

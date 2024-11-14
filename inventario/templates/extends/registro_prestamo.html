@@ -1,0 +1,35 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div class="container">
+    <h1 class="my-4 text-center">Lista de Entregas</h1>
+    <div class="table-responsive">
+        <table class="table table-hover table-borderless text-center">
+            <thead>
+                <tr>
+                    <th class="sortable">Departamento</th>
+                    <th class="sortable">Material</th>
+                    <th class="sortable">Analista</th>
+                    <th class="sortable">Nombre</th>
+                    <th class="sortable">Apellido</th>
+                    <th class="sortable">Cantidad</th>
+                    <th class="sortable">Descripción</th>
+                    <th class="sortable">Fecha de Préstamo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.departamento | title }}</td>
+                    <td>{{ registro.material }}</td>
+                    <td>{{ registro.analista | title}}</td>
+                    <td>{{ registro.persona | title}}</td>
+                    <td>{{ registro.cantidad }}</td>
+                    <td>{{ registro.descripcion }}</td>
+                    <td>{{ registro.fecha_prestamo }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

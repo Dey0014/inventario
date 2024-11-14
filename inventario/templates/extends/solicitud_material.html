@@ -1,0 +1,92 @@
+{% extends "login.html" %}
+{% block content %}
+<body class="formulario_solicitud bluecolor">
+<div id="contenido" class="card content-container mt-4 shadow-lg p-4">
+
+    <div class="formulario">
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary mb-3">Volver</button>
+        </form>
+
+        <h1 class="my-4 text-center">Formulario de Solicitud</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Select Persona -->
+
+                <div class="mb-3 col-md-12">
+                    <label for="persona" class="form-label">Seleccione Persona:</label>
+                    <select id="persona" name="persona" class="form-control select2">
+                        <option value="">Seleccione una persona</option>
+                        <option value="nueva">Nueva persona</option>
+                        {% for person in personas %}
+                            <option value="{{ person.id }}">{{ person.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+            <!-- Nueva Persona Formulario -->
+            <div id="nuevaPersonaForm">
+                <div class="col-md-6 mb-3">
+                    <label for="nombre" class="form-label">Nombre y Apellido:</label>
+                    <input id="nombre" name="nombre" type="text" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cedula" class="form-label">Cédula:</label>
+                    <input id="cedula" name="cedula" type="number" class="form-control">
+                </div>
+                <!-- Select Departamento -->
+                <div class="col-md-12" style="display: flex;flex-direction: column;">
+                    <label for="departamento" class="form-label">Seleccione Departamento:</label>
+                    <select id="departamento" name="departamento" class="form-control select2">
+                        <option value="">Seleccione un departamento</option>
+                        <option value="nuevo">Nuevo departamento</option>
+                        {% for dept in departamentos %}
+                            <option value="{{ dept.id }}">{{ dept.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Nuevo Departamento Input -->
+                <div id="nuevoDepartamentoForm" class="col-md-12" >
+                    <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
+                    <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
+                </div>
+            </div>
+
+            <!-- Material y Cantidad -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="material" class="form-label">Material solicitado:</label>
+                    <select id="material" name="material" class="form-control">
+                        {% for mat in materiales %}
+                            <option value="{{ mat.id }}">{{ mat.descripcion }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cantidad" class="form-label">Cantidad:</label>
+                    <input id="cantidad" name="cantidad" type="number" class="form-control">
+                </div>
+            </div>
+
+            <!-- Botón de envío -->
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary my-4 px-5">Registrar Préstamo</button>
+            </div>
+        </form>
+
+        <!-- Mensajes de feedback -->
+        <ul class="list-unstyled">
+            {% for message in messages %}
+                <li class="alert {{ message.tags }} text-center">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "inicio.html" %} {% block content %}
+<div id="contenido" class="content-container mt-4">
+    <h1 class="my-4 text-center">Bienvenido al Inventario de la Ferretería</h1>
+    {% if messages %}
+    <ul class="list-unstyled">
+        {% for message in messages %}
+            <li class="alert {{ message.tags }} text-center">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    {% if user.is_authenticated %}
+    <ul  class="list-unstyled">
+        <li class="alert text-center">Hola, {{ user.username }}! tu acabas de iniciar sesión.</li>
+    </ul>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

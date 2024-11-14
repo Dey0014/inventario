@@ -1,0 +1,363 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div class="container mt-4 table-responsive">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+                
+    <li class="nav-item" role="presentation">
+        <a class="nav-link nav-link-tabs active" id="profile-tab2" data-bs-toggle="tab" data-bs-target="#materialesentregas"
+            type="button" role="tab" aria-controls="materialesentregas" aria-selected="false">Entregas</a>
+    </li>
+    
+    <li class="nav-item" role="presentation">
+        <a class="nav-link nav-link-tabs" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Prestamos</a>
+    </li>
+
+</ul>
+
+<div class="tab-content card-tabs border-top-0 " id="myTabContent">
+
+  <div class="tab-pane fade show active" id="materialesentregas" role="tabpanel2" aria-labelledby="profile-tab2" tabindex="0">
+    <div style="display: flex;justify-content: space-between;align-items: baseline; min-width: 696px;">
+      <h1 class="mb-4">Lista de Materiales</h1>
+      <input type="text" id="searchInput" placeholder="Buscar" name="buscar" >
+    </div>
+    <div>
+      <table id="tablaMateriales" class="table table-hover table-borderless text-center">
+        <thead>
+          <tr>
+            <th class="sortable">Código</th>
+            <th class="sortable">Descripción</th>
+            <th class="sortable">Cantidad</th>
+            <th class="sortable">Coordinador</th>
+            <th class="sortable">Fecha de Ingreso</th>
+            <th class="sortable">Tipo</th>
+            <th class="sortable">Acción</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for material in materiales %}
+          <tr>
+            <td class="codigo">{{ material.codigo }}</td>
+            <td class="descripcion">{{ material.descripcion }}</td>
+            <td class="cantidad">{{ material.cantidad }}</td>
+            <td class="coordinador">{{ material.coordinador.username | title}}</td>
+            <td class="fecha_ingreso">{{ material.fecha_ingreso }}</td>
+            <td class="tipo_material">{{ material.tipo_material }}</td>
+            <td>
+              <a title="datos" class="info" 
+                data-id="{{ material.id }}"
+                data-codigo="{{ material.codigo }}"
+                data-descripcion="{{ material.descripcion }}"
+                data-cantidad="{{ material.cantidad }}"
+                data-coordinador="{{ material.coordinador.username | title }}"
+                data-fecha="{{ material.fecha_ingreso }}"
+                data-tipo="{{ material.tipo_material }}"
+                style="font-size: 24px; margin-right: 6px;">
+                <i class="bi bi-three-dots"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+</div>
+
+<div class="tab-pane fade" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+tabindex="0">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Primero</th>
+      <th scope="col">Último</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider" >
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td colspan="2">Larry the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+
+<!-- buscador interactivo de tablas -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const searchInput = document.getElementById('searchInput');
+      const materialTable = document.getElementById('tablaMateriales');
+      const usuariosRows = materialTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+      searchInput.addEventListener('input', function () {
+          // Obtener el texto ingresado en el campo de búsqueda
+          const searchText = searchInput.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+          // Recorrer las filas de la tabla de materiales
+          for (let i = 0; i < usuariosRows.length; i++) {
+              const usuarioRow = usuariosRows[i];
+              const usuarioCells = usuarioRow.getElementsByTagName('td');
+
+              let matchFound = false;
+
+              // Recorrer cada celda de la fila actual
+              for (let j = 0; j < usuarioCells.length; j++) {
+                  // Obtener el texto de la celda, incluyendo números
+                  const cellText = usuarioCells[j].innerText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+                  // Comprobar si el texto o el número coincide con la búsqueda
+                  if (cellText.includes(searchText)) {
+                      matchFound = true;
+                      break;
+                  }
+              }
+
+              // Mostrar u ocultar la fila según si hubo coincidencias
+              usuarioRow.style.display = matchFound ? '' : 'none';
+          }
+      });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ajustesButtons = document.querySelectorAll('.info');
+    ajustesButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const pk = this.getAttribute('data-id');
+        const codigo = this.getAttribute('data-codigo');
+        const descripcion = this.getAttribute('data-descripcion');
+        const cantidad = this.getAttribute('data-cantidad');
+        const coordinador = this.getAttribute('data-coordinador');
+        const fecha = this.getAttribute('data-fecha');
+        const tipo = this.getAttribute('data-tipo');
+        
+        Swal.fire({
+          title: `<strong>Detalles del Material</strong>`,
+          icon: "info",
+          html: `
+            <p><b>Código:</b> ${codigo}</p>
+            <p><b>Descripción:</b> ${descripcion}</p>
+            <p><b>Cantidad:</b> ${cantidad}</p>
+            <p><b>Coordinador:</b> ${coordinador}</p>
+            <p><b>Fecha de Ingreso:</b> ${fecha}</p>
+            <p><b>Tipo de Material:</b> ${tipo}</p>
+          `,
+          showCloseButton: false,
+          showCancelButton: false,
+          showConfirmButton: false,
+          focusConfirm: false,
+          footer: `<button id="edit-material" class="swal2-confirm swal2-styled">Editar</button>
+                  <button id="delete-material" class="swal2-confirm swal2-styled">Eliminar</button>
+                  <button id="cantidad-material" class="swal2-confirm swal2-styled">Modificar cantidad</button>
+          `
+        });
+
+      document.getElementById('cantidad-material').addEventListener('click', function() {
+    Swal.fire({
+        title: 'Modificar Cantidad del Material',
+        html: `
+            <form id="modificar-cantidad-form">
+                <div class="form-group">
+                    <p><b>Código:</b> ${codigo}</p>
+                    <p><b>Descripción:</b> ${descripcion}</p>
+                    <p><b>Cantidad:</b> ${cantidad}</p>
+                </div>
+                <div class="form-group">
+                    <label for="id_cantidad_a_agregar">Cantidad a agregar:</label>
+                    <input
+                        type="number"
+                        name="cantidad"
+                        min="1"
+                        class="form-control"
+                        id="id_cantidad_a_agregar"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="id_cantidad_a_restar">Cantidad a restar:</label>
+                    <input
+                        type="number"
+                        name="restar"
+                        min="1"
+                        class="form-control"
+                        id="id_cantidad_a_restar"
+                    />
+                </div>
+            </form>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        preConfirm: () => {
+            return new Promise((resolve) => {
+                const form = $('#modificar-cantidad-form');
+                const formData = form.serialize();
+
+                $.ajax({
+                  type: 'POST',
+                    url: `../modificar_cantidades/${pk}/`,
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Token CSRF
+                        ...form.serializeArray().reduce((obj, item) => {
+                            obj[item.name] = item.value;
+                            return obj;
+                        }, {})
+                    },
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            resolve(data);
+                        } else {
+                            Swal.showValidationMessage(data.message || 'Ocurrió un error.');
+                        }
+                    },
+                    error: function() {
+                        Swal.showValidationMessage('Ocurrió un error inesperado.');
+                    }
+                });
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Éxito',
+                text: 'El material ha sido modificado correctamente.',
+                icon: 'success'
+            });
+        }
+        setInterval("location.reload()",1000);
+    });
+    
+});
+
+      document.getElementById('delete-material').addEventListener('click', function () {
+        Swal.fire({
+        title: "¿Estas seguro?",
+        html: `
+            <p>¡No podrás revertir esto!</p>
+            <div class="form-group">
+                <label for="motivo">Motivo de la eliminación:</label>
+                <textarea id="motivo" class="form-control" rows="4" placeholder="Introduzca el motivo de la eliminación..."></textarea>
+            </div>
+        `,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: "¡Sí, bórralo!",
+        preConfirm: () => {
+        const motivo = document.getElementById('motivo').value;
+        if (!motivo) {
+            Swal.showValidationMessage("Por favor ingrese un motivo para la eliminación");
+        }
+        return motivo;
+      }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const motivo = result.value; 
+
+        $.ajax({
+            url: `../eliminar_material/${pk}/`, 
+            type: 'POST',
+            data: {
+                motivo: motivo,
+                csrfmiddlewaretoken: '{{ csrf_token }}'  
+            },
+            success: function (response) {
+                Swal.fire(
+                    'Deleted!',
+                    'The material has been deleted.',
+                    'success'
+                );
+                // Remueve el elemento eliminado de la vista
+                document.getElementById(`material-${pk}`).remove();
+            },
+            error: function (xhr, errmsg, err) {
+                Swal.fire(
+                    'Error!',
+                    'There was a problem deleting the material.',
+                    'error'
+          );
+        }
+      });
+    }
+  });
+});
+
+      document.getElementById('edit-material').addEventListener('click', function () {
+        Swal.fire({
+          title: 'Editar Material',
+          html: `
+          <div class="form-group">
+            <label for="edit-codigo" class="col-form-label">Código:</label>
+            <input id="edit-codigo" type="text" class="form-control" value="${codigo}">
+          </div>
+          <div class="form-group">
+            <label for="edit-descripcion" class="col-form-label">Descripción:</label>
+            <input id="edit-descripcion" type="text" class="form-control" value="${descripcion}">
+          </div>
+          <div class="form-group">
+            <label for="edit-tipo" class="col-form-label">Tipo de Material:</label>
+            <input id="edit-tipo" type="text" class="form-control" value="${tipo}">
+          </div>
+        `,
+          showCancelButton: true,
+          confirmButtonText: 'Guardar',
+          cancelButtonText: 'Cancelar',
+          preConfirm: () => {
+            const newCodigo = document.getElementById('edit-codigo').value;
+            const newDescripcion = document.getElementById('edit-descripcion').value;
+            const newTipo = document.getElementById('edit-tipo').value;
+
+            if (!newCodigo || !newDescripcion || !newTipo) {
+              Swal.showValidationMessage('Todos los campos son obligatorios');
+              return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: `../editar_material/${pk}/`,  
+                data: {
+                    codigo: newCodigo,
+                    descripcion: newDescripcion,
+                    tipo: newTipo,
+                    csrfmiddlewaretoken: "{{ csrf_token }}", 
+                },
+                success: function (response) {
+                    Swal.fire('Guardado', 'El material ha sido actualizado', 'success');
+                   
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+                }
+            });
+            setInterval("location.reload()",1000);
+
+            return false; 
+          }
+        });
+      });
+    });
+  });
+});
+
+
+
+</script>
+{% endblock %}

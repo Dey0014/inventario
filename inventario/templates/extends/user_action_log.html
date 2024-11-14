@@ -1,0 +1,31 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div class="container mt-4 table-responsive">
+    <h1 class="my-4 text-center">Log</h1>
+<table class="table table-hover table-borderless text-center">
+    <thead>
+    <tr>
+        <th class="sortable">Usuario</th>
+        <th class="sortable">Acción</th>
+        <th class="sortable">Fecha y Hora</th>
+        <th class="sortable">Detalles</th>
+    </tr>
+    </thead>
+    <tbody class="table-group-divider">
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.user.username }}</td>
+        <td>{{ log.get_action_display }}</td>
+        <td>{{ log.timestamp }}</td>
+        <td>{{ log.details }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+
+
+
+
+{% endblock %}

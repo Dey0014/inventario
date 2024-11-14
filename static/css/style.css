@@ -1,0 +1,136 @@
+
+body.inicio {
+    padding-top: 73px; /* ajustado para la barra de navegacion */
+    background-image: url(../img/prueba4.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    overflow-y:auto
+
+}
+body nav.colornav{
+    background-color: rgb(55 84 116);
+}
+
+.bluecolor{
+    background-color: rgb(55 84 116);
+
+}
+
+.hidden {
+    display: none;
+}
+
+body.login{
+    padding-top: 0px;
+    background-color: rgb(55 84 116)
+}
+div.card.content-container.contenido{
+    background-color: #ffffffd4;
+    margin-right: 30px;
+    margin-left: 30px;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.navbar-container {
+    margin-bottom: 20px; /* el espacio que requiere la barra de navegacion */
+}
+
+img.img-fluid.login{
+    height: 100%;
+}
+
+img.logo{
+    width: 146px;
+    max-height: 32px;
+}
+
+
+/* Estado normal */
+.sortable {
+    cursor: pointer;
+}
+
+/* Estado normal */
+.sortable {
+    cursor: pointer;
+}
+
+/* Estado ascendente */
+.sortable.ascendente::after {
+    content: " ▲";
+}
+
+/* Estado descendente */
+.sortable.descendente::after {
+    content: " ▼";
+}
+div#contenido {
+    margin: 50px;
+}
+
+th.sortable {
+    background-color: rgb(55 84 116);
+    white-space: nowrap;
+}
+
+.notification-icon {
+    position: relative; /* Para que la badge se posicione correctamente */
+    display: inline-block; /* Para que no ocupe todo el ancho */
+}
+
+.badge {
+    position: absolute;
+    top: 0px;
+    right: -5px;
+    font-size: 0.75rem;
+    padding: 0.25em 0.5em; /* Espaciado alrededor del texto */
+    border-radius: 1rem; /* Bordes redondeados */
+}
+
+a#inbox-link {
+    padding: 10px;
+}
+
+
+/* Cambia el estilo de letra dentro de todos los diálogos de SweetAlert */
+.swal2-container {
+font-size: initial;               /* Ajusta el tamaño de la letra */
+color: initial;                    /* Cambia el color de la letra */
+}
+
+.swal2-container .select2-container .select2-selection--single .select2-selection__rendered {
+
+    white-space: normal;
+    height: max-content;
+}
+
+.swal2-container .select2-container .select2-selection--single {
+    height: max-content;
+    width: 100%;
+}
+
+
+.swal2-container .select2-container .select2-selection--single .select2-selection__rendered {
+    white-space: break-spaces;
+    height: max-content;
+    width: 100%;
+}
+.swal2-container span.select2.select2-container.select2-container--default.select2-container--below.select2-container--focus {
+    width: 100% !important;
+}
+.swal2-container span.select2.select2-container.select2-container--default.select2-container--below.select2-container {
+    width: 100% !important;
+}
+
+.formulario_solicitud #contenido{
+    margin: 50px;
+    margin-right: 200px;
+    margin-left: 200px;
+
+}
+
+.formulario{
+    padding: 20px;
+}

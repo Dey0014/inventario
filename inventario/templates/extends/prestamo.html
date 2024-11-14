@@ -1,0 +1,77 @@
+{% extends "inicio.html" %}
+{% block content %}
+<div class="container">
+    <h1 class="my-4 text-center">Control de Entregas</h1>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="material" class="form-label">Material:</label>
+            <select name="material" id="material" class="form-control select2" autofocus>
+                {% for mat in materiales %}
+                    <option value="{{ mat.id }}">{{ mat.descripcion }} (Disponible: {{ mat.cantidad }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="departamento" class="form-label">Departamento:</label>
+            <select name="departamento" id="departamento" class="form-control select2">
+                <option value="">------------</option>
+                {% for depto in departamentos %}
+                    <option value="{{ depto.id }}">{{ depto.nombre }}</option>
+                {% endfor %}
+            </select>
+            <a href="#" id="add-department-icon" class="bi bi-plus-circle-dotted" style="cursor: pointer; margin-left: 10px;"></a>
+        </div>
+
+        <div class="mb-3" id="nuevo-departamento-field" style="display: none;">
+            <label for="id_nuevo_departamento" class="form-label">Agregar nuevo departamento:</label>
+            <input type="text" name="nuevo_departamento" id="id_nuevo_departamento" class="form-control" value="">
+        </div>
+
+        <div class="mb-3">
+            <label for="analista" class="form-label">Analista:</label>
+            <div class="form-control" id="id_analista">{{ user.username }}</div>
+            <input type="hidden" name="analista" value="{{ user.id }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="persona" class="form-label">Persona:</label>
+            <select name="nombre" id="persona" class="form-control select2">
+                <option value="">Seleccionar persona</option>
+                {% for per in personas %}
+                    <option value="{{ per.id }}">{{ per.nombre }} - {{ per.cedula }}</option>
+                {% endfor %}
+            </select>
+            <a href="#" id="add-person-icon" class="bi bi-plus-circle-dotted" style="cursor: pointer; margin-left: 10px;"></a>
+        </div>
+
+        <div class="mb-3" id="nueva-persona-field" style="display: none;">
+            <label for="id_nueva_persona" class="form-label">Agregar nueva persona:</label>
+            <input type="text" name="nueva_persona" id="id_nueva_persona" class="form-control" value="">
+        </div>
+
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción:</label>
+            <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="cantidad" class="form-label">Cantidad:</label>
+            <input type="number" name="cantidad" id="cantidad" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary my-4">Registrar Préstamo</button>
+    </form>
+
+    {% if messages %}
+    <div class="alert alert-info mt-3">
+        {% for message in messages %}
+            <p class="{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

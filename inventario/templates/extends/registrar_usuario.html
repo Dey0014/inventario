@@ -1,0 +1,64 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div class="container">
+    <h1 class="my-4 text-center">Registro de Usuario</h1>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Nombre de usuario:</label>
+            <input type="text" name="username" minlength="5" required class="form-control" id="id_username" aria-describedby="usernameHelp">
+            <div id="usernameHelp" class="form-text">Ingrese un nombre de usuario único.</div>
+            <div class="invalid-feedback">
+                Por favor, ingrese un nombre de usuario válido (mínimo 5 caracteres).
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_password" class="form-label">Contraseña:</label>
+            <input type="password" name="password" required class="form-control" id="id_password">
+            <div class="invalid-feedback">
+                Por favor, ingrese una contraseña.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_confirm_password" class="form-label">Confirmar Contraseña:</label>
+            <input type="password" name="confirm_password" required class="form-control" id="id_confirm_password">
+            <div class="invalid-feedback">
+                Por favor, confirme su contraseña.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_email" class="form-label">Correo Electrónico:</label>
+            <input type="email" name="email" maxlength="320" required class="form-control" id="id_email">
+            <div class="invalid-feedback">
+                Por favor, ingrese un correo electrónico válido.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_tipo_usuario" class="form-label">Tipo de Usuario:</label>
+            <select name="tipo_usuario" id="id_tipo_usuario" class="form-select">
+                <option value="Coordinador">Coordinador</option>
+                <option value="Analista">Analista</option>
+            </select>
+        </div>
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </form>
+</div>
+{% endblock %}

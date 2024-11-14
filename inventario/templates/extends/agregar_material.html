@@ -1,0 +1,50 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">Agregar Material</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div>
+      <label for="codigo">Código:</label>
+      <input type="text" name="codigo" maxlength="50" required class="form-control" >
+    </div>
+    <div>
+      <label for="descripcion">Descripción:</label>
+      <input type="text" name="descripcion" maxlength="250" required class="form-control" >
+    </div>
+    <div>
+      <label for="cantidad">Cantidad a agregar:</label>
+      <input type="number" name="cantidad" min="0" required class="form-control" >
+    </div>
+    <div>
+      <label for="tipo">Tipo de Material:</label>
+      <select name="tipo" class="form-control" >
+        <option value="FER" selected>Ferretería</option>
+        <option value="MAN">Mantenimiento</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+  </form>
+  {% if messages %}
+  <div class="mt-3">
+      {% for message in messages %}
+          <div class="alert 
+              {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+              <p>{{ message }}</p>
+          </div>
+      {% endfor %}
+  </div>
+
+  {% for message in messages %}
+      {% if message.tags == 'success' %}
+          <script>
+              // Esperar 3 segundos y luego redirigir a la página de la lista de materiales
+              setTimeout(function() {
+                  window.location.href = "{% url 'material_list' %}";
+              }, 1000);  // 1000 milisegundos = 1 segundos
+          </script>
+      {% endif %}
+  {% endfor %}
+{% endif %}
+</div>
+{% endblock %}
