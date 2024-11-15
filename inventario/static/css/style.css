@@ -134,3 +134,17 @@ color: initial;                    /* Cambia el color de la letra */
 .formulario{
     padding: 20px;
 }
+
+
+ .nav-linke {
+    color: #ffffffd4; /* Color normal */
+    text-decoration: none; /* Sin subrayado por defecto */
+    transition: all 0.2s ease; /* Transición suave */
+}
+
+ .nav-linke:hover {
+    color: white; /* Cambiar el color del texto al pasar el cursor */
+    background-color: #007bff; /* Fondo azul más intenso */
+    text-decoration: underline; /* Agregar subrayado */
+
+}

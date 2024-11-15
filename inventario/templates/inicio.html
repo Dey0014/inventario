@@ -107,11 +107,17 @@
       // Si hay solicitudes, al hacer clic mostramos el SweetAlert
       inboxIcon.addEventListener('click', function() {
         if (solicitudesPendientes.length > 0) {
-          let solicitudesHTML = '<ul style="text-align:left;">';
+          let solicitudesHTML = '<ul style="text-align:left;" class="list-unstyled" >';
           solicitudesPendientes.forEach(function(solicitud) {
-            solicitudesHTML += `<a href=""><li id="${solicitud.id}"> ${solicitud.persona__nombre} - ${solicitud.material_solicitado__descripcion}</li></a>`;
-          });
-          solicitudesHTML += '</ul>';
+            solicitudesHTML += 
+            `<li class="nav-item">
+              <a id="${solicitud.id}" class="nav-linke" href="">  
+                ${solicitud.persona__nombre} - ${solicitud.material_solicitado__descripcion}
+              </a>
+            </li>
+            <br>`;
+            });
+            solicitudesHTML += '</ul>';
   
           Swal.fire({
             title: 'Solicitudes Pendientes',
