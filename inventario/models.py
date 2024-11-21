@@ -117,5 +117,3 @@ class EliminarRegistro(models.Model):
     def __str__(self):
         return f"{self.material_nombre} eliminado por {self.usuario.username} el {self.fecha_eliminacion}"
     
-
-    

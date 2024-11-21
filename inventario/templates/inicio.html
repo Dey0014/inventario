@@ -103,26 +103,65 @@
     document.addEventListener('DOMContentLoaded', function() {
       const solicitudesPendientes = JSON.parse('{{ solicitudes_pendientes|escapejs }}');  // Convertimos el JSON de Django a objeto JS
       const inboxIcon = document.getElementById('inbox-icon');
-  
-      // Si hay solicitudes, al hacer clic mostramos el SweetAlert
+      
+      // Manejamos el clic en el icono de inbox
       inboxIcon.addEventListener('click', function() {
         if (solicitudesPendientes.length > 0) {
-          let solicitudesHTML = '<ul style="text-align:left;" class="list-unstyled" >';
+          let solicitudesHTML = '<ul style="text-align:left;" class="list-unstyled">';
           solicitudesPendientes.forEach(function(solicitud) {
             solicitudesHTML += 
             `<li class="nav-item">
-              <a id="${solicitud.id}" class="nav-linke" href="">  
+              <a id="solicitud-${solicitud.id}" class="nav-link solicitud-link" href="javascript:void(0);" data-id="${solicitud.id}">  
                 ${solicitud.persona__nombre} - ${solicitud.material_solicitado__descripcion}
               </a>
             </li>
             <br>`;
-            });
-            solicitudesHTML += '</ul>';
-  
+          });
+          solicitudesHTML += '</ul>';
+          
           Swal.fire({
             title: 'Solicitudes Pendientes',
             html: solicitudesHTML,
             icon: 'info'
+          });
+  
+          // Añadimos evento de clic a los enlaces generados dinámicamente
+          document.querySelectorAll('.solicitud-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+              const solicitudId = e.target.dataset.id; // ID de la solicitud seleccionada
+              const solicitud = solicitudesPendientes.find(s => s.id == solicitudId); // Encontramos la solicitud en el array
+  
+              // Mostramos un nuevo SweetAlert con la información detallada
+              Swal.fire({
+                title: 'Detalles de la Solicitud',
+                html: `
+                <ul class="text-">
+                  <li><strong>Persona:</strong> ${solicitud.persona__nombre}</li>
+                  <li><strong>Material Solicitado:</strong> ${solicitud.material_solicitado__descripcion}</li>
+                  <li><strong>Cantidad:</strong> ${solicitud.cantidad}</li>
+                  <li><strong>Departamento:</strong> ${solicitud.persona__departamento__nombre}</li>
+                  </ul>
+
+                  <div class="form-group">
+                  
+                    <label for="motivo">Justificacion:</label>
+                    <textarea id="motivo" class="form-control" rows="4" placeholder="detalles..."></textarea>
+                  </div>
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Aprobar',
+                cancelButtonText: 'Descartar'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Lógica para aprobar la solicitud
+                  aprobarSolicitud(solicitudId);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                  // Lógica para descartar la solicitud
+                  descartarSolicitud(solicitudId);
+                }
+              });
+            });
           });
         } else {
           Swal.fire({
@@ -132,6 +171,26 @@
           });
         }
       });
+  
+      // Función para aprobar la solicitud (puedes enviar una petición AJAX)
+      function aprobarSolicitud(id) {
+        Swal.fire({
+          title: 'Solicitud Aprobada',
+          text: `La solicitud con ID ${id} fue aprobada exitosamente.`,
+          icon: 'success'
+        });
+        // Aquí puedes agregar lógica adicional para enviar datos al servidor
+      }
+  
+      // Función para descartar la solicitud (puedes enviar una petición AJAX)
+      function descartarSolicitud(id) {
+        Swal.fire({
+          title: 'Solicitud Descartada',
+          text: `La solicitud con ID ${id} fue descartada.`,
+          icon: 'error'
+        });
+        // Aquí puedes agregar lógica adicional para enviar datos al servidor
+      }
     });
   </script>
 

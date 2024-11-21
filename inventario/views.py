@@ -323,7 +323,7 @@ def prestar_material(request):
         messages.success(request, "El préstamo se ha registrado correctamente.")
         return redirect("prestar_material")  # Redirige a una página de lista o de éxito
     
-    return render(request, "extends/prestamo.html", {"materiales": materiales, "departamentos":departamentos})
+    return render(request, "extends/prestamo.html", {"materiales": materiales, "departamentos":departamentos, "personas":personas})
 
 @login_required
 def prestamo_list(request):

@@ -9,9 +9,4 @@ admin.site.register(Solicitudes)
 admin.site.register(UserActionLog)
 admin.site.register(EliminarRegistro)
 
-@admin.register(Prestamo)
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ("departamento", "material", "analista", "cantidad", "fecha_prestamo")
-# Register your models here.
-
 

@@ -1,51 +1,16 @@
 $(document).ready(function () {
-  $(".select2").select2();
+$(".select2").select2();
 });
-
-
-('click', function(event) {
-  event.preventDefault();  // Previene el comportamiento por defecto del enlace
-  $('#nuevo-departamento-field').toggle();
- 
-});
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ocultar el formulario de nueva persona al cargar la página
-        document.getElementById('nuevaPersonaForm').classList.add('hidden');
-        document.getElementById('nuevoDepartamentoForm').classList.add('hidden');
-    });
-
-    // Detectar cambio en el select de persona
-    $('#persona').on('change.select2', function() {
-        var nuevaPersonaForm = document.getElementById('nuevaPersonaForm');
-        if (this.value === "nueva") {
-            nuevaPersonaForm.classList.remove('hidden');
-            nuevaPersonaForm.classList.add('row');
-        } else {
-            nuevaPersonaForm.classList.add('hidden');
-            nuevaPersonaForm.classList.remove('row');
-        }
-    });
-
-    // Detectar cambio en el select de departamento
-    $('#departamento').on('change.select2', function() {
-        var nuevoDepartamentoForm = document.getElementById('nuevoDepartamentoForm');
-        if (this.value === "nuevo") {
-            nuevoDepartamentoForm.classList.remove('hidden');
-        } else {
-            nuevoDepartamentoForm.classList.add('hidden');
-        }
-    });
-
-
-
-
-$('#add-person-icon').on('click', function(event) {
+//esto es para que funcionen todos los select2
+$('#add-department-icon').on('click', function(event) {
     event.preventDefault();  // Previene el comportamiento por defecto del enlace
-    console.log("Icon clicked");  // Agregar esta línea para depuración
+$('#nuevo-departamento-field').toggle();
+
+});
+$('#add-person-icon').on('click', function(event) {
+      event.preventDefault();  // Previene el comportamiento por defecto del enlace
     $('#nueva-persona-field').toggle();
-  });
+});
 
 
 
@@ -87,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
              // Ordenar las filas basado en el contenido de la columna
-             rows.sort((rowA, rowB) => {
+            rows.sort((rowA, rowB) => {
                 const cellA = rowA.querySelectorAll('td')[index].textContent.trim();
                 const cellB = rowB.querySelectorAll('td')[index].textContent.trim();
                 
