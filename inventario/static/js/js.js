@@ -1,5 +1,7 @@
 $(document).ready(function () {
-$(".select2").select2();
+$(".select2").select2({
+    width: '100%'
+});
 });
 //esto es para que funcionen todos los select2
 $('#add-department-icon').on('click', function(event) {

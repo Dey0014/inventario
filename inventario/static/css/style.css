@@ -1,3 +1,14 @@
+body{
+    font-family: math;
+    font-size: 17px;
+}
+
+body.formulario_solicitud{
+    font-family: math;
+    font-size: 17px;
+}
+
+
 
 body.inicio {
     padding-top: 73px; /* ajustado para la barra de navegacion */
@@ -22,8 +33,10 @@ body nav.colornav{
 }
 
 body.login{
+    font-family: math;
     padding-top: 0px;
-    background-color: rgb(55 84 116)
+    background-color: rgb(55 84 116);
+    font-size: 17px;
 }
 div.card.content-container.contenido{
     background-color: #ffffffd4;
@@ -73,6 +86,7 @@ div#contenido {
 th.sortable {
     background-color: rgb(55 84 116);
     white-space: nowrap;
+    color: rgba(255, 255, 255, 0.55);
 }
 
 .notification-icon {
@@ -124,16 +138,12 @@ color: initial;                    /* Cambia el color de la letra */
     width: 100% !important;
 }
 
-.formulario_solicitud #contenido{
-    margin: 50px;
-    margin-right: 200px;
-    margin-left: 200px;
+
+.nav {
+    --bs-nav-link-hover-color: #000;
 
 }
 
-.formulario{
-    padding: 20px;
-}
 
 
 .nav-linke {
@@ -147,3 +157,24 @@ color: initial;                    /* Cambia el color de la letra */
     text-decoration: underline; /* Agregar subrayado */
 
 }
+
+.no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari y Edge */
+}
+
+.nav-link-tabs{
+    background-color: rgb(55 84 116);
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.55);
+    
+}
+
+.nav-tabs {
+    --bs-nav-tabs-link-hover-border-color: rgb(55 84 116);
+}
+

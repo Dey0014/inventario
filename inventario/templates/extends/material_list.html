@@ -1,21 +1,21 @@
 {% extends "inicio.html" %} 
 {% block content %}
-<div class="container mt-4 table-responsive">
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
+<div id="contenido" class="mt-4 table-responsive ">
+  <ul class="nav nav-tabs" style="border: none;" id="myTab" role="tablist">
                 
     <li class="nav-item" role="presentation">
-        <a class="nav-link nav-link-tabs active" id="profile-tab2" data-bs-toggle="tab" data-bs-target="#materialesentregas"
+        <a class="nav-link nav-link-tabs active"  id="profile-tab2" data-bs-toggle="tab" data-bs-target="#materialesentregas"
             type="button" role="tab" aria-controls="materialesentregas" aria-selected="false">Entregas</a>
     </li>
     
     <li class="nav-item" role="presentation">
-        <a class="nav-link nav-link-tabs" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+        <a class="nav-link nav-link-tabs"  id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
             type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Prestamos</a>
     </li>
 
 </ul>
 
-<div class="tab-content card-tabs border-top-0 " id="myTabContent">
+<div class="{{ tablas }} " style="box-shadow: 1px 1px 30px -10px; border-top-left-radius: 0px;" id="myTabContent">
 
   <div class="tab-pane fade show active" id="materialesentregas" role="tabpanel2" aria-labelledby="profile-tab2" tabindex="0">
     <div style="display: flex;justify-content: space-between;align-items: baseline; min-width: 696px;">

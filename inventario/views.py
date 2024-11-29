@@ -152,52 +152,6 @@ def agregar_material(request):
     
 @login_required
 @group_required("coordinadores")
-def agregar_cantidad_material(request):
-    codigos = Material.objects.all()
-    if request.method == "POST":
-        codigo = request.POST.get('codigo')
-        cantidad_a_agregar = request.POST.get('cantidad')
-        cantidad_a_restar = request.POST.get('restar')
-
-        # Obtener el material por código
-        material = Material.objects.get(codigo=codigo)
-
-        if cantidad_a_agregar:
-            cantidad_a_agregar = int(cantidad_a_agregar)
-            material.agregar_material(cantidad_a_agregar)
-            messages.success(
-                request,
-                f"Se agregó {cantidad_a_agregar} unidades al material {material.descripcion}.",
-            )
-            # Registrar la acción en el log
-            UserActionLog.objects.create(
-                user=request.user,
-                action='agregar material',
-                details=f"Se agregó {cantidad_a_agregar} unidades a {material.descripcion}.",
-            )
-
-        if cantidad_a_restar:
-            cantidad_a_restar = int(cantidad_a_restar)
-            material.restar_material(cantidad_a_restar)
-            messages.success(
-                request,
-                f"Se restó {cantidad_a_restar} unidades al material {material.descripcion}.",
-            )
-            # Registrar la acción en el log
-            UserActionLog.objects.create(
-                user=request.user,
-                action='restar material',
-                details=f"Se restó {cantidad_a_restar} unidades al material {material.descripcion}.",
-            )
-    
-    return render(
-        request,
-        "extends/cantidad_material.html",
-        {"codigos": codigos},
-    )
-
-@login_required
-@group_required("coordinadores")
 def modificar_cantidades(request, pk):
     if request.method == 'POST':
         cantidad_a_agregar = request.POST.get('cantidad')
@@ -312,9 +266,6 @@ def prestar_material(request):
         )
         prestamo.save()
 
-        # Actualizar la cantidad de material
-        material.cantidad -= cantidad
-        material.save()
         UserActionLog.objects.create(
             user=request.user,
             action='entrega',

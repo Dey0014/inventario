@@ -84,5 +84,34 @@
   <script src="{% static 'sweetalert2/dist/sweetalert2.min.js' %}"></script>
   <script src="{% static 'select2/js/select2.min.js' %}"></script>
   <script src="{% static 'js/js.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Ocultar el formulario de nueva persona al cargar la página
+    document.getElementById('nuevaPersonaForm').classList.add('hidden');
+    document.getElementById('nuevoDepartamentoForm').classList.add('hidden');
+});
+
+// Detectar cambio en el select de persona
+$('#persona').on('change.select2', function() {
+    var nuevaPersonaForm = document.getElementById('nuevaPersonaForm');
+    if (this.value === "nueva") {
+        nuevaPersonaForm.classList.remove('hidden');
+
+    } else {
+        nuevaPersonaForm.classList.add('hidden');
+
+    }
+});
+
+// Detectar cambio en el select de departamento
+$('#departamento').on('change.select2', function() {
+    var nuevoDepartamentoForm = document.getElementById('nuevoDepartamentoForm');
+    if (this.value === "nuevo") {
+        nuevoDepartamentoForm.classList.remove('hidden');
+    } else {
+        nuevoDepartamentoForm.classList.add('hidden');
+    }
+});
+</script>
 </body>
 </html>

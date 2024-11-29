@@ -1,6 +1,6 @@
 {% extends "inicio.html" %} 
 {% block content %}
-<div class="container">
+<div id="contenido" class="{{ tablas }} " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
     <h1 class="my-4 text-center">Lista de Entregas</h1>
     <div class="table-responsive">
         <table class="table table-hover table-borderless text-center">
@@ -9,8 +9,7 @@
                     <th class="sortable">Departamento</th>
                     <th class="sortable">Material</th>
                     <th class="sortable">Analista</th>
-                    <th class="sortable">Nombre</th>
-                    <th class="sortable">Apellido</th>
+                    <th class="sortable">Nombre y Apellido</th>
                     <th class="sortable">Cantidad</th>
                     <th class="sortable">Descripción</th>
                     <th class="sortable">Fecha de Préstamo</th>

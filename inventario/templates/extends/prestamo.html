@@ -1,6 +1,6 @@
 {% extends "inicio.html" %}
 {% block content %}
-<div class="container">
+<div id="contenido" class="{{ tablas }} " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
     <h1 class="my-4 text-center">Control de Entregas</h1>
     <form method="post">
         {% csrf_token %}

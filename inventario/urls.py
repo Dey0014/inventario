@@ -11,12 +11,6 @@ urlpatterns = [
     path("agregar-material/", agregar_material, name="agregar_material"),
     path("material-list/", material_list, name="material_list"),
     path("prestamo_list/", prestamo_list, name="prestamo_list"),
-    # Agregar esta línea para redirigir a la lista de materiales
-    path(
-        "agregar_cantidad_material/",
-        agregar_cantidad_material,
-        name="agregar_cantidad_material",
-    ),
     path('modificar_cantidades/<int:pk>/', modificar_cantidades, name="modificar_cantidades"),
     path("prestar/", prestar_material, name="prestar_material"),
     path("registrar_usuario/", registrar_usuario, name="registrar_usuario"),
