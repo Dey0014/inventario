@@ -12,12 +12,13 @@
   <link rel="stylesheet" href="{% static 'select2/css/select2.min.css' %}" />
   <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  <link rel="stylesheet" href="{% static '@sweetalert2/theme-borderless/borderless.css' %}" />
+  <link rel="stylesheet" href="{% static '@sweetalert2/theme-bulma/bulma.css' %}" />
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
 </head>
 
 <body class="inicio">
+  {%  if user.is_authenticated %}
   <div class="navbar-container">
     <nav class="navbar navbar-expand-lg navbar-dark colornav fixed-top">
       <div class="container-fluid">
@@ -33,7 +34,7 @@
             <li class="nav-item">
               <a href="#" id="inbox-link" style="position: relative;">
                 <div class="notification-icon" id="inbox-icon">
-                    <i class="bi bi-inbox" style="font-size: 2rem; cursor: pointer;"></i>
+                    <i class="ts bi bi-inbox" style="font-size: 2rem; cursor: pointer;"></i>
                     {% if cantidad_solicitudes > 0 %}
                         <span class="badge bg-danger" >
                             {{ cantidad_solicitudes }}
@@ -44,10 +45,10 @@
             </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'user_action_log' %}">log</a>
+              <a class="ts nav-link" href="{% url 'user_action_log' %}">log</a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+              <a class="nav-link dropdown-toggle ts" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                 aria-label="Prueba Desplegable 1">usuarios</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'registrar_usuario' %}">Registrar Usuario</a></li>
@@ -55,26 +56,25 @@
               </ul>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+              <a class="ts nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                 aria-label="Prueba Desplegable 1">Entregas</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'prestar_material' %}">control de Entregas</a></li>
-                <li><a class="dropdown-item" href="{% url 'prestamo_list' %}">Lista de entregas</a></li>
+                <li><a class="dropdown-item" href="{% url 'entregar_material' %}">control de Entregas</a></li>
+                <li><a class="dropdown-item" href="{% url 'entrega_list' %}">Lista de entregas</a></li>
               </ul>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+              <a class="ts nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                 aria-label="Prueba Desplegable 2">Material</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'agregar_material' %}">Agregar Material</a></li>
                 <li><a class="dropdown-item" href="{% url 'material_list' %}">Lista de Materiales</a></li>
               </ul>
             </li>
             <li class="nav-item">
               <form method="post" action="{% url 'logout' %}" class="d-inline">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-link nav-link" aria-label="Cerrar sesión">
-                  Cerrar sesión <i class="bi bi-door-closed"></i>
+                <button type="submit" class=" ts btn btn-link nav-link" aria-label="Cerrar sesión">
+                  Cerrar sesión <i class=" bi bi-door-closed"></i>
                 </button>
               </form>
             </li>
@@ -129,29 +129,37 @@
             .join('');
   
           Swal.fire({
-            title: 'Solicitudes Pendientes',
             html: `
-              <div class="no-scrollbar" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover">
-                  <thead class="table-dark">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Nombre</th>
-                      <th scope="col">Material</th>
-                      <th scope="col">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-dark">
-                    ${solicitudesHTML}
-                  </tbody>
-                </table>
+            <div id="contenido" class="bg-light rounded " style="box-shadow: rgb(55 84 116) -1px 1px 15px 0px;">
+                <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
+                  Solicitudes
+                </div>
+                <div class=" table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+                  <table class="table table-hover text-center ">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Material</th>
+                        <th scope="col">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                      ${solicitudesHTML}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             `,
-            icon: 'info',
-            width: '1000px',
-            showCloseButton: true,
-            confirmButtonText: 'Cerrar',
-          });
+  width: '1200px', // Deja que el contenido determine el ancho
+  padding: 0, // Elimina el relleno predeterminado
+  background: 'transparent', // Fondo transparente
+  showCloseButton: false, // Opcional: Ocultar el botón de cierre si no lo necesitas
+  showConfirmButton: false, // Ocultar botón de confirmación
+  customClass: {
+    popup: 'p-0 border-0 shadow-none', // Elimina bordes y sombras
+  },
+});
   
           attachSolicitudEventHandlers(solicitudesPendientes);
         } else {
@@ -190,7 +198,7 @@
                 <textarea 
                   id="motivo" 
                   class="form-control border border-primary" 
-                  rows="4" 
+                  rows="3" 
                   placeholder="Escribe la justificación aquí...">
                 </textarea>
               </div>
@@ -220,50 +228,86 @@
   
       // Función para aprobar la solicitud
       function aprobarSolicitud(id, motivo) {
-        Swal.fire({
-          title: 'Aprobando Solicitud...',
-          allowOutsideClick: false,
-          didOpen: () => {
+    Swal.fire({
+        title: 'Aprobando Solicitud...',
+        allowOutsideClick: false,
+        didOpen: () => {
             Swal.showLoading();
-            // Simula una petición AJAX
-            setTimeout(() => {
-              Swal.fire({
-                title: 'Solicitud Aprobada',
-                text: `La solicitud con ID ${id} fue aprobada con motivo: ${motivo}`,
-                icon: 'success',
-              });
-            }, 1000);
-          },
-        });
-      }
-  
-      // Función para descartar la solicitud
-      function descartarSolicitud(id) {
-        Swal.fire({
-          title: 'Descartando Solicitud...',
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-            // Simula una petición AJAX
-            setTimeout(() => {
-              Swal.fire({
-                title: 'Solicitud Descartada',
-                text: `La solicitud con ID ${id} fue descartada.`,
-                icon: 'error',
-              });
-            }, 1000);
-          },
-        });
-      }
+
+            $.ajax({
+                url: `/inventario/aprobar_solicitud/${id}/`, // Endpoint de tu vista
+                type: 'POST',
+                data: JSON.stringify({ motivo: motivo }), // Envía la justificación en formato JSON
+                contentType: 'application/json', // Especifica el tipo de contenido
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Incluye el token CSRF
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Solicitud Aprobada',
+                            text: `La solicitud con ID ${id} fue aprobada con motivo: ${motivo}`,
+                            icon: 'success',
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'Ocurrió un error al aprobar la solicitud.',
+                            icon: 'error',
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Ocurrió un error en el servidor.',
+                        icon: 'error',
+                    });
+                },
+            });
+        },
     });
+}
+    })
   </script>
-  
+
 
   <script src="{% static 'sweetalert2/dist/sweetalert2.min.js' %}"></script>
   <script src="{% static 'jquery/jquery.min.js' %}"></script>
   <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'select2/js/select2.min.js' %}"></script>
   <script src="{% static 'js/js.js' %}"></script>
+
+  <script>
+
+    // Detectar cambio en el select de persona
+    $('#persona').on('change.select2', function() {
+        var nuevaPersonaForm = document.getElementById('nuevaPersonaForm');
+        if (this.value === "nueva") {
+            nuevaPersonaForm.classList.remove('hidden');
+    
+        } else {
+            nuevaPersonaForm.classList.add('hidden');
+    
+        }
+    });
+    
+    // Detectar cambio en el select de departamento
+    $('#departamento').on('change.select2', function() {
+        var nuevoDepartamentoForm = document.getElementById('nuevoDepartamentoForm');
+        if (this.value === "nuevo") {
+            nuevoDepartamentoForm.classList.remove('hidden');
+        } else {
+            nuevoDepartamentoForm.classList.add('hidden');
+        }
+    });
+    </script>
+    {% else %}
+    <script>
+      window.location.href = "{% url 'login' %}"
+    </script>
+
+    {% endif %}
 </body>
 
 </html>

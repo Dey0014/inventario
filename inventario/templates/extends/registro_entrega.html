@@ -1,9 +1,11 @@
 {% extends "inicio.html" %} 
 {% block content %}
-<div id="contenido" class="{{ tablas }} " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
-    <h1 class="my-4 text-center">Lista de Entregas</h1>
-    <div class="table-responsive">
-        <table class="table table-hover table-borderless text-center">
+<div id="contenido" class="bg-light rounded " style="box-shadow: 1px 1px 30px -10px;">
+    <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
+        Lista de Entregas
+    </div>
+    <div class=" rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+        <table class="table table-hover text-center ">
             <thead>
                 <tr>
                     <th class="sortable">Departamento</th>
@@ -15,16 +17,16 @@
                     <th class="sortable">Fecha de Préstamo</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
                 {% for registro in registros %}
                 <tr>
-                    <td>{{ registro.departamento | title }}</td>
+                    <td>{{ registro.persona.departamento | title }}</td>
                     <td>{{ registro.material }}</td>
                     <td>{{ registro.analista | title}}</td>
                     <td>{{ registro.persona | title}}</td>
                     <td>{{ registro.cantidad }}</td>
                     <td>{{ registro.descripcion }}</td>
-                    <td>{{ registro.fecha_prestamo }}</td>
+                    <td>{{ registro.fecha_entrega }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

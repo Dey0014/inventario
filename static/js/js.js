@@ -4,16 +4,6 @@ $(".select2").select2({
 });
 });
 //esto es para que funcionen todos los select2
-$('#add-department-icon').on('click', function(event) {
-    event.preventDefault();  // Previene el comportamiento por defecto del enlace
-$('#nuevo-departamento-field').toggle();
-
-});
-$('#add-person-icon').on('click', function(event) {
-      event.preventDefault();  // Previene el comportamiento por defecto del enlace
-    $('#nueva-persona-field').toggle();
-});
-
 
 
 document.addEventListener('DOMContentLoaded', function () {

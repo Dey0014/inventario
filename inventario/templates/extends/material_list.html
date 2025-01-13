@@ -1,29 +1,73 @@
 {% extends "inicio.html" %} 
+{% load static %}
 {% block content %}
-<div id="contenido" class="mt-4 table-responsive ">
-  <ul class="nav nav-tabs" style="border: none;" id="myTab" role="tablist">
-                
+<div id="contenido" class="rounded"  id="myTabContent">
+
+  <ul class="nav nav-tabs" style="border-bottom: 0 !important;" id="myTab" role="tablist">
+
     <li class="nav-item" role="presentation">
-        <a class="nav-link nav-link-tabs active"  id="profile-tab2" data-bs-toggle="tab" data-bs-target="#materialesentregas"
-            type="button" role="tab" aria-controls="materialesentregas" aria-selected="false">Entregas</a>
-    </li>
-    
-    <li class="nav-item" role="presentation">
-        <a class="nav-link nav-link-tabs"  id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
-            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Prestamos</a>
+      <a class="nav-link nav-link-tabs active"  id="pestaña1" data-bs-toggle="tab" style="background-color: #92d0508f;" data-bs-target="#pestaña1-pane"
+          type="button" role="tab" aria-controls="pestaña1-pane" aria-selected="true">ELECTRICIDAD</a>
     </li>
 
-</ul>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña2" data-bs-toggle="tab" style="background-color: #f796468a;" data-bs-target="#pestaña2-pane"
+          type="button" role="tab" aria-controls="pestaña2-pane" aria-selected="true">PLOMERIA</a>
+    </li>
 
-<div class="{{ tablas }} " style="box-shadow: 1px 1px 30px -10px; border-top-left-radius: 0px;" id="myTabContent">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña3" data-bs-toggle="tab" style="background-color: #00b0508c;" data-bs-target="#pestaña3-pane"
+          type="button" role="tab" aria-controls="pestaña3-pane" aria-selected="true">ELECTROMECANICA</a>
+    </li>
 
-  <div class="tab-pane fade show active" id="materialesentregas" role="tabpanel2" aria-labelledby="profile-tab2" tabindex="0">
-    <div style="display: flex;justify-content: space-between;align-items: baseline; min-width: 696px;">
-      <h1 class="mb-4">Lista de Materiales</h1>
-      <input type="text" id="searchInput" placeholder="Buscar" name="buscar" >
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña4" data-bs-toggle="tab" data-bs-target="#pestaña4-pane" style="background-color: #fabf8f91;"
+          type="button" role="tab" aria-controls="pestaña4-pane" aria-selected="true">PAPELERIA</a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link nav-link-tabs"  id="pestaña5" data-bs-toggle="tab" data-bs-target="#pestaña5-pane" style="background-color: #8064a296;"
+            type="button" role="tab" aria-controls="pestaña5" aria-selected="false">MATERIAL DE LIMPIEZA</a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link nav-link-tabs"  id="pestaña6" data-bs-toggle="tab" data-bs-target="#pestaña6-pane" style="background-color: #948a548c;"
+            type="button" role="tab" aria-controls="pestaña6-pane" aria-selected="true">HERRAMIENTAS</a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña7" data-bs-toggle="tab" data-bs-target="#pestaña7-pane" style="background-color: #76933c8a;"
+          type="button" role="tab" aria-controls="pestaña7-pane" aria-selected="true">PINTURAS</a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña8" data-bs-toggle="tab" style="background-color: #b7dee881;" data-bs-target="#pestaña8-pane"
+          type="button" role="tab" aria-controls="pestaña8-pane" aria-selected="true">RESGUARDOS</a>
+    </li>
+    {%  if user.username == "deyner" %}
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña9" data-bs-toggle="tab" style="background-color: #b7dee881;" data-bs-target="#pestaña9-pane"
+          type="button" role="tab" aria-controls="pestaña9-pane" aria-selected="true">PRUEBA</a>
+    </li>
+    {% endif %}
+  </ul>
+
+
+<div class="tab-content lista_materiales rounded bg-light" id="myTabContent">
+
+  <!-- panel de ELECTRICIDAD -->
+  <div class="tab-pane fade show active" id="pestaña1-pane" role="tabpanel" aria-labelledby="pestaña1" tabindex="0" >
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+      <p class="fs-2 m-0">ELECTRICIDAD</p>
+      <div style="display: flex;">
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+        <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+      </div>
     </div>
-    <div>
-      <table id="tablaMateriales" class="table table-hover table-borderless text-center">
+
+    <div class=" p-4 pt-0 pb-0" >
+    <div class=" table-responsive tab-content card-tabs border-top-0">
+      <table class="tablaMateriales table table-hover text-center">
         <thead>
           <tr>
             <th class="sortable">Código</th>
@@ -36,23 +80,23 @@
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          {% for material in materiales %}
+          {% for ele in electricidad %}
           <tr>
-            <td class="codigo">{{ material.codigo }}</td>
-            <td class="descripcion">{{ material.descripcion }}</td>
-            <td class="cantidad">{{ material.cantidad }}</td>
-            <td class="coordinador">{{ material.coordinador.username | title}}</td>
-            <td class="fecha_ingreso">{{ material.fecha_ingreso }}</td>
-            <td class="tipo_material">{{ material.tipo_material }}</td>
+            <td class="codigo">{{ ele.codigo }}</td>
+            <td class="descripcion">{{ ele.descripcion }}</td>
+            <td class="cantidad">{{ ele.cantidad }}</td>
+            <td class="coordinador">{{ ele.coordinador.username | title}}</td>
+            <td class="fecha_ingreso">{{ ele.fecha_ingreso }}</td>
+            <td class="tipo_material">{{ ele.tipo_material }}</td>
             <td>
               <a title="datos" class="info" 
-                data-id="{{ material.id }}"
-                data-codigo="{{ material.codigo }}"
-                data-descripcion="{{ material.descripcion }}"
-                data-cantidad="{{ material.cantidad }}"
-                data-coordinador="{{ material.coordinador.username | title }}"
-                data-fecha="{{ material.fecha_ingreso }}"
-                data-tipo="{{ material.tipo_material }}"
+                data-id="{{ ele.id }}"
+                data-codigo="{{ ele.codigo }}"
+                data-descripcion="{{ ele.descripcion }}"
+                data-cantidad="{{ ele.cantidad }}"
+                data-coordinador="{{ ele.coordinador.username | title }}"
+                data-fecha="{{ ele.fecha_ingreso }}"
+                data-tipo="{{ ele.tipo_material }}"
                 style="font-size: 24px; margin-right: 6px;">
                 <i class="bi bi-three-dots"></i>
               </a>
@@ -62,82 +106,543 @@
         </tbody>
       </table>
       </div>
+    </div>
+  </div>
+
+  <!-- panel de PLOMERIA -->
+  <div class="tab-pane fade" id="pestaña2-pane" role="tabpanel" aria-labelledby="pestaña2" tabindex="0" >
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+      <p class="fs-2 m-0">PLOMERIA</p>
+      <div style="display: flex;">
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+        <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+      </div>
+    </div>
+
+    <div class=" p-4 pt-0 pb-0" >
+    <div class=" table-responsive tab-content card-tabs border-top-0">
+      <table class="tablaMateriales table table-hover text-center">
+        <thead>
+          <tr>
+            <th class="sortable">Código</th>
+            <th class="sortable">Descripción</th>
+            <th class="sortable">Cantidad</th>
+            <th class="sortable">Coordinador</th>
+            <th class="sortable">Fecha de Ingreso</th>
+            <th class="sortable">Tipo</th>
+            <th class="sortable">Acción</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for plo in plomeria %}
+          <tr>
+            <td class="codigo">{{ plo.codigo }}</td>
+            <td class="descripcion">{{ plo.descripcion }}</td>
+            <td class="cantidad">{{ plo.cantidad }}</td>
+            <td class="coordinador">{{ plo.coordinador.username | title}}</td>
+            <td class="fecha_ingreso">{{ plo.fecha_ingreso }}</td>
+            <td class="tipo_material">{{ plo.tipo_material }}</td>
+            <td>
+              <a title="datos" class="info" 
+                data-id="{{ plo.id }}"
+                data-codigo="{{ plo.codigo }}"
+                data-descripcion="{{ plo.descripcion }}"
+                data-cantidad="{{ plo.cantidad }}"
+                data-coordinador="{{ plo.coordinador.username | title }}"
+                data-fecha="{{ plo.fecha_ingreso }}"
+                data-tipo="{{ plo.tipo_material }}"
+                style="font-size: 24px; margin-right: 6px;">
+                <i class="bi bi-three-dots"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- panel de ELECTROMECANICA -->
+  <div class="tab-pane fade" id="pestaña3-pane" role="tabpanel" aria-labelledby="pestaña3" tabindex="0" >
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+      <p class="fs-2 m-0">ELECTROMECANICA</p>
+      <div style="display: flex;">
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+        <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+      </div>
+    </div>
+
+    <div class=" p-4 pt-0 pb-0" >
+    <div class=" table-responsive tab-content card-tabs border-top-0">
+      <table class="tablaMateriales table table-hover text-center">
+        <thead>
+          <tr>
+            <th class="sortable">Código</th>
+            <th class="sortable">Descripción</th>
+            <th class="sortable">Cantidad</th>
+            <th class="sortable">Coordinador</th>
+            <th class="sortable">Fecha de Ingreso</th>
+            <th class="sortable">Tipo</th>
+            <th class="sortable">Acción</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for elm in electromecanica %}
+          <tr>
+            <td class="codigo">{{ elm.codigo }}</td>
+            <td class="descripcion">{{ elm.descripcion }}</td>
+            <td class="cantidad">{{ elm.cantidad }}</td>
+            <td class="coordinador">{{ elm.coordinador.username | title}}</td>
+            <td class="fecha_ingreso">{{ elm.fecha_ingreso }}</td>
+            <td class="tipo_material">{{ elm.tipo_material }}</td>
+            <td>
+              <a title="datos" class="info" 
+                data-id="{{ elm.id }}"
+                data-codigo="{{ elm.codigo }}"
+                data-descripcion="{{ elm.descripcion }}"
+                data-cantidad="{{ elm.cantidad }}"
+                data-coordinador="{{ elm.coordinador.username | title }}"
+                data-fecha="{{ elm.fecha_ingreso }}"
+                data-tipo="{{ elm.tipo_material }}"
+                style="font-size: 24px; margin-right: 6px;">
+                <i class="bi bi-three-dots"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- panel de PAPELERIA -->
+  <div class="tab-pane fade" id="pestaña4-pane" role="tabpanel" aria-labelledby="pestaña4" tabindex="0" >
+      <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+        <p class="fs-2 m-0">PAPELERIA</p>
+        <div style="display: flex;">
+          <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+          <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+        </div>
+    </div>
+
+    <div class=" p-4 pt-0 pb-0" >
+      <div class=" table-responsive tab-content card-tabs border-top-0">
+        <table class="tablaMateriales table table-hover text-center">
+          <thead>
+            <tr>
+              <th class="sortable">Código</th>
+              <th class="sortable">Descripción</th>
+              <th class="sortable">Cantidad</th>
+              <th class="sortable">Coordinador</th>
+              <th class="sortable">Fecha de Ingreso</th>
+              <th class="sortable">Tipo</th>
+              <th class="sortable">Acción</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            {% for ppl in papeleria %}
+            <tr>
+              <td class="codigo">{{ ppl.codigo }}</td>
+              <td class="descripcion">{{ ppl.descripcion }}</td>
+              <td class="cantidad">{{ ppl.cantidad }}</td>
+              <td class="coordinador">{{ ppl.coordinador.username | title}}</td>
+              <td class="fecha_ingreso">{{ ppl.fecha_ingreso }}</td>
+              <td class="tipo_material">{{ ppl.tipo_material }}</td>
+              <td>
+                <a title="datos" class="info" 
+                  data-id="{{ ppl.id }}"
+                  data-codigo="{{ ppl.codigo }}"
+                  data-descripcion="{{ ppl.descripcion }}"
+                  data-cantidad="{{ ppl.cantidad }}"
+                  data-coordinador="{{ ppl.coordinador.username | title }}"
+                  data-fecha="{{ ppl.fecha_ingreso }}"
+                  data-tipo="{{ ppl.tipo_material }}"
+                  style="font-size: 24px; margin-right: 6px;">
+                  <i class="bi bi-three-dots"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
+
+  <!-- panel de  LIMPIEZA -->
+  <div class="tab-pane fade" id="pestaña5-pane" role="tabpanel" aria-labelledby="pestaña5" tabindex="0" >
+        <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+          <p class="fs-2 m-0">LIMPIEZA</p>
+          <div style="display: flex;">
+          <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+          <a class="agregar-material"><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class=" btn mx-2 btn-primary"></a>
+        </div>
+      </div>
+
+      <div class=" p-4 pt-0 pb-0" >
+        <div class=" table-responsive tab-content card-tabs border-top-0">
+          <table class="tablaMateriales table table-hover text-center">
+            <thead>
+              <tr>
+                <th class="sortable">Código</th>
+                <th class="sortable">Descripción</th>
+                <th class="sortable">Cantidad</th>
+                <th class="sortable">Coordinador</th>
+                <th class="sortable">Fecha de Ingreso</th>
+                <th class="sortable">Tipo</th>
+                <th class="sortable">Acción</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              {% for LIM in limpieza %}
+              <tr>
+                <td class="codigo">{{ LIM.codigo }}</td>
+                <td class="descripcion">{{ LIM.descripcion }}</td>
+                <td class="cantidad">{{ LIM.cantidad }}</td>
+                <td class="coordinador">{{ LIM.coordinador.username | title}}</td>
+                <td class="fecha_ingreso">{{ LIM.fecha_ingreso }}</td>
+                <td class="tipo_material">{{ LIM.tipo_material }}</td>
+                <td>
+                  <a title="datos" class="info" 
+                    data-id="{{ LIM.id }}"
+                    data-codigo="{{ LIM.codigo }}"
+                    data-descripcion="{{ LIM.descripcion }}"
+                    data-cantidad="{{ LIM.cantidad }}"
+                    data-coordinador="{{ LIM.coordinador.username | title }}"
+                    data-fecha="{{ LIM.fecha_ingreso }}"
+                    data-tipo="{{ LIM.tipo_material }}"
+                    style="font-size: 24px; margin-right: 6px;">
+                    <i class="bi bi-three-dots"></i>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          </div>
+      </div>
+  </div>
+
+  <!-- panel de HERRAMIENTAS -->
+  <div class="tab-pane fade" id="pestaña6-pane" role="tabpanel" aria-labelledby="pestaña6" tabindex="0">
+
+      <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+        <p class="fs-2 m-0">HERRAMIENTAS</p>
+        <div style="display: flex;">
+          <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+          <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+        </div>
+    </div>
+
+    <div class=" p-4 pt-0 pb-0" >
+      <div class=" table-responsive tab-content card-tabs border-top-0">
+        <table class="tablaMateriales table table-hover text-center">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">descripcion</th>
+        <th scope="col">cantidad</th>
+        <th scope="col">coordinador</th>
+        <th scope="col">fecha_ingreso</th>
+        <th scope="col">condicion</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider" >
+      {% for her in herramientas %}
+      <tr>
+        <th scope="row">{{ her.id }}</th>
+        <td>{{ her.descripcion }}</td>
+        <td>{{ her.cantidad }}</td>
+        <td>{{ her.coordinador }}</td>
+        <td>{{ her.fecha_ingreso }}</td>
+        <td>{{ her.condicion }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+    </div>
+    </div>
+
+  </div>
+
+  <!-- panel de PINTURAS -->
+  <div class="tab-pane fade" id="pestaña7-pane" role="tabpanel" aria-labelledby="pestaña7" tabindex="0" >
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+      <p class="fs-2 m-0">PINTURAS</p>
+      <div style="display: flex;">
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+        <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+      </div>
+    </div>
+
+    <div class=" p-4 pt-0 pb-0" >
+    <div class=" table-responsive tab-content card-tabs border-top-0">
+      <table class="tablaMateriales table table-hover text-center">
+        <thead>
+          <tr>
+            <th class="sortable">Código</th>
+            <th class="sortable">Descripción</th>
+            <th class="sortable">Cantidad</th>
+            <th class="sortable">Coordinador</th>
+            <th class="sortable">Fecha de Ingreso</th>
+            <th class="sortable">Tipo</th>
+            <th class="sortable">Acción</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for pin in pinturas %}
+          <tr>
+            <td class="codigo">{{ pin.codigo }}</td>
+            <td class="descripcion">{{ pin.descripcion }}</td>
+            <td class="cantidad">{{ pin.cantidad }}</td>
+            <td class="coordinador">{{ pin.coordinador.username | title}}</td>
+            <td class="fecha_ingreso">{{ pin.fecha_ingreso }}</td>
+            <td class="tipo_material">{{ pin.tipo_material }}</td>
+            <td>
+              <a title="datos" class="info" 
+                data-id="{{ pin.id }}"
+                data-codigo="{{ pin.codigo }}"
+                data-descripcion="{{ pin.descripcion }}"
+                data-cantidad="{{ pin.cantidad }}"
+                data-coordinador="{{ pin.coordinador.username | title }}"
+                data-fecha="{{ pin.fecha_ingreso }}"
+                data-tipo="{{ pin.tipo_material }}"
+                style="font-size: 24px; margin-right: 6px;">
+                <i class="bi bi-three-dots"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- panel de RESGUARDOS -->
+  <div class="tab-pane fade" id="pestaña8-pane" role="tabpanel" aria-labelledby="pestaña8" tabindex="0" >
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+      <p class="fs-2 m-0">RESGUARDOS</p>
+      <div style="display: flex;">
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+        <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+      </div>
+    </div>
+
+    <div class=" p-4 pt-0 pb-0" >
+    <div class=" table-responsive tab-content card-tabs border-top-0">
+      <table class="tablaMateriales table table-hover text-center">
+        <thead>
+          <tr>
+            <th class="sortable">Código</th>
+            <th class="sortable">Descripción</th>
+            <th class="sortable">Cantidad</th>
+            <th class="sortable">Coordinador</th>
+            <th class="sortable">Fecha de Ingreso</th>
+            <th class="sortable">Tipo</th>
+            <th class="sortable">Acción</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for res in resguardos %}
+          <tr>
+            <td class="codigo">{{ res.codigo }}</td>
+            <td class="descripcion">{{ res.descripcion }}</td>
+            <td class="cantidad">{{ res.cantidad }}</td>
+            <td class="coordinador">{{ res.coordinador.username | title}}</td>
+            <td class="fecha_ingreso">{{ res.fecha_ingreso }}</td>
+            <td class="tipo_material">{{ res.tipo_material }}</td>
+            <td>
+              <a title="datos" class="info" 
+                data-id="{{ res.id }}"
+                data-codigo="{{ res.codigo }}"
+                data-descripcion="{{ res.descripcion }}"
+                data-cantidad="{{ res.cantidad }}"
+                data-coordinador="{{ res.coordinador.username | title }}"
+                data-fecha="{{ res.fecha_ingreso }}"
+                data-tipo="{{ res.tipo_material }}"
+                style="font-size: 24px; margin-right: 6px;">
+                <i class="bi bi-three-dots"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  {%  if user.username == "deyner" %}
+    <!-- panel de PRUEBA -->
+    <div class="tab-pane fade" id="pestaña9-pane" role="tabpanel" aria-labelledby="pestaña9" tabindex="0" >
+      <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+        <p class="fs-2 m-0">PRUEBA</p>
+        <div style="display: flex;">
+          <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+          <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+        </div>
+      </div>
+  
+      <div class=" p-4 pt-0 pb-0" >
+      <div class=" table-responsive tab-content card-tabs border-top-0">
+        <table class="tablaMateriales table table-hover text-center">
+          <thead>
+            <tr>
+              <th class="sortable">Código</th>
+              <th class="sortable">Descripción</th>
+              <th class="sortable">Cantidad</th>
+              <th class="sortable">Coordinador</th>
+              <th class="sortable">Fecha de Ingreso</th>
+              <th class="sortable">Tipo</th>
+              <th class="sortable">Acción</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            {% for pru in prueba %}
+            <tr>
+              <td class="codigo">{{ pru.codigo }}</td>
+              <td class="descripcion">{{ pru.descripcion }}</td>
+              <td class="cantidad">{{ pru.cantidad }}</td>
+              <td class="coordinador">{{ pru.coordinador.username | title}}</td>
+              <td class="fecha_ingreso">{{ pru.fecha_ingreso }}</td>
+              <td class="tipo_material">{{ pru.tipo_material }}</td>
+              <td>
+                <a title="datos" class="info" 
+                  data-id="{{ pru.id }}"
+                  data-codigo="{{ pru.codigo }}"
+                  data-descripcion="{{ pru.descripcion }}"
+                  data-cantidad="{{ pru.cantidad }}"
+                  data-coordinador="{{ pru.coordinador.username | title }}"
+                  data-fecha="{{ pru.fecha_ingreso }}"
+                  data-tipo="{{ pru.tipo_material }}"
+                  style="font-size: 24px; margin-right: 6px;">
+                  <i class="bi bi-three-dots"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 </div>
 
-<div class="tab-pane fade" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
-tabindex="0">
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Primero</th>
-      <th scope="col">Último</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody class="table-group-divider" >
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-</div>
-
+<!-- agregar materiales -->
+<script>
+document.querySelectorAll('.agregar-material').forEach(function(element) {
+  element.addEventListener('click', function() {
+    Swal.fire({
+      title: 'Agregar Material',
+      html: `
+        <form id="material-form">
+          <div class="mb-3">
+            <label for="codigo" class="form-label">Código:</label>
+            <input type="text" name="codigo" id="codigo" maxlength="50" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción:</label>
+            <input type="text" name="descripcion" id="descripcion" maxlength="250" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="cantidad" class="form-label">Cantidad a agregar:</label>
+            <input type="number" name="cantidad" id="cantidad" min="0" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo de Material:</label>
+            <select name="tipo" id="tipo" class="form-control select2">
+            {% for valor, nombre in tipos %}
+                <option value="{{ valor }}">{{ nombre }}</option>
+            {% endfor %}
+            </select>
+          </div>
+        </form>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      preConfirm: () => {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            url: "{% url 'agregar_material' %}",
+            type: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+              codigo: $('#codigo').val(),
+              descripcion: $('#descripcion').val(),
+              cantidad: $('#cantidad').val(),
+              tipo: $('#tipo').val(),
+            },
+            success: function(response) {
+              if (!response.success) {
+                Swal.showValidationMessage(response.message);
+              }
+              resolve(response);
+            },
+            error: function(xhr, status, error) {
+              Swal.showValidationMessage(`Error: ${error}`);
+            }
+          });
+        });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Material agregado!',
+          text: 'El material se ha registrado correctamente.',
+        }).then(() => {
+          window.location.href = "{% url 'material_list' %}";
+        });
+      }
+    });
+  });
+});
+</script>
 
 <!-- buscador interactivo de tablas -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const searchInput = document.getElementById('searchInput');
-      const materialTable = document.getElementById('tablaMateriales');
-      const usuariosRows = materialTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+document.addEventListener('DOMContentLoaded', function () {
+    // Obtener todos los inputs de búsqueda y sus respectivas tablas
+    const searchInputs = document.querySelectorAll('.searchInput');
+    const tables = document.querySelectorAll('.tablaMateriales');
 
-      searchInput.addEventListener('input', function () {
-          // Obtener el texto ingresado en el campo de búsqueda
-          const searchText = searchInput.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // Asociar cada buscador con su tabla
+    searchInputs.forEach((input, index) => {
+        input.addEventListener('input', function () {
+            // Texto de búsqueda normalizado
+            const searchText = input.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-          // Recorrer las filas de la tabla de materiales
-          for (let i = 0; i < usuariosRows.length; i++) {
-              const usuarioRow = usuariosRows[i];
-              const usuarioCells = usuarioRow.getElementsByTagName('td');
+            // Obtener las filas de la tabla correspondiente
+            const table = tables[index];
+            const rows = table.querySelectorAll('tbody tr');
 
-              let matchFound = false;
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let matchFound = false;
 
-              // Recorrer cada celda de la fila actual
-              for (let j = 0; j < usuarioCells.length; j++) {
-                  // Obtener el texto de la celda, incluyendo números
-                  const cellText = usuarioCells[j].innerText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                cells.forEach(cell => {
+                    // Normalizar el texto de cada celda
+                    const cellText = cell.innerText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    if (cellText.includes(searchText)) {
+                        matchFound = true;
+                    }
+                });
 
-                  // Comprobar si el texto o el número coincide con la búsqueda
-                  if (cellText.includes(searchText)) {
-                      matchFound = true;
-                      break;
-                  }
-              }
-
-              // Mostrar u ocultar la fila según si hubo coincidencias
-              usuarioRow.style.display = matchFound ? '' : 'none';
-          }
-      });
-  });
+                // Mostrar u ocultar la fila según la coincidencia
+                row.style.display = matchFound ? '' : 'none';
+            });
+        });
+    });
+});
 </script>
 
+<!-- boton de mas informacion y acciones -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const ajustesButtons = document.querySelectorAll('.info');
@@ -341,7 +846,6 @@ tabindex="0">
                 },
                 success: function (response) {
                     Swal.fire('Guardado', 'El material ha sido actualizado', 'success');
-                   
                 },
                 error: function (xhr, status, error) {
                     Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
@@ -360,4 +864,5 @@ tabindex="0">
 
 
 </script>
+
 {% endblock %}

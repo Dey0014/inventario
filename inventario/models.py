@@ -3,19 +3,38 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
-class Material(models.Model):
-    TIPO_MATERIAL_CHOICES = [
-        ('FER', 'Ferretería'),
-        ('MAN', 'Mantenimiento'),
-    ]
-    
-    codigo = models.CharField(max_length=50)
+class Herramientas(models.Model):
     descripcion = models.CharField(max_length=250)
     cantidad = models.PositiveIntegerField(default=0)
-    tipo_material = models.CharField(max_length=3, choices=TIPO_MATERIAL_CHOICES, default='FER',)
     coordinador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_ingreso = models.DateTimeField(auto_now_add=True)
-    eliminado = models.BooleanField(default=False)
+    condicion = models.CharField(max_length=20, default='Bueno',)
+    prestamo = models.BooleanField(default=False, null=True, blank=True)
+
+    # auto_now_add=True
+    def __str__(self):
+        return f'{self.descripcion} ({self.cantidad})'
+
+class Material(models.Model):
+    TIPO_MATERIAL_CHOICES = [
+        ('FER', 'prueba'),
+        ('res', 'RESGUARDOS'),
+        ('HER', 'HERRAMIENTAS'),
+        ('LIM', 'MATERIAL DE LIMPIEZA Y BIOSEGURIDAD'),
+        ('ppl', 'PAPELERIA'),
+        ('ELM', 'ELECTROMECANICA'),
+        ('PLO', 'PLOMERIA'),
+        ('ELE', 'ELECTRICIDAD'),
+        ('CABLE', 'CABLE')
+    ]
+    
+    codigo = models.CharField(max_length=50, null=True, blank=True )
+    descripcion = models.CharField(max_length=250)
+    cantidad = models.PositiveIntegerField(default=0)
+    tipo_material = models.CharField(max_length=20, choices=TIPO_MATERIAL_CHOICES, default='FER',)
+    coordinador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_ingreso = models.DateTimeField(auto_now_add=True)
+    eliminado = models.BooleanField(default=False, null=True, blank=True)
 
 # auto_now_add=True
     def __str__(self):
@@ -29,10 +48,10 @@ class Material(models.Model):
         self.cantidad -= cantidad_a_restar
         self.save()
         
-    def prestar_material(self, cantidad_a_prestar):
-        if self.cantidad < cantidad_a_prestar:
+    def entregar_material(self, cantidad_a_entregar):
+        if self.cantidad < cantidad_a_entregar:
             raise ValidationError("No hay suficiente cantidad en inventario para este préstamo.")
-        self.cantidad -= cantidad_a_prestar
+        self.cantidad -= cantidad_a_entregar
         self.save()
 
 class Departamento(models.Model):
@@ -66,28 +85,17 @@ class Solicitudes(models.Model):
     def __str__(self):
         return f'Solicitud de {self.material_solicitado} por {self.persona}'
     
-
-
-class Prestamo(models.Model):
-    material = models.ForeignKey(Material, on_delete=models.SET_NULL, null=True, blank=True)
+class Entrega(models.Model):
+    material = models.CharField(max_length=150, null=True, blank=True)
     persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
-    departamento = models.ForeignKey(Departamento, on_delete=models.SET_NULL, null=True, blank=True)
     analista = models.CharField(max_length=150)
     cantidad = models.PositiveIntegerField()
-    fecha_prestamo = models.DateTimeField(auto_now_add=True)
+    fecha_entrega = models.DateTimeField(auto_now_add=True)
     descripcion = models.CharField(max_length=1000)
 
-    def save(self, *args, **kwargs):
-        material = self.material
-        if material.cantidad < self.cantidad:
-            raise ValidationError("No hay suficiente cantidad en inventario para este préstamo.")
-        material.prestar_material(self.cantidad)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Préstamo de {self.cantidad} {self.material} a {self.persona}'
-    
-
     
 class UserActionLog(models.Model):
     ACTION_CHOICES = [

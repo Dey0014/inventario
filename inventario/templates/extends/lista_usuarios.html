@@ -1,9 +1,13 @@
 {% extends "inicio.html" %}
 {% block content %}
-<div id="contenido" class="{{ tablas }} " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
-    <h1 class="my-4 text-center">Lista de usuarios</h1>
-    <div class="table-responsive">
-        <table class="table table-hover table-borderless text-center">
+<div id="contenido" class="bg-light rounded " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
+
+    <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
+        Lista de usuarios
+    </div>    
+    
+    <div class="table-responsive rounded p-5 pt-2 pb-2">
+        <table class="table table-hover text-center">
             <thead >
                 <tr>
                     <th class="sortable">Username</th>
@@ -13,7 +17,7 @@
                     <th class="sortable">Acción</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
                 {% for user in users.all %}
                 <tr>
                     <td>{{ user.username | title }}</td>
@@ -39,6 +43,7 @@
                 {% endfor %}
             </tbody>
         </table>
+
     </div>
 </div>
 {% endblock %}

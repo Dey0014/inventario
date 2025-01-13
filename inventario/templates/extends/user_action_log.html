@@ -1,29 +1,32 @@
 {% extends "inicio.html" %} 
 {% block content %}
-<div id="contenido" class="bg-light" style="box-shadow: 1px 1px 30px -10px;">
-    <div class="p-3 pb-0 tab-content card-tabs border-top-0 bg-light">
-    <h1 class="mb-4 mt-0 text-left">Log</h1>
+<div id="contenido" class="bg-light rounded " style="box-shadow: 1px 1px 30px -10px;">
+    <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
+        <p class="fs-2 m-0 ts">Log</p>
+    </div>
+    <div class=" rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+        <table class="table table-hover  text-center ">
+            <thead  > 
+            <tr  >
+                <th class=" col-1 sortable">Usuario</th>
+                <th class=" col-1 sortable">Acción</th>
+                <th class=" col-2 sortable">Fecha y Hora</th>
+                <th class=" col-2 sortable">Detalles</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider ">
+            {% for log in logs %}
+            <tr class="table-bordered">
+                <td>{{ log.user.username }}</td>
+                <td>{{ log.get_action_display }}</td>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.details }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>   
-<table class="table table-hover table-borderless text-center" style="box-shadow: 1px 1px 30px -10px;">
-    <thead>
-    <tr>
-        <th class="sortable">Usuario</th>
-        <th class="sortable">Acción</th>
-        <th class="sortable">Fecha y Hora</th>
-        <th class="sortable">Detalles</th>
-    </tr>
-    </thead>
-    <tbody class="table-group-divider">
-    {% for log in logs %}
-    <tr>
-        <td>{{ log.user.username }}</td>
-        <td>{{ log.get_action_display }}</td>
-        <td>{{ log.timestamp }}</td>
-        <td>{{ log.details }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+
 </div>
 
 

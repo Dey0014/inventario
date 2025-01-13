@@ -4,11 +4,7 @@
 
     <div id="contenido" class="card justify-content-center bg-light mt-4 shadow-lg p-4" >
     <div class="formulario">
-        <form method="post" action="{% url 'logout' %}" class="d-inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary mb-3">Volver</button>
-        </form>
-
+        <a class="btn btn-primary mb-3" href="{% url 'login' %}">Volver</a>
         <h1 class="my-4 text-center">Formulario de Solicitud</h1>
 
         <form method="post">
@@ -56,7 +52,7 @@
                 </div>
 
                 <!-- Nuevo Departamento Input -->
-                <div id="nuevoDepartamentoForm" class="row mb-3">
+                <div id="nuevoDepartamentoForm" class="hidden">
                     <div class="col-12">
                         <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
                         <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
@@ -68,7 +64,7 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="material" class="form-label">Material solicitado:</label>
-                    <select id="material" name="material" class="form-control">
+                    <select id="material" name="material" class="form-control select2">
                         {% for mat in materiales %}
                             <option value="{{ mat.id }}">{{ mat.descripcion }}</option>
                         {% endfor %}

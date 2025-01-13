@@ -1,18 +1,18 @@
 {
-  "name": "@sweetalert2/theme-borderless",
+  "name": "@sweetalert2/theme-bulma",
   "version": "5.0.18",
   "repository": "sweetalert2/sweetalert2-themes",
   "homepage": "https://sweetalert2.github.io/",
-  "description": "Borderless theme for SweetAlert2",
-  "author": "Kalvis Kolesnikovs",
+  "description": "Bulma theme for SweetAlert2",
+  "author": "",
   "files": [
     "*.css",
     "*.scss"
   ],
-  "main": "borderless.css",
+  "main": "bulma.css",
   "keywords": [
     "sweetalert2",
-    "borderless",
+    "bulma",
     "theme",
     "themes",
     "theming",

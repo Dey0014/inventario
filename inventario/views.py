@@ -1,20 +1,9 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
 from .forms import *
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
-from django.http import HttpResponseForbidden
-from django.shortcuts import redirect, render, get_object_or_404
-from .models import UserActionLog
-from datetime import datetime
-from django.http import JsonResponse, HttpResponseBadRequest
 import json
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.csrf import csrf_exempt
+#el resto de importaciones están en forms.py
 
 
+#decorador para las funciones dependiendo del grupo 
 def group_required(*group_names):
     def decorator(view_func):
         def _wrapped_view(request, *args, **kwargs):
@@ -28,14 +17,85 @@ def group_required(*group_names):
         return _wrapped_view
     return decorator
 
-def home(request):
-    return render(request, "extends/home.html")
+#------------------------------------------------------------------------------------
 
 # login, inicio y hacer logout
 @login_required
 def inicio(request):
     return render(request, "extends/home.html")
 
+@login_required
+def home(request):
+    return render(request, "extends/home.html")
+
+def login_view(request):
+        # Cerrar sesión si el usuario está autenticado
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect("login")
+    
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                # messages.info(request, f"Estas iniciando secion con {username}.")
+                return redirect("inicio")
+            else:
+                messages.error(request, "credenciales invalidas.")
+        else:
+            messages.error(request, "credenciales invalidas.")
+    else:
+        form = AuthenticationForm()
+    return render(request, "login.html", {"form": form,})
+
+
+#--------------------------------------
+
+
+# vistas de agregar materiales
+@login_required
+def agregar_material(request):
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        codigo = request.POST.get('codigo')
+        descripcion = request.POST.get('descripcion')
+        cantidad = request.POST.get('cantidad')
+        tipo = request.POST.get('tipo')
+
+        # Validación
+        if Material.objects.filter(codigo=codigo).exists():
+            return JsonResponse({'success': False, 'message': "El código ya existe en el inventario."})
+
+        try:
+            # Crear material
+            material = Material.objects.create(
+                codigo=codigo,
+                descripcion=descripcion,
+                coordinador=request.user,
+                cantidad=int(cantidad),
+                tipo_material=tipo
+            )
+
+                    # Registrar la acción en el log
+            UserActionLog.objects.create(
+                user=request.user,
+                action='Agrego Material',
+                details=f"Se agrego {material.descripcion} por el usuario {request.user}",
+            )
+            return JsonResponse({'success': True, 'message': "Material registrado correctamente."})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f"Error: {str(e)}"})
+
+    return JsonResponse({'success': False, 'message': "Solicitud no válida."})
+
+#----------------------------------------
+
+
+
+# vista de entrega de materiales
 
 def solicitud_material(request):
     if request.method == "POST":
@@ -90,66 +150,213 @@ def solicitud_material(request):
     }
     return render(request, 'extends/solicitud_material.html', context)
 
-def login_view(request):
-    materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # messages.info(request, f"Estas iniciando secion con {username}.")
-                return redirect("inicio")
-            else:
-                messages.error(request, "credenciales invalidas.")
-        else:
-            messages.error(request, "credenciales invalidas.")
-    else:
-        form = AuthenticationForm()
-    return render(request, "login.html", {"form": form, 'materiales': materiales})
-
 @login_required
-@group_required("coordinadores")
-def agregar_material(request):
-    tipo = Material.objects.all()
+@csrf_exempt
+def aprobar_solicitud(request, id):
+    if request.method == 'POST':
+        try:
+            # Obtener datos del cuerpo de la solicitud
+            data = json.loads(request.body)
+            motivo = data.get('motivo', '').strip()
 
-    if request.method == "POST":
-        codigo = request.POST.get('codigo')
-        descripcion = request.POST.get('descripcion')
-        cantidad_a_agregar = int(request.POST.get('cantidad'))
+            if not motivo:
+                return JsonResponse({'success': False, 'message': 'La justificación es obligatoria.'}, status=400)
 
-        # Verificar si el material con el mismo código ya existe
-        if Material.objects.filter(codigo=codigo).exists():
-            messages.error(request, "El código ya existe en el inventario.")
-        else:
-            # Crear el nuevo material
-            material = Material(
-                codigo=codigo,
-                descripcion=descripcion,
-                cantidad=cantidad_a_agregar,
-                tipo_material=request.POST.get('tipo'),
-                coordinador=request.user,
-                fecha_ingreso=datetime.now()
+            # Obtener la solicitud
+            solicitud = get_object_or_404(Solicitudes, id=id)
+
+            # Validar que la cantidad solicitada esté disponible
+            material = solicitud.material_solicitado
+            if solicitud.cantidad > material.cantidad:
+                return JsonResponse({'success': False, 'message': 'Cantidad insuficiente en inventario.'}, status=400)
+
+            # Registrar la entrega en el modelo Entrega
+            entrega = Entrega.objects.create(
+                material=material,
+                persona=solicitud.persona,
+                analista=request.user.username,  # Asume que el usuario actual es el analista
+                cantidad=solicitud.cantidad,
+                descripcion=motivo,
             )
-
-            # Guardar el nuevo material en la base de datos
+            material.cantidad -= solicitud.cantidad 
             material.save()
 
-            # Registrar la acción en el log
             UserActionLog.objects.create(
-                user=request.user,
-                action='agregar material',
-                details=f'Añadió {material.descripcion} con código {material.codigo}',
+            user=request.user,
+            action='entrega',
+            details=f'Entregó {solicitud.cantidad} de {material.descripcion} por {motivo}')
+            # Actualizar el estado de la solicitud
+            solicitud.delete()
+
+
+            return JsonResponse({'success': True, 'message': 'Solicitud aprobada y entrega registrada.'})
+
+        except Solicitudes.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'La solicitud no existe.'}, status=404)
+        except Material.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'El material solicitado no existe.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
+
+@login_required
+def entregar_material(request):
+
+    materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
+    departamentos = Departamento.objects.all()
+    personas = Personas.objects.all()
+
+    if request.method == "POST":
+        nuevo_departamento = request.POST.get('nuevo_dep')
+        departamento_id = request.POST.get('departamento')
+        material_id = request.POST.get('material')
+        analista_id = request.POST.get('analista')
+        descripcion = request.POST.get('descripcion')
+        cantidad = int(request.POST.get('cantidad'))
+        persona_id = request.POST.get('persona')
+        nombre = request.POST.get("nombre")
+        cedula = request.POST.get("cedula")
+        
+        if nuevo_departamento or departamento_id:
+            if departamento_id == "nuevo":
+                departamento = Departamento.objects.create(nombre=nuevo_departamento)
+            else:
+                departamento = get_object_or_404(Departamento, id=departamento_id)
+
+        # Crear o seleccionar la persona
+        if persona_id == "nueva":
+            persona = Personas.objects.create(
+                nombre=nombre,
+                cedula=cedula,
+                departamento=departamento
+            )
+        else:
+            persona = get_object_or_404(Personas, id=persona_id)
+            
+        material = Material.objects.get(id=material_id)
+
+        # Validar si la cantidad solicitada es mayor que la cantidad disponible
+        if cantidad > material.cantidad:
+            messages.error(request, f"La cantidad solicitada excede la cantidad disponible. Solo hay {material.cantidad} disponible.")
+            return redirect("entregar_material")
+
+        analista = User.objects.get(id=analista_id)
+
+        # Crear el préstamo
+        entrega = Entrega(
+            material=material,
+            analista=analista,
+            cantidad=cantidad,
+            descripcion=descripcion,
+            persona=persona
+        )
+        entrega.save()
+
+        # Descontar la cantidad y guardar el cambio
+        material.cantidad -= cantidad  # Restar la cantidad solicitada
+        material.save()  # Guardar el cambio en la base de datos
+
+        UserActionLog.objects.create(
+            user=request.user,
+            action='entrega',
+            details=f'Entregó {cantidad} de {material.descripcion}')
+        
+        messages.success(request, "El préstamo se ha registrado correctamente.")
+        return redirect("entregar_material")  # Redirige a una página de lista o de éxito
+    
+    return render(request, "extends/entrega.html", {"materiales": materiales, "departamentos":departamentos, "personas":personas})
+
+@login_required
+def entrega_list(request):
+    registros = Entrega.objects.all()
+    return render(request, "extends/registro_entrega.html", {"registros": registros})
+
+#-------------------------------------------
+
+
+
+# vista para generar u usuarios
+@login_required
+def registrar_usuario(request):
+    if request.method == "POST":
+        form = RegistroUsuarioForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            email = form.cleaned_data["email"]
+            tipo_usuario = form.cleaned_data["tipo_usuario"]
+
+            # Crear usuario
+            user = User.objects.create_user(
+                username=username, password=password, email=email
+            )
+            UserActionLog.objects.create(
+            user=request.user,
+            action='view',
+            details='Registro a un usuario'
             )
 
-            messages.success(request, "El material se ha registrado correctamente.")
-            return redirect("agregar_material")
+            # Asignar grupo
+            if tipo_usuario == "Coordinador":
+                grupo = Group.objects.get(name="coordinadores")
+            else:
+                grupo = Group.objects.get(name="analistas")
+            user.groups.add(grupo)
 
-    # Si no es una solicitud POST, renderizar un formulario simple (o vacío)
-    return render(request, "extends/agregar_material.html", {"tipo": tipo})
-    
+            return redirect(
+                "registrar_usuario"
+            )  # Redirige al login después de registrar
+    else:
+        form = RegistroUsuarioForm()
+
+        
+    return render(request, "extends/registrar_usuario.html", {"form": form})
+
+@login_required
+def desactivar_usuario(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user.is_active = False
+    user.save()
+
+    UserActionLog.objects.create(
+    user=request.user,
+    action='view',
+    details='desactivo un usuario'
+    )
+    return redirect("users_list")  # Redirige a la lista de usuarios o a donde prefieras
+
+@login_required
+def activar_usuario(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user.is_active = True
+    user.save()
+
+    UserActionLog.objects.create(
+    user=request.user,
+    action='view',
+    details='Activo un usuario'
+    )
+    return redirect("users_list")
+
+@login_required
+def users_list(request):
+    users = User.objects.all().order_by('username')
+    return render(request, "extends/lista_usuarios.html", {"users": users})
+
+
+@login_required
+def user_action_log(request):
+    logs = UserActionLog.objects.all().order_by('-timestamp')
+    return render(request, 'extends/user_action_log.html', {'logs': logs})
+
+
+#-------------------------------------------------------------------------------------------
+
+
+# lista de materiales edicion eliminar modificar y mas
+
+
 @login_required
 @group_required("coordinadores")
 def modificar_cantidades(request, pk):
@@ -206,159 +413,37 @@ def modificar_cantidades(request, pk):
 # vista para listado de materiales
 @login_required
 def material_list(request):
-    materiales = Material.objects.filter(eliminado=False).order_by('descripcion')
-    return render(request, "extends/material_list.html", {"materiales": materiales})
+    herramientas = Herramientas.objects.all().order_by('descripcion')
+    limpieza = Material.objects.filter(eliminado=False, tipo_material="LIM" ).order_by('descripcion')
+    papeleria = Material.objects.filter(eliminado=False, tipo_material="ppl" ).order_by('descripcion')
+    pinturas = Material.objects.filter(eliminado=False, tipo_material="pin" ).order_by('descripcion')
+    resguardos = Material.objects.filter(eliminado=False, tipo_material="res" ).order_by('descripcion')
+    electromecanica = Material.objects.filter(eliminado=False, tipo_material="ELM" ).order_by('descripcion')
+    plomeria = Material.objects.filter(eliminado=False, tipo_material="PLO" ).order_by('descripcion')
+    electricidad = Material.objects.filter(eliminado=False,  tipo_material__in=["ELE", "CABLE"]).order_by('descripcion')
+    prueba = Material.objects.filter(eliminado=False,  tipo_material= "FER" ).order_by('descripcion')
+    tipos = Material.TIPO_MATERIAL_CHOICES
+
+    context = {
+        "limpieza": limpieza,
+        "herramientas":herramientas,
+        "papeleria": papeleria,
+        "pinturas": pinturas,
+        "resguardos":resguardos,
+        "electromecanica":electromecanica,
+        "plomeria":plomeria,
+        "electricidad":electricidad,
+        "prueba":prueba,
+        "tipos":tipos
+    }
+
+    return render(request, "extends/material_list.html", context)
 
 @login_required
-def prestar_material(request):
-
-    materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
-    departamentos = Departamento.objects.all()
-    personas = Personas.objects.all()
-
-    if request.method == "POST":
-        nuevo_departamento = request.POST.get('nuevo_departamento')
-        departamento_id = request.POST.get('departamento')
-        material_id = request.POST.get('material')
-        analista_id = request.POST.get('analista')
-        descripcion = request.POST.get('descripcion')
-        cantidad = int(request.POST.get('cantidad'))
-        nueva_persona = request.POST.get('nueva_persona')
-        persona_id = request.POST.get('nombre')
-       
-        # Validar si no se ha seleccionado un departamento ni se ha ingresado uno nuevo
-        if not nuevo_departamento and not departamento_id:
-            messages.error(request, "Debe seleccionar un departamento existente o ingresar uno nuevo.")
-            return render(request, "extends/prestamo.html", {"materiales": materiales, "departamentos": departamentos, "personas":personas})
-        
-        if nuevo_departamento:
-            departamento, _ = Departamento.objects.get_or_create(nombre=nuevo_departamento)
-        else:
-            departamento = Departamento.objects.get(id=departamento_id)
-
-                # Validar si no se ha seleccionado un departamento ni se ha ingresado uno nuevo
-        if not nueva_persona and not persona_id:
-            messages.error(request, "Debe seleccionar una persona existente o ingresar una nueva.")
-            return render(request, "extends/prestamo.html", {"materiales": materiales, "departamentos": departamentos, "personas":personas})
-        
-        if nueva_persona:
-            persona, _ = Personas.objects.get_or_create(nombre=nueva_persona)
-        else:
-            persona = Personas.objects.get(id=persona_id)
-            
-        material = Material.objects.get(id=material_id)
-
-         # Validar si la cantidad solicitada es mayor que la cantidad disponible
-        if cantidad > material.cantidad:
-            messages.error(request, f"La cantidad solicitada excede la cantidad disponible. Solo hay {material.cantidad} disponible.")
-            return render(request, "extends/prestamo.html", {"materiales": materiales, "departamentos": departamentos, "personas":personas})
-
-        analista = User.objects.get(id=analista_id)
-
-        # Crear el préstamo
-        prestamo = Prestamo(
-            departamento=departamento,
-            material=material,
-            analista=analista,
-            cantidad=cantidad,
-            descripcion=descripcion,
-            persona=persona
-        )
-        prestamo.save()
-
-        UserActionLog.objects.create(
-            user=request.user,
-            action='entrega',
-            details=f'Entregó {cantidad} de {material.descripcion}')
-        
-        messages.success(request, "El préstamo se ha registrado correctamente.")
-        return redirect("prestar_material")  # Redirige a una página de lista o de éxito
-    
-    return render(request, "extends/prestamo.html", {"materiales": materiales, "departamentos":departamentos, "personas":personas})
-
-@login_required
-def prestamo_list(request):
-    registros = Prestamo.objects.all()
-    return render(request, "extends/registro_prestamo.html", {"registros": registros})
-
-def registrar_usuario(request):
-    if request.method == "POST":
-        form = RegistroUsuarioForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            email = form.cleaned_data["email"]
-            tipo_usuario = form.cleaned_data["tipo_usuario"]
-
-            # Crear usuario
-            user = User.objects.create_user(
-                username=username, password=password, email=email
-            )
-
-            # Asignar grupo
-            if tipo_usuario == "Coordinador":
-                grupo = Group.objects.get(name="coordinadores")
-            else:
-                grupo = Group.objects.get(name="analistas")
-            user.groups.add(grupo)
-
-            return redirect(
-                "registrar_usuario"
-            )  # Redirige al login después de registrar
-    else:
-        form = RegistroUsuarioForm()
-
-    UserActionLog.objects.create(
-    user=request.user,
-    action='view',
-    details='Registro a un usuario'
-    )
-    return render(request, "extends/registrar_usuario.html", {"form": form})
-
-@login_required
-def desactivar_usuario(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    user.is_active = False
-    user.save()
-
-    UserActionLog.objects.create(
-    user=request.user,
-    action='view',
-    details='desactivo un usuario'
-    )
-    return redirect("users_list")  # Redirige a la lista de usuarios o a donde prefieras
-
-@login_required
-def activar_usuario(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    user.is_active = True
-    user.save()
-
-    UserActionLog.objects.create(
-    user=request.user,
-    action='view',
-    details='Activo un usuario'
-    )
-    return redirect("users_list")
-
-@login_required
-def users_list(request):
-    users = User.objects.all().order_by('username')
-    return render(request, "extends/lista_usuarios.html", {"users": users})
-
-@login_required
-def user_action_log(request):
-    logs = UserActionLog.objects.all().order_by('-timestamp')
-    return render(request, 'extends/user_action_log.html', {'logs': logs})
-
 def eliminar_material(request, pk):
     if request.method == 'POST':
         material = get_object_or_404(Material, pk=pk)
         motivo = request.POST.get('motivo')
-
-        # Marcar como eliminado
-        material.eliminado = True
-        material.save()
 
         # Registrar la eliminación
         EliminarRegistro.objects.create(
@@ -367,10 +452,22 @@ def eliminar_material(request, pk):
             usuario=request.user
         )
 
+        # Registrar la acción en el log
+        UserActionLog.objects.create(
+            user=request.user,
+            action='Elimino Material',
+            details=f"Se elimino {material.descripcion} con el id {material.id} por el usuario {request.user}",
+        )
+        # Marcar como eliminado
+        material.delete()
+
+
+
         return JsonResponse({'status': 'success', 'message': 'El material ha sido eliminado correctamente.'}, status=200)
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
-        
+
+@login_required
 def editar_material(request, pk):
     if request.method == 'POST':
         codigo = request.POST.get('codigo')
@@ -385,9 +482,17 @@ def editar_material(request, pk):
             material.tipo_material = tipo
             material.save()
 
+            # Registrar la acción en el log
+            UserActionLog.objects.create(
+            user=request.user,
+            action='Modifico Material',
+            details=f"Se modifico el material con el id {material.id} por el usuario {request.user}",
+            )
+
             return JsonResponse({'status': 'success'}, status=200)
         except Material.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Material no encontrado'}, status=404)
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=400)
 
+#---------------------------------------------------------------------
