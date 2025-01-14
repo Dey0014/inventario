@@ -52,9 +52,7 @@ div.card.content-container.contenido{
     max-height: 600px;
 }
 
-.navbar-container {
-    margin-bottom: 20px; /* el espacio que requiere la barra de navegacion */
-}
+
 
 img.img-fluid.login{
     height: 100%;
@@ -143,24 +141,6 @@ color: initial;                    /* Cambia el color de la letra */
 }
 
 
-.nav {
-    --bs-nav-link-hover-color: #000;
-
-}
-
-
-
-.nav-linke {
-    color: #a6a6a6d4; /* Color normal */
-    text-decoration: none; /* Sin subrayado por defecto */
-    transition: all 0.2s ease; /* Transición suave */
-}
-
-.nav-linke:hover {
-    color: white; /* Cambiar el color del texto al pasar el cursor */
-    text-decoration: underline; /* Agregar subrayado */
-
-}
 
 .no-scrollbar {
     scrollbar-width: none; /* Firefox */
@@ -169,17 +149,6 @@ color: initial;                    /* Cambia el color de la letra */
 
 .no-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome, Safari y Edge */
-}
-
-.nav-link-tabs{
-    background-color: rgb(77 135 199);
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.55);
-    
-}
-
-.nav-tabs {
-    --bs-nav-tabs-link-hover-border-color: rgb(77 135 199);
 }
 
 .table
@@ -197,6 +166,7 @@ color: initial;                    /* Cambia el color de la letra */
 .encabezado_lista{
     display: flex;
     justify-content: space-between;
+    border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
 .blue_gradient{
@@ -204,3 +174,63 @@ color: initial;                    /* Cambia el color de la letra */
     color: rgba(255, 255, 255, 0.55);
 }
 
+
+
+.navbar-container {
+    margin-bottom: 20px; /* el espacio que requiere la barra de navegacion */
+}
+
+.nav {
+    --bs-nav-link-hover-color: #000;
+}
+
+.nav-linke {
+    color: #a6a6a6d4; /* Color normal */
+    text-decoration: none; /* Sin subrayado por defecto */
+    transition: all 0.2s ease; /* Transición suave */
+}
+
+.nav-linke:hover {
+    color: white; /* Cambiar el color del texto al pasar el cursor */
+    text-decoration: underline; /* Agregar subrayado */
+}
+
+.nav-link-tabs{
+    background-color: rgb(77 135 199);
+    text-decoration: none;
+    color: black;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #ddd; /* Línea inferior limpia */
+}
+
+.nav-tabs .nav-link {
+    border: 1px solid rgba(255, 255, 255, 0.226);
+    border-radius: 8px 8px 0 0; /* Borde superior redondeado */
+    color: black;
+    padding: 10px 15px;
+    margin-left: 2px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #4A90E2; /* Color de pestaña activa */
+    border-color: #dddddd81 #dddddd83 #ffffff71; /* Resalta la pestaña activa */
+    color: black; /* Texto claro */
+    font-weight: bold;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #6CA3E0; /* Cambia color al pasar el mouse */
+    border-color: #cccccc; /* Añade borde al hover */
+    color: black;
+}
+
+.nav-tabs .nav-item {
+    margin-bottom: -1px; /* Evita que se superpongan */
+}
+
+.ts {
+    text-shadow: 0px 1px 4px black;
+}
