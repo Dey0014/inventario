@@ -1,9 +1,9 @@
 from .forms import *
 import json
-#el resto de importaciones están en forms.py
+# el resto de importaciones están en forms.py
 
 
-#decorador para las funciones dependiendo del grupo 
+# decorador para las funciones dependiendo del grupo 
 def group_required(*group_names):
     def decorator(view_func):
         def _wrapped_view(request, *args, **kwargs):
@@ -344,7 +344,6 @@ def users_list(request):
     users = User.objects.all().order_by('username')
     return render(request, "extends/lista_usuarios.html", {"users": users})
 
-
 @login_required
 def user_action_log(request):
     logs = UserActionLog.objects.all().order_by('-timestamp')
@@ -410,7 +409,6 @@ def modificar_cantidades(request, pk):
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
 
-# vista para listado de materiales
 @login_required
 def material_list(request):
     herramientas = Herramientas.objects.all().order_by('descripcion')
