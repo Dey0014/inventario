@@ -60,13 +60,11 @@
                       </ul>
                     {% endif %}
 
-                    <div class="d-grid gap-2 col-6 mx-auto">
-                      <button data-mdb-button-init class="btn btn-primary" type="submit">
+                    <div class="d-flex gap-2 row mx-auto">
+                      <button data-mdb-button-init="" class="btn btn-primary col-12" type="submit">
                         Entrar
                       </button>
-                    </div>
-                    <div class="text-center">
-                      <a class="dropdown-item" href="{% url 'Solicitud' %}" id="abrirFormulario">Solicitar Material</a>
+                      <a class="btn btn-primary col-12" href="/inventario/Solicitud/" id="abrirFormulario">Solicitar Material</a>
                     </div>
                   </form>
                 </div>
@@ -78,39 +76,86 @@
     </div>
 
   {% endblock %}
+
+  </script>
   <script src="{% static 'jquery/jquery.min.js' %}"></script>
   <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'sweetalert2/dist/sweetalert2.min.js' %}"></script>
   <script src="{% static 'select2/js/select2.min.js' %}"></script>
   <script src="{% static 'js/js.js' %}"></script>
+
+
+</script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Ocultar el formulario de nueva persona al cargar la página
-    document.getElementById('nuevaPersonaForm').classList.add('hidden');
-    document.getElementById('nuevoDepartamentoForm').classList.add('hidden');
+    // Seleccionar los elementos del DOM
+    const radioButtons = document.querySelectorAll('input[name="tipo"]');
+    const materialesContainer = document.getElementById('materiales-container');
+    const herramientasContainer = document.getElementById('herramientas-container');
+    
+    // Escuchar cambios en los radio buttons
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (this.value === 'material') {
+                materialesContainer.style.display = 'block';
+                herramientasContainer.style.display = 'none';
+            } else if (this.value === 'herramientas') {
+                herramientasContainer.style.display = 'block';
+                materialesContainer.style.display = 'none';
+            }
+        });
+    });
+    $(document).ready(function() {
+    // Escuchar el evento change de Select2
+    $('#herramienta').on('change', function() {
+        // Obtener la opción seleccionada
+        const selectedOption = $(this).find(':selected');
+        
+        // Obtener el valor de data-max de la opción seleccionada
+        const maxCantidad = selectedOption.data('max');
+
+        if (maxCantidad !== undefined) {
+            // Convertir el valor de maxCantidad a un número entero
+            let cantidadMaxima = parseInt(maxCantidad, 10);
+
+            // Asegurarnos de que el valor sea un número válido
+            if (!isNaN(cantidadMaxima)) {
+                // Establecer el atributo max del campo input cantidad
+                $('#cantidad').attr('max', cantidadMaxima);
+
+                // Opcional: establecer el valor inicial de la cantidad a 1
+                $('#cantidad').val(false);
+                
+                console.log('Cantidad máxima:', cantidadMaxima);
+            }
+        }
+    });
+
+    $('#material').on('change', function() {
+        // Obtener la opción seleccionada
+        const selectedOption = $(this).find(':selected');
+        
+        // Obtener el valor de data-max de la opción seleccionada
+        const maxCantidad = selectedOption.data('max');
+
+        if (maxCantidad !== undefined) {
+            // Convertir el valor de maxCantidad a un número entero
+            let cantidadMaxima = parseInt(maxCantidad, 10);
+
+            // Asegurarnos de que el valor sea un número válido
+            if (!isNaN(cantidadMaxima)) {
+                // Establecer el atributo max del campo input cantidad
+                $('#cantidad').attr('max', cantidadMaxima);
+                
+                // Opcional: establecer el valor inicial de la cantidad a 1
+                $('#cantidad').val(false);
+
+                console.log('Cantidad máxima:', cantidadMaxima);
+            }
+        }
+    });
 });
 
-// Detectar cambio en el select de persona
-$('#persona').on('change.select2', function() {
-    var nuevaPersonaForm = document.getElementById('nuevaPersonaForm');
-    if (this.value === "nueva") {
-        nuevaPersonaForm.classList.remove('hidden');
 
-    } else {
-        nuevaPersonaForm.classList.add('hidden');
-
-    }
-});
-
-// Detectar cambio en el select de departamento
-$('#departamento').on('change.select2', function() {
-    var nuevoDepartamentoForm = document.getElementById('nuevoDepartamentoForm');
-    if (this.value === "nuevo") {
-        nuevoDepartamentoForm.classList.remove('hidden');
-    } else {
-        nuevoDepartamentoForm.classList.add('hidden');
-    }
-});
 </script>
 {%  if user.is_authenticated %}
 <script>

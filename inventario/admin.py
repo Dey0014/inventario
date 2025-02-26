@@ -8,5 +8,6 @@ admin.site.register(Personas)
 admin.site.register(Solicitudes)
 admin.site.register(UserActionLog)
 admin.site.register(EliminarRegistro)
-
+admin.site.register(Herramientas)
+admin.site.register(Prestamos)
 

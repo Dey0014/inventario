@@ -1,12 +1,12 @@
 {% extends "inicio.html" %} 
 {% load static %}
 {% block content %}
-<div id="contenido" class="rounded"  id="myTabContent">
+<div class="rounded m-5 mt-0"  id="myTabContent">
 
   <ul class="nav nav-tabs" style="border-bottom: 0 !important;" id="myTab" role="tablist">
 
     <li class="nav-item" role="presentation">
-      <a class="nav-link nav-link-tabs active"  id="pestaña1" data-bs-toggle="tab" style="background-color: #92d0508f;" data-bs-target="#pestaña1-pane"
+      <a class="nav-link nav-link-tabs"  id="pestaña1" data-bs-toggle="tab" style="background-color: #92d0508f;" data-bs-target="#pestaña1-pane"
           type="button" role="tab" aria-controls="pestaña1-pane" aria-selected="true">ELECTRICIDAD</a>
     </li>
 
@@ -27,27 +27,21 @@
 
     <li class="nav-item" role="presentation">
         <a class="nav-link nav-link-tabs"  id="pestaña5" data-bs-toggle="tab" data-bs-target="#pestaña5-pane" style="background-color: #8064a296;"
-            type="button" role="tab" aria-controls="pestaña5" aria-selected="false">MATERIAL DE LIMPIEZA</a>
+            type="button" role="tab" aria-controls="pestaña5" aria-selected="false">LIMPIEZA</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link nav-link-tabs"  id="pestaña6" data-bs-toggle="tab" data-bs-target="#pestaña6-pane" style="background-color: #76933c8a;"
+          type="button" role="tab" aria-controls="pestaña6-pane" aria-selected="true">PINTURAS</a>
     </li>
 
     <li class="nav-item" role="presentation">
-        <a class="nav-link nav-link-tabs"  id="pestaña6" data-bs-toggle="tab" data-bs-target="#pestaña6-pane" style="background-color: #948a548c;"
-            type="button" role="tab" aria-controls="pestaña6-pane" aria-selected="true">HERRAMIENTAS</a>
-    </li>
-
-    <li class="nav-item" role="presentation">
-      <a class="nav-link nav-link-tabs"  id="pestaña7" data-bs-toggle="tab" data-bs-target="#pestaña7-pane" style="background-color: #76933c8a;"
-          type="button" role="tab" aria-controls="pestaña7-pane" aria-selected="true">PINTURAS</a>
-    </li>
-
-    <li class="nav-item" role="presentation">
-      <a class="nav-link nav-link-tabs"  id="pestaña8" data-bs-toggle="tab" style="background-color: #b7dee881;" data-bs-target="#pestaña8-pane"
-          type="button" role="tab" aria-controls="pestaña8-pane" aria-selected="true">RESGUARDOS</a>
+      <a class="nav-link nav-link-tabs"  id="pestaña7" data-bs-toggle="tab" style="background-color: #b7dee881;" data-bs-target="#pestaña7-pane"
+          type="button" role="tab" aria-controls="pestaña7-pane" aria-selected="true">RESGUARDOS</a>
     </li>
     {%  if user.username == "deyner" %}
     <li class="nav-item" role="presentation">
-      <a class="nav-link nav-link-tabs"  id="pestaña9" data-bs-toggle="tab" style="background-color: #b7dee881;" data-bs-target="#pestaña9-pane"
-          type="button" role="tab" aria-controls="pestaña9-pane" aria-selected="true">PRUEBA</a>
+      <a class="nav-link nav-link-tabs"  id="pestaña8" data-bs-toggle="tab" style="background-color: #b7dee881;" data-bs-target="#pestaña8-pane"
+          type="button" role="tab" aria-controls="pestaña8-pane" aria-selected="true">PRUEBA</a>
     </li>
     {% endif %}
   </ul>
@@ -56,7 +50,7 @@
 <div class="tab-content lista_materiales rounded bg-light" id="myTabContent">
 
   <!-- panel de ELECTRICIDAD -->
-  <div class="tab-pane fade show active" id="pestaña1-pane" role="tabpanel" aria-labelledby="pestaña1" tabindex="0" >
+  <div class="tab-pane fade" id="pestaña1-pane" role="tabpanel" aria-labelledby="pestaña1" tabindex="0" >
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
       <p class="fs-2 m-0">ELECTRICIDAD</p>
       <div style="display: flex;">
@@ -65,29 +59,29 @@
       </div>
     </div>
 
-    <div class=" p-4 pt-0 pb-0" >
-    <div class=" table-responsive tab-content card-tabs border-top-0">
-      <table class="tablaMateriales table table-hover text-center">
+    <div class="table-responsive p-4 pt-0 pb-0" >
+      <div class="tab-content card-tabs border-top-0">
+      <table class="tablasApp table table-hover text-center">
         <thead>
-          <tr>
-            <th class="sortable">Código</th>
-            <th class="sortable">Descripción</th>
-            <th class="sortable">Cantidad</th>
-            <th class="sortable">Coordinador</th>
-            <th class="sortable">Fecha de Ingreso</th>
-            <th class="sortable">Tipo</th>
-            <th class="sortable">Acción</th>
-          </tr>
+            <tr>
+              <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
+            </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for ele in electricidad %}
           <tr>
-            <td class="codigo">{{ ele.codigo }}</td>
-            <td class="descripcion">{{ ele.descripcion }}</td>
-            <td class="cantidad">{{ ele.cantidad }}</td>
-            <td class="coordinador">{{ ele.coordinador.username | title}}</td>
-            <td class="fecha_ingreso">{{ ele.fecha_ingreso }}</td>
-            <td class="tipo_material">{{ ele.tipo_material }}</td>
+            <td class="">{{ ele.codigo }}</td>
+            <td class="">{{ ele.descripcion }}</td>
+            <td class="">{{ ele.cantidad }}</td>
+            <td class="">{{ ele.coordinador.username | title}}</td>
+            <td class="">{{ ele.fecha_ingreso }}</td>
+            <td class="">{{ ele.tipo_material }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ ele.id }}"
@@ -119,29 +113,29 @@
       </div>
     </div>
 
-    <div class=" p-4 pt-0 pb-0" >
-    <div class=" table-responsive tab-content card-tabs border-top-0">
-      <table class="tablaMateriales table table-hover text-center">
+    <div class="table-responsive p-4 pt-0 pb-0" >
+      <div class="tab-content card-tabs border-top-0">
+      <table class="tablasApp table table-hover text-center">
         <thead>
-          <tr>
-            <th class="sortable">Código</th>
-            <th class="sortable">Descripción</th>
-            <th class="sortable">Cantidad</th>
-            <th class="sortable">Coordinador</th>
-            <th class="sortable">Fecha de Ingreso</th>
-            <th class="sortable">Tipo</th>
-            <th class="sortable">Acción</th>
-          </tr>
+            <tr>
+              <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
+            </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for plo in plomeria %}
           <tr>
-            <td class="codigo">{{ plo.codigo }}</td>
-            <td class="descripcion">{{ plo.descripcion }}</td>
-            <td class="cantidad">{{ plo.cantidad }}</td>
-            <td class="coordinador">{{ plo.coordinador.username | title}}</td>
-            <td class="fecha_ingreso">{{ plo.fecha_ingreso }}</td>
-            <td class="tipo_material">{{ plo.tipo_material }}</td>
+            <td class="">{{ plo.codigo }}</td>
+            <td class="">{{ plo.descripcion }}</td>
+            <td class="">{{ plo.cantidad }}</td>
+            <td class="">{{ plo.coordinador.username | title}}</td>
+            <td class="">{{ plo.fecha_ingreso }}</td>
+            <td class="">{{ plo.tipo_material }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ plo.id }}"
@@ -173,29 +167,29 @@
       </div>
     </div>
 
-    <div class=" p-4 pt-0 pb-0" >
-    <div class=" table-responsive tab-content card-tabs border-top-0">
-      <table class="tablaMateriales table table-hover text-center">
+    <div class="table-responsive p-4 pt-0 pb-0" >
+      <div class="tab-content card-tabs border-top-0">
+      <table class="tablasApp table table-hover text-center">
         <thead>
-          <tr>
-            <th class="sortable">Código</th>
-            <th class="sortable">Descripción</th>
-            <th class="sortable">Cantidad</th>
-            <th class="sortable">Coordinador</th>
-            <th class="sortable">Fecha de Ingreso</th>
-            <th class="sortable">Tipo</th>
-            <th class="sortable">Acción</th>
-          </tr>
+            <tr>
+              <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
+            </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for elm in electromecanica %}
           <tr>
-            <td class="codigo">{{ elm.codigo }}</td>
-            <td class="descripcion">{{ elm.descripcion }}</td>
-            <td class="cantidad">{{ elm.cantidad }}</td>
-            <td class="coordinador">{{ elm.coordinador.username | title}}</td>
-            <td class="fecha_ingreso">{{ elm.fecha_ingreso }}</td>
-            <td class="tipo_material">{{ elm.tipo_material }}</td>
+            <td class="">{{ elm.codigo }}</td>
+            <td class="">{{ elm.descripcion }}</td>
+            <td class="">{{ elm.cantidad }}</td>
+            <td class="">{{ elm.coordinador.username | title}}</td>
+            <td class="">{{ elm.fecha_ingreso }}</td>
+            <td class="">{{ elm.tipo_material }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ elm.id }}"
@@ -227,29 +221,29 @@
         </div>
     </div>
 
-    <div class=" p-4 pt-0 pb-0" >
-      <div class=" table-responsive tab-content card-tabs border-top-0">
-        <table class="tablaMateriales table table-hover text-center">
+    <div class="table-responsive p-4 pt-0 pb-0" >
+      <div class="tab-content card-tabs border-top-0">
+        <table class="tablasApp table table-hover text-center">
           <thead>
             <tr>
-              <th class="sortable">Código</th>
-              <th class="sortable">Descripción</th>
-              <th class="sortable">Cantidad</th>
-              <th class="sortable">Coordinador</th>
-              <th class="sortable">Fecha de Ingreso</th>
-              <th class="sortable">Tipo</th>
-              <th class="sortable">Acción</th>
+              <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-4">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
             </tr>
           </thead>
           <tbody class="table-group-divider">
             {% for ppl in papeleria %}
             <tr>
-              <td class="codigo">{{ ppl.codigo }}</td>
-              <td class="descripcion">{{ ppl.descripcion }}</td>
-              <td class="cantidad">{{ ppl.cantidad }}</td>
-              <td class="coordinador">{{ ppl.coordinador.username | title}}</td>
-              <td class="fecha_ingreso">{{ ppl.fecha_ingreso }}</td>
-              <td class="tipo_material">{{ ppl.tipo_material }}</td>
+              <td class="">{{ ppl.codigo }}</td>
+              <td class="">{{ ppl.descripcion }}</td>
+              <td class="">{{ ppl.cantidad }}</td>
+              <td class="">{{ ppl.coordinador.username | title}}</td>
+              <td class="">{{ ppl.fecha_ingreso }}</td>
+              <td class="">{{ ppl.tipo_material }}</td>
               <td>
                 <a title="datos" class="info" 
                   data-id="{{ ppl.id }}"
@@ -276,34 +270,34 @@
         <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
           <p class="fs-2 m-0">LIMPIEZA</p>
           <div style="display: flex;">
-          <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+            <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
           <a class="agregar-material"><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class=" btn mx-2 btn-primary"></a>
         </div>
       </div>
 
-      <div class=" p-4 pt-0 pb-0" >
-        <div class=" table-responsive tab-content card-tabs border-top-0">
-          <table class="tablaMateriales table table-hover text-center">
+      <div class="table-responsive p-4 pt-0 pb-0" >
+        <div class="tab-content card-tabs border-top-0">
+          <table class="tablasApp table table-hover text-center" data-name="Material de Limpieza">
             <thead>
               <tr>
-                <th class="sortable">Código</th>
-                <th class="sortable">Descripción</th>
-                <th class="sortable">Cantidad</th>
-                <th class="sortable">Coordinador</th>
-                <th class="sortable">Fecha de Ingreso</th>
-                <th class="sortable">Tipo</th>
-                <th class="sortable">Acción</th>
+                <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+                <th class="col-1">Cantidad</th>
+                <th class="col-1">Coordinador</th>
+                <th class="col-3">Fecha de Ingreso</th>
+                <th class="col-1">Tipo</th>
+                <th class="col-1">Acción</th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
               {% for LIM in limpieza %}
               <tr>
-                <td class="codigo">{{ LIM.codigo }}</td>
-                <td class="descripcion">{{ LIM.descripcion }}</td>
-                <td class="cantidad">{{ LIM.cantidad }}</td>
-                <td class="coordinador">{{ LIM.coordinador.username | title}}</td>
-                <td class="fecha_ingreso">{{ LIM.fecha_ingreso }}</td>
-                <td class="tipo_material">{{ LIM.tipo_material }}</td>
+                <td class="">{{ LIM.codigo }}</td>
+                <td class="">{{ LIM.descripcion }}</td>
+                <td class="">{{ LIM.cantidad }}</td>
+                <td class="">{{ LIM.coordinador.username | title}}</td>
+                <td class="">{{ LIM.fecha_ingreso }}</td>
+                <td class="">{{ LIM.tipo_material }}</td>
                 <td>
                   <a title="datos" class="info" 
                     data-id="{{ LIM.id }}"
@@ -325,50 +319,8 @@
       </div>
   </div>
 
-  <!-- panel de HERRAMIENTAS -->
-  <div class="tab-pane fade" id="pestaña6-pane" role="tabpanel" aria-labelledby="pestaña6" tabindex="0">
-
-      <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
-        <p class="fs-2 m-0">HERRAMIENTAS</p>
-        <div style="display: flex;">
-          <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
-          <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
-        </div>
-    </div>
-
-    <div class=" p-4 pt-0 pb-0" >
-      <div class=" table-responsive tab-content card-tabs border-top-0">
-        <table class="tablaMateriales table table-hover text-center">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">descripcion</th>
-        <th scope="col">cantidad</th>
-        <th scope="col">coordinador</th>
-        <th scope="col">fecha_ingreso</th>
-        <th scope="col">condicion</th>
-      </tr>
-    </thead>
-    <tbody class="table-group-divider" >
-      {% for her in herramientas %}
-      <tr>
-        <th scope="row">{{ her.id }}</th>
-        <td>{{ her.descripcion }}</td>
-        <td>{{ her.cantidad }}</td>
-        <td>{{ her.coordinador }}</td>
-        <td>{{ her.fecha_ingreso }}</td>
-        <td>{{ her.condicion }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    </table>
-    </div>
-    </div>
-
-  </div>
-
   <!-- panel de PINTURAS -->
-  <div class="tab-pane fade" id="pestaña7-pane" role="tabpanel" aria-labelledby="pestaña7" tabindex="0" >
+  <div class="tab-pane fade" id="pestaña6-pane" role="tabpanel" aria-labelledby="pestaña6" tabindex="0" >
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
       <p class="fs-2 m-0">PINTURAS</p>
       <div style="display: flex;">
@@ -377,29 +329,29 @@
       </div>
     </div>
 
-    <div class=" p-4 pt-0 pb-0" >
-    <div class=" table-responsive tab-content card-tabs border-top-0">
-      <table class="tablaMateriales table table-hover text-center">
+    <div class="table-responsive p-4 pt-0 pb-0" >
+      <div class="tab-content card-tabs border-top-0">
+      <table class="tablasApp table table-hover text-center">
         <thead>
-          <tr>
-            <th class="sortable">Código</th>
-            <th class="sortable">Descripción</th>
-            <th class="sortable">Cantidad</th>
-            <th class="sortable">Coordinador</th>
-            <th class="sortable">Fecha de Ingreso</th>
-            <th class="sortable">Tipo</th>
-            <th class="sortable">Acción</th>
-          </tr>
+            <tr>
+              <th class="col-1">Código</th>
+              <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
+            </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for pin in pinturas %}
           <tr>
-            <td class="codigo">{{ pin.codigo }}</td>
-            <td class="descripcion">{{ pin.descripcion }}</td>
-            <td class="cantidad">{{ pin.cantidad }}</td>
-            <td class="coordinador">{{ pin.coordinador.username | title}}</td>
-            <td class="fecha_ingreso">{{ pin.fecha_ingreso }}</td>
-            <td class="tipo_material">{{ pin.tipo_material }}</td>
+            <td class="">{{ pin.codigo }}</td>
+            <td class="">{{ pin.descripcion }}</td>
+            <td class="">{{ pin.cantidad }}</td>
+            <td class="">{{ pin.coordinador.username | title}}</td>
+            <td class="">{{ pin.fecha_ingreso }}</td>
+            <td class="">{{ pin.tipo_material }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ pin.id }}"
@@ -422,7 +374,7 @@
   </div>
 
   <!-- panel de RESGUARDOS -->
-  <div class="tab-pane fade" id="pestaña8-pane" role="tabpanel" aria-labelledby="pestaña8" tabindex="0" >
+  <div class="tab-pane fade" id="pestaña7-pane" role="tabpanel" aria-labelledby="pestaña7" tabindex="0" >
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
       <p class="fs-2 m-0">RESGUARDOS</p>
       <div style="display: flex;">
@@ -431,29 +383,29 @@
       </div>
     </div>
 
-    <div class=" p-4 pt-0 pb-0" >
-    <div class=" table-responsive tab-content card-tabs border-top-0">
-      <table class="tablaMateriales table table-hover text-center">
+    <div class="table-responsive p-4 pt-0 pb-0" >
+      <div class="tab-content card-tabs border-top-0">
+      <table class="tablasApp table table-hover text-center">
         <thead>
-          <tr>
-            <th class="sortable">Código</th>
-            <th class="sortable">Descripción</th>
-            <th class="sortable">Cantidad</th>
-            <th class="sortable">Coordinador</th>
-            <th class="sortable">Fecha de Ingreso</th>
-            <th class="sortable">Tipo</th>
-            <th class="sortable">Acción</th>
-          </tr>
+            <tr>
+              <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
+            </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for res in resguardos %}
           <tr>
-            <td class="codigo">{{ res.codigo }}</td>
-            <td class="descripcion">{{ res.descripcion }}</td>
-            <td class="cantidad">{{ res.cantidad }}</td>
-            <td class="coordinador">{{ res.coordinador.username | title}}</td>
-            <td class="fecha_ingreso">{{ res.fecha_ingreso }}</td>
-            <td class="tipo_material">{{ res.tipo_material }}</td>
+            <td class="">{{ res.codigo }}</td>
+            <td class="">{{ res.descripcion }}</td>
+            <td class="">{{ res.cantidad }}</td>
+            <td class="">{{ res.coordinador.username | title}}</td>
+            <td class="">{{ res.fecha_ingreso }}</td>
+            <td class="">{{ res.tipo_material }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ res.id }}"
@@ -477,7 +429,7 @@
 
   {%  if user.username == "deyner" %}
     <!-- panel de PRUEBA -->
-    <div class="tab-pane fade" id="pestaña9-pane" role="tabpanel" aria-labelledby="pestaña9" tabindex="0" >
+    <div class="tab-pane fade" id="pestaña8-pane" role="tabpanel" aria-labelledby="pestaña8" tabindex="0" >
       <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
         <p class="fs-2 m-0">PRUEBA</p>
         <div style="display: flex;">
@@ -486,29 +438,29 @@
         </div>
       </div>
   
-      <div class=" p-4 pt-0 pb-0" >
-      <div class=" table-responsive tab-content card-tabs border-top-0">
-        <table class="tablaMateriales table table-hover text-center">
+      <div class="table-responsive p-4 pt-0 pb-0" >
+        <div class="tab-content card-tabs border-top-0">
+        <table class="tablasApp table table-hover text-center">
           <thead>
             <tr>
-              <th class="sortable">Código</th>
-              <th class="sortable">Descripción</th>
-              <th class="sortable">Cantidad</th>
-              <th class="sortable">Coordinador</th>
-              <th class="sortable">Fecha de Ingreso</th>
-              <th class="sortable">Tipo</th>
-              <th class="sortable">Acción</th>
+              <th class="col-1">Código</th>
+                <th class="col-5">Descripción</th>
+              <th class="col-1">Cantidad</th>
+              <th class="col-1">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Tipo</th>
+              <th class="col-1">Acción</th>
             </tr>
           </thead>
           <tbody class="table-group-divider">
             {% for pru in prueba %}
             <tr>
-              <td class="codigo">{{ pru.codigo }}</td>
-              <td class="descripcion">{{ pru.descripcion }}</td>
-              <td class="cantidad">{{ pru.cantidad }}</td>
-              <td class="coordinador">{{ pru.coordinador.username | title}}</td>
-              <td class="fecha_ingreso">{{ pru.fecha_ingreso }}</td>
-              <td class="tipo_material">{{ pru.tipo_material }}</td>
+              <td class="">{{ pru.codigo }}</td>
+              <td class="">{{ pru.descripcion }}</td>
+              <td class="">{{ pru.cantidad }}</td>
+              <td class="">{{ pru.coordinador.username | title}}</td>
+              <td class="">{{ pru.fecha_ingreso }}</td>
+              <td class="">{{ pru.tipo_material }}</td>
               <td>
                 <a title="datos" class="info" 
                   data-id="{{ pru.id }}"
@@ -531,6 +483,8 @@
     </div>
   {% endif %}
 </div>
+
+<button id="pruebasss" class="btn btn-primary boton-flotante">Descargar PDF</button>
 
 <!-- agregar materiales -->
 <script>
@@ -605,43 +559,6 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
 });
 </script>
 
-<!-- buscador interactivo de tablas -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Obtener todos los inputs de búsqueda y sus respectivas tablas
-    const searchInputs = document.querySelectorAll('.searchInput');
-    const tables = document.querySelectorAll('.tablaMateriales');
-
-    // Asociar cada buscador con su tabla
-    searchInputs.forEach((input, index) => {
-        input.addEventListener('input', function () {
-            // Texto de búsqueda normalizado
-            const searchText = input.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-            // Obtener las filas de la tabla correspondiente
-            const table = tables[index];
-            const rows = table.querySelectorAll('tbody tr');
-
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                let matchFound = false;
-
-                cells.forEach(cell => {
-                    // Normalizar el texto de cada celda
-                    const cellText = cell.innerText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                    if (cellText.includes(searchText)) {
-                        matchFound = true;
-                    }
-                });
-
-                // Mostrar u ocultar la fila según la coincidencia
-                row.style.display = matchFound ? '' : 'none';
-            });
-        });
-    });
-});
-</script>
-
 <!-- boton de mas informacion y acciones -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -671,11 +588,234 @@ document.addEventListener('DOMContentLoaded', function () {
           showCancelButton: false,
           showConfirmButton: false,
           focusConfirm: false,
-          footer: `<button id="edit-material" class="swal2-confirm swal2-styled">Editar</button>
-                  <button id="delete-material" class="swal2-confirm swal2-styled">Eliminar</button>
-                  <button id="cantidad-material" class="swal2-confirm swal2-styled">Modificar cantidad</button>
+          width: '600px',
+          footer: `
+          <div class="flex-d">
+            <div>
+              <button id="edit-material" class="swal2-confirm col-4 swal2-styled">Editar</button>
+              <button id="delete-material" class="swal2-confirm col-4 swal2-styled">Eliminar</button>
+            </div>
+            <div>
+              <button id="cantidad-material" class="swal2-confirm col-4 swal2-styled">Cantidad</button>
+              <button id="entrega-material" class="swal2-confirm col-4 swal2-styled">Entregar</button>
+            </div>
+          </div>
           `
         });
+
+    document.getElementById('entrega-material').addEventListener('click', function() {
+      Swal.fire({
+        title: `${descripcion} (Disponible: ${cantidad})`,
+        html: `
+        <div class="p-0">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <input type="hidden" id="material" value="${pk}">
+              <input type="hidden" id="id_analista" name="analista" value="{{ user.id }}">
+
+              <div id="inputPeople">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="showNewPeople"><i class="bi bi-person-plus"></i></a>
+                </div>
+                <div class="mb-3">
+                  <div class="col-12">
+                    <label for="persona" class="form-label">Seleccione Persona:</label>
+                    <select id="persona" name="persona" class="form-control selectPeople">
+                    <option value="" selected disabled>Seleccione una persona</option>
+                      {% for person in personas %}
+                        <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="newPeopleForm" style="display: none;">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="closeNewPeople"><i class="bi bi-backspace"></i></a>
+                </div>
+                <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="nombre" class="form-label">Nombre y Apellido:</label>
+                  <input id="nombre" name="nombre" type="text" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="cedula" class="form-label">Cédula:</label>
+                  <input id="cedula" name="cedula" type="number" class="form-control">
+                </div>
+              </div>
+
+            <!-- Select Departamento -->
+              <div id="inputDepartment">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="showNewDepartment"><i class="bi bi-person-plus"></i></a>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <label for="departamento" class="form-label">Seleccione Departamento:</label>
+                    <select id="departamento" name="departamento" class="form-control selectDepartment">
+                      <option value="">Seleccione un departamento</option>
+                        {% for dept in departamentos %}
+                          <option value="{{ dept.id }}">{{ dept.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+            <!-- Nuevo Departamento Input -->
+              <div id="newDepartmentForm" style="display: none;">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="closeNewDepartment"><i class="bi bi-backspace"></i></a>
+                </div>
+                <div class="col-12">
+                  <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
+                  <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
+                </div>
+              </div>
+            </div>
+
+
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripción:</label>
+              <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="cantidad" class="form-label">Cantidad:</label>
+              <input type="number" name="cantidad" id="cantidad" class="form-control" min='1' max='${cantidad}' required>
+            </div>
+          </form>
+        </div>
+        `
+        ,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        width: '600px',
+        didOpen: () => {
+        // Inicializa Select2 para las personas
+        $('.selectPeople').select2({
+        placeholder: 'Seleccione una persona',
+        width: '100%', // Ajusta el ancho
+        dropdownParent: $('.swal2-popup') // Se asegura de que el dropdown funcione correctamente en SweetAlert2
+        });
+        //--------------------------------------
+        // Inicializa Select2 para los nuevos departamentos
+        $('.selectDepartment').select2({
+        placeholder: 'Seleccione un departamento',
+        width: '100%', // Ajusta el ancho
+        dropdownParent: $('.swal2-popup') // Se asegura de que el dropdown funcione correctamente en SweetAlert2
+        });
+        //--------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 personas
+        const inputPeople = document.getElementById('inputPeople');
+        const newPeopleForm = document.getElementById('newPeopleForm');
+        const showNewPeople = document.getElementById('showNewPeople');
+        const closeNewPeople = document.getElementById('closeNewPeople');
+        //-------------------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 departamentos
+        const inputDepartment = document.getElementById('inputDepartment')
+        const newDepartmentForm = document.getElementById('newDepartmentForm')
+        const showNewDepartment = document.getElementById('showNewDepartment')
+        const closeNewDepartment = document.getElementById('closeNewDepartment')
+        //-------------------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 personas
+        showNewPeople.addEventListener('click', () => {
+        inputPeople.style.display = 'none';
+        newPeopleForm.style.display = 'block';
+        });
+
+        closeNewPeople.addEventListener('click', () => {
+        newPeopleForm.style.display = 'none';
+        inputPeople.style.display = 'block';
+        });
+        //-------------------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 departamentos
+        showNewDepartment.addEventListener('click', ()=>{
+        inputDepartment.style.display = 'none';
+        newDepartmentForm.style.display = 'block';
+        })
+
+        closeNewDepartment.addEventListener('click', () => {
+        newDepartmentForm.style.display = 'none';
+        inputDepartment.style.display = 'block';
+        });
+        //-------------------------------------------------
+        },
+
+        preConfirm: () => {
+          const E_Material = document.getElementById('material').value;
+          const E_Analista = document.getElementById('id_analista').value
+
+          // Verificar si persona está seleccionada, si no, verificar nombre, cedula y departamento
+          const E_Persona = document.getElementById('persona') && document.getElementById('persona').value ? document.getElementById('persona').value : '';
+          const E_Nombre = document.getElementById('nombre') && document.getElementById('nombre').value ? document.getElementById('nombre').value : '';
+          const E_Cedula = document.getElementById('cedula') && document.getElementById('cedula').value ? document.getElementById('cedula').value : '';
+          const E_Departamento = document.getElementById('departamento') && document.getElementById('departamento').value ? document.getElementById('departamento').value : '';
+          const E_NuevoDepartamento = document.getElementById('nuevo_dep') && document.getElementById('nuevo_dep').value ? document.getElementById('nuevo_dep').value : '';
+          const E_Descripcion = document.getElementById('descripcion') ? document.getElementById('descripcion').value : '';
+          const E_Cantidad = document.getElementById('cantidad').value;
+
+          // Condición para saber si se ha seleccionado una persona o se están ingresando los datos manualmente
+          const validPersona = E_Persona || (E_Nombre && E_Cedula && E_Departamento);
+          const validDepartamento = E_Departamento || E_NuevoDepartamento; // Asegurarse de que uno de los dos esté presente
+
+          if (!E_Cantidad) { 
+            Swal.showValidationMessage('ingrese una cantidad valida.');
+            return false;
+          } 
+          else if (!E_Descripcion){
+            Swal.showValidationMessage('ingrese una justificacion.');
+            return false;
+          }
+          // if (!E_Analista || 
+          //     !validPersona ||  // Se valida que se complete una de las dos opciones (Persona o Datos manuales)
+          //     !E_Descripcion || !E_Cantidad || 
+          //     !validDepartamento) { // Se valida que el departamento o nuevo departamento esté completo
+          //     Swal.showValidationMessage('Todos los campos son obligatorios y deben cumplir las condiciones.');
+          //     return false;
+          // }
+
+          // Llamada AJAX para enviar los datos al servidor
+          $.ajax({
+            type: "POST",
+            url: `../entregar_material_prueba/${pk}/`,  
+            data: {
+              material: E_Material,
+              analista: E_Analista,
+              persona: E_Persona,
+              nombre: E_Nombre,
+              cedula: E_Cedula,
+              departamento: E_Departamento,
+              nuevo_dep: E_NuevoDepartamento,
+              descripcion: E_Descripcion,
+              cantidad: E_Cantidad,
+              csrfmiddlewaretoken: "{{ csrf_token }}", 
+            },
+            success: function (response) {
+                    Swal.fire({
+                        title: 'Guardado!',
+                        text: 'El material ha sido actualizado',
+                        icon: 'success',
+                        showConfirmButton: false, // Oculta el botón "OK"
+                        timer: 1000 // Cierra automáticamente en 1 segundo
+                    }).then(() => {
+                        location.reload(); // Recarga la página después de que la alerta desaparezca
+                    });
+                  },
+            error: function (xhr, status, error) {
+              Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+            }
+          });
+        }
+      });
+    });
+
 
       document.getElementById('cantidad-material').addEventListener('click', function() {
     Swal.fire({
@@ -715,7 +855,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return new Promise((resolve) => {
                 const form = $('#modificar-cantidad-form');
                 const formData = form.serialize();
-
                 $.ajax({
                   type: 'POST',
                     url: `../modificar_cantidades/${pk}/`,
@@ -740,17 +879,20 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Éxito',
-                text: 'El material ha sido modificado correctamente.',
-                icon: 'success'
-            });
-        }
-        setInterval("location.reload()",1000);
-    });
-    
+    if (result.isConfirmed) {
+      Swal.fire({
+          title: 'Éxito!',
+          text: 'El material ha sido modificado correctamente.',
+          icon: 'success',
+          showConfirmButton: false, // Oculta el botón "OK"
+          timer: 1000 // Cierra automáticamente en 1 segundo
+      }).then(() => {
+          location.reload(); // Recarga la página después de que la alerta desaparezca
+      });
+    }
+  });
 });
+
 
       document.getElementById('delete-material').addEventListener('click', function () {
         Swal.fire({
@@ -786,14 +928,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 csrfmiddlewaretoken: '{{ csrf_token }}'  
             },
             success: function (response) {
-                Swal.fire(
-                    'Deleted!',
-                    'The material has been deleted.',
-                    'success'
-                );
-                // Remueve el elemento eliminado de la vista
-                document.getElementById(`material-${pk}`).remove();
-            },
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text: 'El material ha sido eliminado',
+                        icon: 'success',
+                        showConfirmButton: false, // Oculta el botón "OK"
+                        timer: 1000 // Cierra automáticamente en 1 segundo
+                    }).then(() => {
+                        location.reload(); // Recarga la página después de que la alerta desaparezca
+                    });
+                  },
             error: function (xhr, errmsg, err) {
                 Swal.fire(
                     'Error!',
@@ -805,6 +949,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
 
       document.getElementById('edit-material').addEventListener('click', function () {
         Swal.fire({
@@ -845,15 +990,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     csrfmiddlewaretoken: "{{ csrf_token }}", 
                 },
                 success: function (response) {
-                    Swal.fire('Guardado', 'El material ha sido actualizado', 'success');
+                    Swal.fire({
+                        title: 'Guardado',
+                        text: 'El material ha sido actualizado',
+                        icon: 'success',
+                        showConfirmButton: false, // Oculta el botón "OK"
+                        timer: 1000 // Cierra automáticamente en 1 segundo
+                    }).then(() => {
+                        location.reload(); // Recarga la página después de que la alerta desaparezca
+                    });
                 },
                 error: function (xhr, status, error) {
                     Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
                 }
             });
-            setInterval("location.reload()",1000);
 
-            return false; 
           }
         });
       });
@@ -865,4 +1016,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 
+
+<!-- este escrip sirve para que el ultimo tab en el que estaba quede activo cuando recarge la pagina -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      // Obtener el último tab guardado en localStorage
+      let lastTab = localStorage.getItem("activeTab");
+  
+      // Si hay un tab guardado, activarlo
+      if (lastTab) {
+          let tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
+          if (tabElement) {
+              let tab = new bootstrap.Tab(tabElement);
+              tab.show();
+          }
+      }
+  
+      // Escuchar el evento cuando se cambia de pestaña y guardar el ID
+      document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+          tab.addEventListener("shown.bs.tab", function (event) {
+              localStorage.setItem("activeTab", event.target.getAttribute("data-bs-target"));
+          });
+      });
+  });
+  </script>
 {% endblock %}

@@ -1,20 +1,22 @@
 {% extends "inicio.html" %} 
 {% block content %}
-<div id="contenido" class="bg-light rounded " style="box-shadow: 1px 1px 30px -10px;">
-    <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
-        Lista de Entregas
+<div class="rounded m-5 mt-0"  id="myTabContent">
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+        <p class="fs-2 m-0">Lista de Entregas</p>
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput"  style="width: 200px;">
     </div>
-    <div class=" rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
-        <table class="table table-hover text-center ">
+    
+    <div class=" rounded-top-0 rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+        <table class="tablasApp table table-hover text-center ">
             <thead>
                 <tr>
-                    <th class="sortable">Departamento</th>
-                    <th class="sortable">Material</th>
-                    <th class="sortable">Analista</th>
-                    <th class="sortable">Nombre y Apellido</th>
-                    <th class="sortable">Cantidad</th>
-                    <th class="sortable">Descripción</th>
-                    <th class="sortable">Fecha de Préstamo</th>
+                    <th class="col-1">Departamento</th>
+                    <th class="col-2">Material</th>
+                    <th class="col-1">Analista</th>
+                    <th class="col-2">Nombre - CI</th>
+                    <th class="col-1">Cantidad</th>
+                    <th class="col-2">Descripción</th>
+                    <th class="col-3">Fecha de Préstamo</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">

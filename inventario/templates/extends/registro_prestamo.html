@@ -1,0 +1,97 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div class="rounded m-5 mt-0"  id="myTabContent">
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+        <p class="fs-2 m-0">Prestamos activos</p>
+        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput"  style="width: 200px;">
+    </div>
+    <div class=" table-container rounded-top-0 rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+        <table class="tablasApp table table-hover text-center ">
+            <thead>
+                <tr>
+                    <th class="col-1">Departamento</th>
+                    <th class="col-2">Herramienta</th>
+                    <th class="col-1">Analista</th>
+                    <th class="col-2">Nombre - CI</th>
+                    <th class="col-1">Cantidad</th>
+                    <th class="col-2">Descripción</th>
+                    <th class="col-2">Fecha de Préstamo</th>
+                    <th class="col-1">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                {% for prestamo in prestamos %}
+                <tr>
+                    <td>{{ prestamo.persona.departamento | title }}</td>
+                    <td>{{ prestamo.herramienta }}</td>
+                    <td>{{ prestamo.analista | title}}</td>
+                    <td>{{ prestamo.persona | title}}</td>
+                    <td>{{ prestamo.cantidad }}</td>
+                    <td>{{ prestamo.descripcion }}</td>
+                    <td>{{ prestamo.fecha_prestamo }}</td>
+                    <td>
+                            <button class="btn btn-success entregar-btn" data-id="{{ prestamo.id }}" 
+                                    data-herramienta="{{ prestamo.herramienta_id }}"
+                                    data-cantidad="{{ prestamo.cantidad }}"
+                                    data-persona="{{ prestamo.persona | title}}">
+                                    
+                                Finalizar Préstamo
+                            </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.entregar-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const prestamoId = this.dataset.id;
+            const herramientaId = this.dataset.herramienta;
+            const cantidad = this.dataset.cantidad;
+            const csrfToken = "{{ csrf_token }}";  
+
+            Swal.fire({
+                title: "¿Confirmar entrega?",
+                text: `Se devolverán ${cantidad} unidades al inventario.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, entregar",
+                cancelButtonText: "Cancelar",
+
+
+
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                    type: "POST",
+                    url: `../devolucion_herramientas/${prestamoId}/`,
+                    data: {
+                        cantidad: cantidad,
+                        herramientaId: herramientaId,
+                        csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+                    },
+                    dataType: "json",  // Asegúrate de que la respuesta sea JSON
+                    success: function(response) {
+                        console.log(response);  // Verifica qué es lo que llega
+                        if (response.success) {
+                            Swal.fire('Guardado', 'El material ha sido actualizado', 'success').then(() => {
+                                location.reload();  // Recargar la página para actualizar la tabla
+                            });
+                        } else {
+                            Swal.fire('Error', response.error || 'Hubo un problema al guardar los cambios', 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error', 'Hubo un problema con la solicitud', 'error');
+                    }
+                });
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
+
 class Herramientas(models.Model):
     descripcion = models.CharField(max_length=250)
     cantidad = models.PositiveIntegerField(default=0)
@@ -14,6 +15,21 @@ class Herramientas(models.Model):
     # auto_now_add=True
     def __str__(self):
         return f'{self.descripcion} ({self.cantidad})'
+    
+    
+    def agregar_herramienta(self, cantidad_a_agregar):
+        self.cantidad += cantidad_a_agregar
+        self.save()
+    
+    def restar_herramienta(self, cantidad_a_restar):
+        self.cantidad -= cantidad_a_restar
+        self.save()
+        
+    def entregar_herramienta(self, cantidad_a_entregar):
+        if self.cantidad < cantidad_a_entregar:
+            raise ValidationError("No hay suficiente cantidad en inventario para este préstamo.")
+        self.cantidad -= cantidad_a_entregar
+        self.save()
 
 class Material(models.Model):
     TIPO_MATERIAL_CHOICES = [
@@ -76,16 +92,16 @@ class Solicitudes(models.Model):
         ('A', 'Aprobada'),
     ]
     persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
-    material_solicitado = models.ForeignKey(Material, on_delete=models.SET_NULL, null=True, blank=True)
+    articulo_id = models.PositiveIntegerField(default=0)
+    articulo_solicitado = models.CharField(150)
     cantidad = models.PositiveIntegerField(default=0)
     tipo = models.CharField(150)
-    estado = models.CharField   (max_length=20,
-                                choices=OPCIONES_ESTADO, 
-                                default='P')
+
     def __str__(self):
         return f'Solicitud de {self.material_solicitado} por {self.persona}'
     
 class Entrega(models.Model):
+    
     material = models.CharField(max_length=150, null=True, blank=True)
     persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
     analista = models.CharField(max_length=150)
@@ -97,6 +113,18 @@ class Entrega(models.Model):
     def __str__(self):
         return f'Préstamo de {self.cantidad} {self.material} a {self.persona}'
     
+class Prestamos(models.Model):
+    herramienta = models.CharField(max_length=150, null=True, blank=True)
+    herramienta_id = models.CharField(max_length=150, null=True, blank=True)
+    persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
+    analista = models.CharField(max_length=150)
+    cantidad = models.PositiveBigIntegerField()
+    fecha_prestamo = models.DateTimeField(auto_now_add=True)
+    descripcion = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f'prestamo de {self.cantidad} {self.herramienta} a {self.persona}'
+
 class UserActionLog(models.Model):
     ACTION_CHOICES = [
         ('login', 'Login'),

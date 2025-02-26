@@ -3,76 +3,117 @@
 <body class="formulario_solicitud bluecolor">
 
     <div id="contenido" class="card justify-content-center bg-light mt-4 shadow-lg p-4" >
-    <div class="formulario">
-        <a class="btn btn-primary mb-3" href="{% url 'login' %}">Volver</a>
+    <div class="formulario text-center" >
+    <div class="d-flex aling-items-start">
+        <a class="btn btn-primary aling-items-start mb-3" href="/inventario/">Volver</a>
+    </div>
         <h1 class="my-4 text-center">Formulario de Solicitud</h1>
 
         <form method="post">
             {% csrf_token %}
             
-            <!-- Select Persona -->
+
+        <div class="row mb-3" id="inputPeople">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="showNewPeople"><i class="bi bi-person-plus"></i></a>
+            </div>
+            <div class="mb-3">
+                <div class="col-12">
+                <label for="persona" class="form-label">Seleccione Persona:</label>
+                <select id="persona" name="persona" class="form-control select2">
+                <option value="" selected disabled></option>
+                    {% for person in personas %}
+                    <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+            </div>
+        </div>
+        
+        <div id="newPeopleForm" style="display: none;">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="closeNewPeople"><i class="bi bi-backspace"></i></a>
+            </div>
+            <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombre" class="form-label">Nombre y Apellido:</label>
+                <input id="nombre" name="nombre" type="text" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="cedula" class="form-label">Cédula:</label>
+                <input id="cedula" name="cedula" type="number" class="form-control">
+            </div>
+            </div>
+
+            <!-- Select Departamento -->
+            <div id="inputDepartment">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="showNewDepartment"><i class="bi bi-person-plus"></i></a>
+            </div>
             <div class="row mb-3">
                 <div class="col-12">
-                    <label for="persona" class="form-label">Seleccione Persona:</label>
-                    <select id="persona" name="persona" class="form-control select2">
-                        <option value="">Seleccione una persona</option>
-                        <option value="nueva">Nueva persona</option>
-                        {% for person in personas %}
-                            <option value="{{ person.id }}">{{ person.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <label for="departamento" class="form-label">Seleccione Departamento:</label>
+                <select id="departamento" name="departamento" class="form-control select2">
+                    <option value=""></option>
+                    {% for dept in departamentos %}
+                        <option value="{{ dept.id }}">{{ dept.nombre }}</option>
+                    {% endfor %}
+                </select>
             </div>
+        </div>
+        </div>
 
-            <!-- Nueva Persona Formulario -->
-            <div id="nuevaPersonaForm" class="hidden">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="nombre" class="form-label">Nombre y Apellido:</label>
-                        <input id="nombre" name="nombre" type="text" class="form-control">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="cedula" class="form-label">Cédula:</label>
-                        <input id="cedula" name="cedula" type="number" class="form-control">
-                    </div>
-                </div>
-
-                <!-- Select Departamento -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <label for="departamento" class="form-label">Seleccione Departamento:</label>
-                        <select id="departamento" name="departamento" class="form-control select2">
-                            <option value="">Seleccione un departamento</option>
-                            <option value="nuevo">Nuevo departamento</option>
-                            {% for dept in departamentos %}
-                                <option value="{{ dept.id }}">{{ dept.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Nuevo Departamento Input -->
-                <div id="nuevoDepartamentoForm" class="hidden">
-                    <div class="col-12">
-                        <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
-                        <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
-                    </div>
-                </div>
+            <!-- Nuevo Departamento Input -->
+            <div id="newDepartmentForm" style="display: none;">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="closeNewDepartment"><i class="bi bi-backspace"></i></a>
             </div>
+            <div class="col-12">
+                <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
+                <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control text-center">
+            </div>
+            </div>
+        </div>
+
 
             <!-- Material y Cantidad -->
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input text-center" name="tipo" type="radio" id="inlineRadio1" value="herramientas">
+                        <label class="form-check-label" for="inlineRadio1">Herramientas</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input text-center" name="tipo" type="radio" id="inlineRadio2" value="material">
+                        <label class="form-check-label" for="inlineRadio2">Materiales</label>
+                    </div>
+                </div>
+            
+                <!-- Contenedor de materiales -->
+                <div id="materiales-container" class="col-md-6 mb-3" style="display: none;">
                     <label for="material" class="form-label">Material solicitado:</label>
-                    <select id="material" name="material" class="form-control select2">
+                    <select id="material" name="articulo" class="form-control select2">
+                        <option value="" selected disabled></option>
                         {% for mat in materiales %}
-                            <option value="{{ mat.id }}">{{ mat.descripcion }}</option>
+                            <option value="{{ mat.id }}" data-max="{{ mat.cantidad }}">{{ mat.descripcion }}({{ mat.cantidad }})</option>
                         {% endfor %}
                     </select>
                 </div>
+            
+                <!-- Contenedor de herramientas -->
+                <div id="herramientas-container" class="col-md-6 mb-3" style="display: none;">
+                    <label for="herramienta" class="form-label">Herramienta solicitada:</label>
+                    <select id="herramienta" name="articulo" class="form-control select2">
+                        <option value="" selected disabled></option>
+                        {% for her in herramientas %}
+                            <option value="{{ her.id }}" data-max="{{ her.cantidad }}">{{ her.descripcion }} ({{ her.cantidad }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
                 <div class="col-md-6 mb-3">
                     <label for="cantidad" class="form-label">Cantidad:</label>
-                    <input id="cantidad" name="cantidad" type="number" class="form-control">
+                    <input id="cantidad" name="cantidad" type="number" min="1" class="form-control text-center">
                 </div>
             </div>
 

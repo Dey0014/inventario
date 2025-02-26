@@ -1,0 +1,400 @@
+{% extends "inicio.html" %} 
+{% load static %}
+{% block content %}
+<div class="rounded m-5 mt-0"  id="myTabContent">
+
+
+
+<div class="tab-content lista_materiales rounded bg-light" id="myTabContent">
+    <!-- panel de HERRAMIENTAS -->
+
+        <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+            <p class="fs-2 m-0">HERRAMIENTAS</p>
+            <div style="display: flex;">
+            <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
+            <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+            </div>
+        </div>
+
+        <div class="table-responsive p-4 pt-0 pb-0" >
+        <div class="tab-content card-tabs border-top-0">
+            <table class="tablasApp  table table-hover text-center">
+        <thead class=text-center>
+        <tr>
+            <th class="col-1">#</th>
+            <th class="col-4">descripcion</th>
+            <th class="col-1">cantidad</th>
+            <th class="col-2">coordinador</th>
+            <th class="col-4">fecha ingreso</th>
+            <th class="col-1">condicion</th>
+            <th class="col-1">Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for her in herramientas %}
+        <tr>
+            <td class="">{{ her.id }}</td>
+            <td class="">{{ her.descripcion }}</td>
+            <td class="">{{ her.cantidad }}</td>
+            <td class="">{{ her.coordinador }}</td>
+            <td class="">{{ her.fecha_ingreso }}</td>
+            <td class="">{{ her.condicion }}</td>
+            <td>
+            <a title="datosHerramientas" class="infoH" 
+                data-id="{{ her.id }}"
+                data-descripcion="{{ her.descripcion }}"
+                data-cantidad="{{ her.cantidad }}"
+                data-coordinador="{{ her.coordinador.username | title }}"
+                data-fecha="{{ her.fecha_ingreso }}"
+                data-condicion="{{ her.condicion  }}"
+                style="font-size: 24px; margin-right: 6px;">
+                <i class="bi bi-three-dots"></i>
+            </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        </div>
+        </div>
+
+    </div>
+</div>
+<button id="printBtn" class="btn btn-primary boton-flotante">Descargar PDF</button>
+
+
+<!-- boton de mas informacion y acciones en las herramientas -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ajustesButtonsH = document.querySelectorAll('.infoH');
+    ajustesButtonsH.forEach(button => {
+      button.addEventListener('click', function () {
+        const pk = this.getAttribute('data-id');
+        const descripcion = this.getAttribute('data-descripcion');
+        const cantidad = this.getAttribute('data-cantidad');
+        const coordinador = this.getAttribute('data-coordinador');
+        const fecha = this.getAttribute('data-fecha');
+        const condicion = this.getAttribute('data-condicion');
+        
+        Swal.fire({
+          title: `<strong>Detalles de Herramienta</strong>`,
+          icon: "info",
+          html: `
+            <p><b>Descripción:</b> ${descripcion}</p>
+            <p><b>Cantidad:</b> ${cantidad}</p>
+            <p><b>Coordinador:</b> ${coordinador}</p>
+            <p><b>Fecha de Ingreso:</b> ${fecha}</p>
+            <p><b>condicion:</b> ${condicion}</p>
+          `,
+          showCloseButton: false,
+          showCancelButton: false,
+          showConfirmButton: false,
+          focusConfirm: false,
+          footer: `
+                  <div class="flex-d">
+                  <div>
+                  <button id="edit-material" class="swal2-confirm col-4 swal2-styled">Editar</button>
+                  <button id="delete-material" class="swal2-confirm col-4 swal2-styled">Eliminar</button>
+                  </div>
+                  <div>
+                  <button id="cantidad-material" class="swal2-confirm col-4 swal2-styled">Cantidad</button>
+                  <button id="entrega-material" class="swal2-confirm col-4 swal2-styled">Entregar</button>
+                  </div>
+                  </div>
+          `
+        });
+
+      document.getElementById('entrega-material').addEventListener('click', function() {
+        Swal.fire({
+          title: 'Modificar Cantidad de la herramienta',
+          html: ` 
+          <div class="p-5">
+          <form method="post">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                  <label for="material" class="form-label">Material:</label>
+                  <select name="material" id="material" class="form-control select2" autofocus>
+                      {% for mat in materiales %}
+                          <option value="{{ mat.id }}">{{ mat.descripcion }} (Disponible: {{ mat.cantidad }})</option>
+                      {% endfor %}
+                  </select>
+              </div>
+
+              <div class="mb-3">
+                  <label for="analista" class="form-label">Analista:</label>
+                  <div class="form-control" id="id_analista">{{ user.username }}</div>
+                  <input type="hidden" name="analista" value="{{ user.id }}">
+              </div>
+
+              <div class="mb-3">
+                  <label for="persona" class="form-label">Seleccione Persona:</label>
+                  <select id="persona" name="persona" class="form-control select2">
+                      <option selected>Seleccione una persona</option>
+                      <option value="nueva">Nueva persona</option>
+                      {% for person in personas %}
+                      <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+
+              <div id="nuevaPersonaForm" class="hidden">
+                  <div class="row">
+                      <div class="col-md-6 mb-3">
+                          <label for="nombre" class="form-label">Nombre y Apellido:</label>
+                          <input id="nombre" name="nombre" type="text" class="form-control">
+                      </div>
+                      <div class="col-md-6 mb-3">
+                          <label for="cedula" class="form-label">Cédula:</label>
+                          <input id="cedula" name="cedula" type="number" class="form-control">
+                      </div>
+                  </div>
+
+                  <!-- Select Departamento -->
+                  <div class="row mb-3">
+                      <div class="col-12">
+                          <label for="departamento" class="form-label">Seleccione Departamento:</label>
+                          <select id="departamento" name="departamento" class="form-control select2">
+                              <option value="">Seleccione un departamento</option>
+                              <option value="nuevo">Nuevo departamento</option>
+                              {% for dept in departamentos %}
+                                  <option value="{{ dept.id }}">{{ dept.nombre }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                  </div>
+
+                  <!-- Nuevo Departamento Input -->
+                  <div id="nuevoDepartamentoForm" class="hidden">
+                      <div class="col-12">
+                          <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
+                          <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
+                      </div>
+                  </div>
+              </div>
+
+
+              <div class="mb-3">
+                  <label for="descripcion" class="form-label">Descripción:</label>
+                  <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+              </div>
+
+              <div class="mb-3">
+                  <label for="cantidad" class="form-label">Cantidad:</label>
+                  <input type="number" name="cantidad" id="cantidad" class="form-control" required>
+              </div>
+            </form>
+            </div>
+          
+          `
+        })
+      })
+
+
+
+      document.getElementById('cantidad-material').addEventListener('click', function() {
+    Swal.fire({
+        title: 'Modificar Cantidad de la herramienta',
+        html: `
+            <form id="modificar-cantidad-form">
+                <div class="form-group">
+                    <p><b>Descripción:</b> ${descripcion}</p>
+                    <p><b>Cantidad:</b> ${cantidad}</p>
+                    <p><b>condicion:</b> ${condicion}</p>
+                </div>
+                <div class="form-group">
+                    <label for="id_cantidad_a_agregar">Cantidad a agregar:</label>
+                    <input
+                        type="number"
+                        name="cantidad"
+                        min="1"
+                        class="form-control"
+                        id="id_cantidad_a_agregar"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="id_cantidad_a_restar">Cantidad a restar:</label>
+                    <input
+                        type="number"
+                        name="restar"
+                        min="1"
+                        class="form-control"
+                        id="id_cantidad_a_restar"
+                    />
+                </div>
+            </form>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        preConfirm: () => {
+            return new Promise((resolve) => {
+                const form = $('#modificar-cantidad-form');
+                const formData = form.serialize();
+
+                $.ajax({
+                  type: 'POST',
+                    url: `../modificarCantidadesHerramientas/${pk}/`,
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Token CSRF
+                        ...form.serializeArray().reduce((obj, item) => {
+                            obj[item.name] = item.value;
+                            return obj;
+                        }, {})
+                    },
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            resolve(data);
+                        } else {
+                            Swal.showValidationMessage(data.message || 'Ocurrió un error.');
+                        }
+                    },
+                    error: function() {
+                        Swal.showValidationMessage('Ocurrió un error inesperado.');
+                    }
+                });
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Éxito',
+                text: 'la Herramienta ha sido modificado correctamente.',
+                icon: 'success'
+            });
+        }
+        setInterval("location.reload()",1000);
+    });
+    
+});
+
+      document.getElementById('delete-material').addEventListener('click', function () {
+        Swal.fire({
+        title: "¿Estas seguro?",
+        html: `
+            <p>¡No podrás revertir esto!</p>
+            <div class="form-group">
+                <label for="motivo">Motivo de la eliminación:</label>
+                <textarea id="motivo" class="form-control" rows="4" placeholder="Introduzca el motivo de la eliminación..."></textarea>
+            </div>
+        `,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: "¡Sí, bórralo!",
+        preConfirm: () => {
+        const motivo = document.getElementById('motivo').value;
+        if (!motivo) {
+            Swal.showValidationMessage("Por favor ingrese un motivo para la eliminación");
+        }
+        return motivo;
+      }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const motivo = result.value; 
+
+        $.ajax({
+            url: `../eliminar_herramienta/${pk}/`, 
+            type: 'POST',
+            data: {
+                motivo: motivo,
+                csrfmiddlewaretoken: '{{ csrf_token }}'  
+            },
+            success: function (response) {
+                Swal.fire(
+                    'Deleted!',
+                    'The material has been deleted.',
+                    'success'
+                );
+                // Remueve el elemento eliminado de la vista
+                document.getElementById(`material-${pk}`).remove();
+            },
+            error: function (xhr, errmsg, err) {
+                Swal.fire(
+                    'Error!',
+                    'There was a problem deleting the material.',
+                    'error'
+          );
+        }
+      });
+    }
+    setInterval("location.reload()",1000);
+  });
+});
+
+      document.getElementById('edit-material').addEventListener('click', function () {
+        Swal.fire({
+          title: 'Editar Herramienta',
+          html: `
+
+          <div class="form-group">
+            <label for="edit-descripcion" class="col-form-label">Descripción:</label>
+            <input id="edit-descripcion" type="text" class="form-control" value="${descripcion}">
+          </div>
+          <div class="form-group">
+            <label for="edit-condicion" class="col-form-label">condicion:</label>
+            <input id="edit-condicion" type="text" class="form-control" value="${condicion}">
+          </div>
+        `,
+          showCancelButton: true,
+          confirmButtonText: 'Guardar',
+          cancelButtonText: 'Cancelar',
+          preConfirm: () => {
+            const newDescripcion = document.getElementById('edit-descripcion').value;
+            const newCondicion = document.getElementById('edit-condicion').value;
+
+            if (!newDescripcion || !newCondicion) {
+              Swal.showValidationMessage('Todos los campos son obligatorios');
+              return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: `../editar_herramienta/${pk}/`,  
+                data: {
+                    descripcion: newDescripcion,
+                    condicion: newCondicion,
+                    csrfmiddlewaretoken: "{{ csrf_token }}", 
+                },
+                success: function (response) {
+                    Swal.fire('Guardado', 'El material ha sido actualizado', 'success');
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+                }
+            });
+            setInterval("location.reload()",1000);
+
+            return false; 
+          }
+        });
+      });
+    });
+  });
+});
+
+</script>
+
+<!-- este escrip sirve para que el ultimo tab en el que estaba quede activo cuando recarge la pagina -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      // Obtener el último tab guardado en localStorage
+      let lastTab = localStorage.getItem("activeTab");
+  
+      // Si hay un tab guardado, activarlo
+      if (lastTab) {
+          let tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
+          if (tabElement) {
+              let tab = new bootstrap.Tab(tabElement);
+              tab.show();
+          }
+      }
+  
+      // Escuchar el evento cuando se cambia de pestaña y guardar el ID
+      document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+          tab.addEventListener("shown.bs.tab", function (event) {
+              localStorage.setItem("activeTab", event.target.getAttribute("data-bs-target"));
+          });
+      });
+  });
+  </script>
+{% endblock %}

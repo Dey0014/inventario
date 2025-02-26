@@ -1,12 +1,16 @@
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from .models import Solicitudes
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce
+
 
 def solicitudes_pendientes(request):
     # Consultar solicitudes pendientes con detalles necesarios
-    solicitudes_pendientes = Solicitudes.objects.filter(estado='P').values(
+    solicitudes_pendientes = Solicitudes.objects.all().values(
         'id',  # ID de la solicitud
-        'material_solicitado__descripcion',  # Descripción del material
+        'articulo_solicitado',
+        'articulo_id',  # Descripción combinada
         'cantidad',  # Cantidad solicitada
         'tipo',  # Tipo de solicitud
         'persona__nombre',  # Nombre de la persona

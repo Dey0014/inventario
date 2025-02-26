@@ -104,40 +104,66 @@ def solicitud_material(request):
         cedula = request.POST.get("cedula")
         departamento_id = request.POST.get("departamento")
         nuevo_departamento = request.POST.get("nuevo_dep")
-        material_id = request.POST.get("material")
-        cantidad = int(request.POST.get('cantidad'))
+        articulo_id = request.POST.get("articulo")
+        # Obtener la cantidad y manejar el caso en que esté vacía
+        cantidad = request.POST.get('cantidad')
+        if cantidad:  # Si no está vacío
+            cantidad = int(cantidad)
+        else:
+            cantidad = 0  # O podrías establecer un valor predeterminado como 0, o mostrar un error
+    
+        tipo = request.POST.get("tipo")
 
+        if not cantidad:
+            messages.error(request, "Por favor, ingrese una cantidad valida.")
+            return redirect("Solicitud")
         # Verificar que todos los datos necesarios estén presentes
-        if not material_id or not cantidad :
+        if (tipo == "material" and not articulo_id) or (tipo == "herramientas" and not articulo_id):
             messages.error(request, "Por favor, complete todos los campos obligatorios.")
             return redirect("Solicitud")
+        
+        
 
 # Validar si no se ha seleccionado un departamento ni se ha ingresado uno nuevo
         if nuevo_departamento or departamento_id:
                 # Crear o seleccionar el departamento
-            if departamento_id == "nuevo":
+            if departamento_id == "":
                 departamento = Departamento.objects.create(nombre=nuevo_departamento)
             else:
                 departamento = get_object_or_404(Departamento, id=departamento_id)
 
-        # Crear o seleccionar la persona
-        if persona_id == "nueva":
+        if persona_id:  # Si el usuario seleccionó una persona
+            persona = Personas.objects.filter(id=persona_id).first()
+            if not persona:
+                messages.error(request, "La persona seleccionada no existe.")
+                return redirect("Solicitud")
+        else:  # Si no se seleccionó, crear una nueva
             persona = Personas.objects.create(
                 nombre=nombre,
                 cedula=cedula,
                 departamento=departamento
             )
-        else:
-            persona = get_object_or_404(Personas, id=persona_id)
 
-        # Obtener el material solicitado
-        material = get_object_or_404(Material, id=material_id)
+# Obtener el material o herramienta solicitada
+        articulo=None
 
-        # Crear la solicitud
+
+        if tipo == "material":
+            articulo = get_object_or_404(Material, id=articulo_id)
+            articulo_nombre = articulo.descripcion
+            articulo_id = articulo.id
+        elif tipo == "herramientas":
+            articulo = get_object_or_404(Herramientas, id=articulo_id)
+            articulo_nombre = articulo.descripcion
+            articulo_id = articulo.id
+
+        # Crear la solicitud con el nombre del artículo
         Solicitudes.objects.create(
+            tipo=tipo,
             persona=persona,
-            material_solicitado=material,
-            cantidad=cantidad
+            articulo_solicitado=articulo_nombre,  # Guardar solo el nombre
+            cantidad=cantidad,
+            articulo_id = articulo_id
         )
 
         messages.success(request, "La solicitud se ha registrado correctamente.")
@@ -146,6 +172,7 @@ def solicitud_material(request):
     context = {
         "personas": Personas.objects.all(),
         "materiales": Material.objects.filter(cantidad__gt=0, eliminado=False),
+        "herramientas": Herramientas.objects.filter(cantidad__gt=0),
         "departamentos": Departamento.objects.all()
     }
     return render(request, 'extends/solicitud_material.html', context)
@@ -164,27 +191,48 @@ def aprobar_solicitud(request, id):
 
             # Obtener la solicitud
             solicitud = get_object_or_404(Solicitudes, id=id)
+            if solicitud.tipo == 'material':
 
-            # Validar que la cantidad solicitada esté disponible
-            material = solicitud.material_solicitado
-            if solicitud.cantidad > material.cantidad:
-                return JsonResponse({'success': False, 'message': 'Cantidad insuficiente en inventario.'}, status=400)
+                # Validar que la cantidad solicitada esté disponible
+                material = get_object_or_404(Material, id=solicitud.articulo_id) 
+                if solicitud.cantidad > material.cantidad or material.cantidad <= 0:
+                    return JsonResponse({'success': False, 'message': 'Cantidad insuficiente en inventario.'}, status=400)
 
-            # Registrar la entrega en el modelo Entrega
-            entrega = Entrega.objects.create(
-                material=material,
-                persona=solicitud.persona,
-                analista=request.user.username,  # Asume que el usuario actual es el analista
-                cantidad=solicitud.cantidad,
-                descripcion=motivo,
-            )
-            material.cantidad -= solicitud.cantidad 
-            material.save()
+                # Registrar la entrega en el modelo Entrega
+                entrega = Entrega.objects.create(
+                    material=material,
+                    persona=solicitud.persona,
+                    analista=request.user.username,  # Asume que el usuario actual es el analista
+                    cantidad=solicitud.cantidad,
+                    descripcion=motivo,
+                )
+                material.cantidad -= solicitud.cantidad 
+                material.save()
+
+            else:
+                # Validar que la cantidad solicitada esté disponible
+                herramienta = get_object_or_404(Herramientas, id=solicitud.articulo_id) 
+                if solicitud.cantidad > herramienta.cantidad or herramienta.cantidad <= 0:
+                    return JsonResponse({'success': False, 'message': 'Cantidad insuficiente en inventario.'}, status=400)
+
+                # Registrar la entrega en el modelo Entrega
+                Prestamo = Prestamos.objects.create(
+                    herramienta=herramienta,
+                    persona=solicitud.persona,
+                    analista=request.user.username,  # Asume que el usuario actual es el analista
+                    cantidad=solicitud.cantidad,
+                    descripcion=motivo,
+                    herramienta_id=herramienta.id
+                )
+                herramienta.cantidad -= solicitud.cantidad 
+                herramienta.save()
+
+
 
             UserActionLog.objects.create(
             user=request.user,
             action='entrega',
-            details=f'Entregó {solicitud.cantidad} de {material.descripcion} por {motivo}')
+            details=f'Entregó {solicitud.cantidad} de {solicitud.articulo_solicitado} por {motivo}')
             # Actualizar el estado de la solicitud
             solicitud.delete()
 
@@ -200,72 +248,20 @@ def aprobar_solicitud(request, id):
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
 
-@login_required
-def entregar_material(request):
+@csrf_exempt
+def descartar_solicitud(request, id):
+    if request.method == 'DELETE':
+        try:
+            solicitud = Solicitudes.objects.get(id=id)
+            solicitud.delete()
+            return JsonResponse({'success': True, 'message': 'Solicitud eliminada correctamente.'})
+        except Solicitudes.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Solicitud no encontrada.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
 
-    materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
-    departamentos = Departamento.objects.all()
-    personas = Personas.objects.all()
-
-    if request.method == "POST":
-        nuevo_departamento = request.POST.get('nuevo_dep')
-        departamento_id = request.POST.get('departamento')
-        material_id = request.POST.get('material')
-        analista_id = request.POST.get('analista')
-        descripcion = request.POST.get('descripcion')
-        cantidad = int(request.POST.get('cantidad'))
-        persona_id = request.POST.get('persona')
-        nombre = request.POST.get("nombre")
-        cedula = request.POST.get("cedula")
-        
-        if nuevo_departamento or departamento_id:
-            if departamento_id == "nuevo":
-                departamento = Departamento.objects.create(nombre=nuevo_departamento)
-            else:
-                departamento = get_object_or_404(Departamento, id=departamento_id)
-
-        # Crear o seleccionar la persona
-        if persona_id == "nueva":
-            persona = Personas.objects.create(
-                nombre=nombre,
-                cedula=cedula,
-                departamento=departamento
-            )
-        else:
-            persona = get_object_or_404(Personas, id=persona_id)
-            
-        material = Material.objects.get(id=material_id)
-
-        # Validar si la cantidad solicitada es mayor que la cantidad disponible
-        if cantidad > material.cantidad:
-            messages.error(request, f"La cantidad solicitada excede la cantidad disponible. Solo hay {material.cantidad} disponible.")
-            return redirect("entregar_material")
-
-        analista = User.objects.get(id=analista_id)
-
-        # Crear el préstamo
-        entrega = Entrega(
-            material=material,
-            analista=analista,
-            cantidad=cantidad,
-            descripcion=descripcion,
-            persona=persona
-        )
-        entrega.save()
-
-        # Descontar la cantidad y guardar el cambio
-        material.cantidad -= cantidad  # Restar la cantidad solicitada
-        material.save()  # Guardar el cambio en la base de datos
-
-        UserActionLog.objects.create(
-            user=request.user,
-            action='entrega',
-            details=f'Entregó {cantidad} de {material.descripcion}')
-        
-        messages.success(request, "El préstamo se ha registrado correctamente.")
-        return redirect("entregar_material")  # Redirige a una página de lista o de éxito
-    
-    return render(request, "extends/entrega.html", {"materiales": materiales, "departamentos":departamentos, "personas":personas})
 
 @login_required
 def entrega_list(request):
@@ -411,6 +407,9 @@ def modificar_cantidades(request, pk):
 
 @login_required
 def material_list(request):
+    departamentos = Departamento.objects.all()
+    personas = Personas.objects.all()
+    materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
     herramientas = Herramientas.objects.all().order_by('descripcion')
     limpieza = Material.objects.filter(eliminado=False, tipo_material="LIM" ).order_by('descripcion')
     papeleria = Material.objects.filter(eliminado=False, tipo_material="ppl" ).order_by('descripcion')
@@ -424,7 +423,6 @@ def material_list(request):
 
     context = {
         "limpieza": limpieza,
-        "herramientas":herramientas,
         "papeleria": papeleria,
         "pinturas": pinturas,
         "resguardos":resguardos,
@@ -432,10 +430,32 @@ def material_list(request):
         "plomeria":plomeria,
         "electricidad":electricidad,
         "prueba":prueba,
-        "tipos":tipos
+        "tipos":tipos,
+        "herramientas":herramientas,
+        "materiales":materiales,
+        "departamentos":departamentos,
+        "personas":personas,
     }
 
     return render(request, "extends/material_list.html", context)
+
+@login_required
+def ListaHerramientas(request):
+    departamentos = Departamento.objects.all()
+    personas = Personas.objects.all()
+    herramientas = Herramientas.objects.all().order_by('descripcion')
+    prueba = Material.objects.filter(eliminado=False,  tipo_material= "FER" ).order_by('descripcion')
+    tipos = Material.TIPO_MATERIAL_CHOICES
+    context = {
+
+        "prueba":prueba,
+        "tipos":tipos,
+        "herramientas":herramientas,
+        "departamentos":departamentos,
+        "personas":personas,
+    }
+
+    return render(request, "extends/lista_herramientas.html", context)
 
 @login_required
 def eliminar_material(request, pk):
@@ -493,4 +513,382 @@ def editar_material(request, pk):
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=400)
 
+@login_required
+def entregar_material_prueba(request, pk):
+    if request.method == "POST":
+        try:
+            # Obtener datos del formulario
+            analista_id = request.POST.get('analista')
+            persona_id = request.POST.get('persona')
+            nombre = request.POST.get("nombre")
+            cedula = request.POST.get("cedula")
+            departamento_id = request.POST.get('departamento')
+            nuevo_departamento = request.POST.get('nuevo_dep')
+            descripcion = request.POST.get('descripcion')
+            cantidad = int(request.POST.get('cantidad'))
+            material_id = request.POST.get('material')
+
+
+            
+            # Validar y crear/obtener el departamento
+            if nuevo_departamento or departamento_id:
+                if departamento_id == "":
+                    departamento = Departamento.objects.create(nombre=nuevo_departamento)
+                else:
+                    departamento = get_object_or_404(Departamento, id=departamento_id)
+                    # Crear o seleccionar la persona
+
+            if persona_id == "":
+                persona = Personas.objects.create(
+                    nombre=nombre,
+                    cedula=cedula,
+                    departamento=departamento
+                )
+            else:
+                persona = get_object_or_404(Personas, id=persona_id)
+            
+            
+            material = Material.objects.get(id=material_id)
+            
+            # Validar cantidad disponible
+            if cantidad > material.cantidad:
+                messages.error(request, f"La cantidad solicitada excede la disponible ({material.cantidad}).")
+                return redirect("entregar_material")
+            
+            # Obtener el analista
+            analista = User.objects.get(id=analista_id)
+            # Crear el préstamo
+            entrega = Entrega(
+                material=material,
+                analista=analista,
+                cantidad=cantidad,
+                descripcion=descripcion,
+                persona=persona
+            )
+            entrega.save()
+
+            # Descontar la cantidad y guardar el material
+            material.cantidad -= cantidad
+            material.save()
+
+            # Registrar la acción en el log
+            UserActionLog.objects.create(
+                user=request.user,
+                action='entrega',
+                details=f'Entregó {cantidad} de {material.descripcion}'
+            )
+
+            messages.success(request, "El préstamo se ha registrado correctamente.")
+            return redirect("entregar_material")
+
+        except Exception as e:
+            # Manejo genérico de errores
+            print(f"Error: {e}")
+            messages.error(request, "Ocurrió un error al procesar la solicitud.")
+            return redirect("entregar_material")
+
+    return render(request, "extends/entrega.html")
 #---------------------------------------------------------------------
+
+# lista de Herramientas edicion eliminar modificar y mas
+@login_required
+def editar_herramienta(request, pk):
+    if request.method == 'POST':
+        descripcion = request.POST.get('descripcion')
+        condicion = request.POST.get('condicion')
+
+        # Encuentra el material por su código o ID
+        try:
+            herramienta = get_object_or_404(Herramientas, pk=pk)
+            herramienta.descripcion = descripcion
+            herramienta.condicion = condicion
+            herramienta.save()
+
+            # Registrar la acción en el log
+            UserActionLog.objects.create(
+            user=request.user,
+            action='Modifico Herramienta',
+            details=f"Se modifico la Herramienta con el id {herramienta.id} por el usuario {request.user}",
+            )
+
+            return JsonResponse({'status': 'success'}, status=200)
+        except Material.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Material no encontrado'}, status=404)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=400)
+
+@login_required
+def eliminar_herramienta(request, pk):
+    if request.method == 'POST':
+        herramienta = get_object_or_404(Herramientas, pk=pk)
+        motivo = request.POST.get('motivo')
+
+        # Registrar la eliminación
+        EliminarRegistro.objects.create(
+            material_nombre=herramienta.descripcion,
+            motivo=motivo,
+            usuario=request.user
+        )
+
+        # Registrar la acción en el log
+        UserActionLog.objects.create(
+            user=request.user,
+            action='Elimino Herramienta',
+            details=f"Se elimino {herramienta.descripcion} con el id {herramienta.id} por el usuario {request.user}",
+        )
+        # Marcar como eliminado
+        herramienta.delete()
+
+
+
+        return JsonResponse({'status': 'success', 'message': 'El material ha sido eliminado correctamente.'}, status=200)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
+
+@login_required
+@group_required("coordinadores")
+def modificarCantidadesHerramientas(request, pk):
+    if request.method == 'POST':
+        cantidad_a_agregar = request.POST.get('cantidad')
+        cantidad_a_restar = request.POST.get('restar')
+
+        try:
+            # Obtener el material por pk (ID)
+            herramienta = Herramientas.objects.get(pk=pk)
+
+            # Realiza las operaciones de agregar o restar cantidades
+            if cantidad_a_agregar:
+                cantidad_a_agregar = int(cantidad_a_agregar)
+                herramienta.agregar_herramienta(cantidad_a_agregar)
+                mensaje_agregar = f"Se agregaron {cantidad_a_agregar} unidades al material {herramienta.descripcion}."
+
+                # Registrar la acción en el log
+                UserActionLog.objects.create(
+                    user=request.user,
+                    action='agregar herramienta',
+                    details=f"Se agregó {cantidad_a_agregar} unidades a {herramienta.descripcion}.",
+                )
+
+            if cantidad_a_restar:
+                cantidad_a_restar = int(cantidad_a_restar)
+                herramienta.restar_herramienta(cantidad_a_restar)
+                mensaje_restar = f"Se restaron {cantidad_a_restar} unidades al material {herramienta.descripcion}."
+
+                # Registrar la acción en el log
+                UserActionLog.objects.create(
+                    user=request.user,
+                    action='restar herramienta',
+                    details=f"Se restaron {cantidad_a_restar} unidades al material {herramienta.descripcion}.",
+                )
+            
+            # Combinamos los mensajes de éxito para enviar en la respuesta JSON
+            mensajes = []
+            if cantidad_a_agregar:
+                mensajes.append(mensaje_agregar)
+            if cantidad_a_restar:
+                mensajes.append(mensaje_restar)
+
+            return JsonResponse({'status': 'success', 'messages': mensajes}, status=200)
+
+        except Material.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Material no encontrado.'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
+
+#---------------------------------------------------------------------
+
+@login_required
+def herramientas_prestadas(request):
+
+    prestamos = Prestamos.objects.all()
+    return render(request, "extends/registro_prestamo.html", {"prestamos": prestamos})
+
+def devolucion_herramientas(request, pk):
+    if request.method == "POST":
+        try:
+            
+            # Obtener los datos enviados por AJAX
+            cantidad = int(request.POST.get('cantidad'))
+            herramienta_id = request.POST.get('herramientaId')
+
+            # Obtener el préstamo y la herramienta
+            prestamo = Prestamos.objects.get(id=pk)
+            herramienta = Herramientas.objects.get(id=herramienta_id)
+
+            # Sumar la cantidad de la herramienta al inventario
+            herramienta.cantidad += cantidad
+            herramienta.save()
+
+            UserActionLog.objects.create(
+                user=request.user,
+                action="Entrega ",
+                details=f"Finalizo el Prestamo de {herramienta.descripcion}- {cantidad} unds a ({prestamo.persona.nombre}) "
+            )
+
+            # Eliminar el préstamo activo
+            prestamo.delete()
+
+            return JsonResponse({"success": True})
+
+        except ObjectDoesNotExist:
+            # Manejar error si el préstamo o la herramienta no existen
+            return JsonResponse({"success": False, "error": "Préstamo o herramienta no encontrados."})
+
+        except ValueError:
+            # Manejar error si la cantidad no es un valor válido
+            return JsonResponse({"success": False, "error": "Cantidad no válida."})
+
+        except Exception as e:
+            # Manejar otros errores inesperados
+            return JsonResponse({"success": False, "error": str(e)})
+
+    # Si el método no es POST, se devuelve error
+    return JsonResponse({"success": False, "error": "Método no permitido."})
+
+def Prestamo_herramientas(request, pk):
+    if request.method == "POST":
+        try:
+            # Obtener datos del formulario
+            analista_id = request.POST.get('analista')
+            persona_id = request.POST.get('persona')
+            nombre = request.POST.get("nombre")
+            cedula = request.POST.get("cedula")
+            departamento_id = request.POST.get('departamento')
+            nuevo_departamento = request.POST.get('nuevo_dep')
+            descripcion = request.POST.get('descripcion')
+            cantidad = int(request.POST.get('cantidad'))
+            material_id = request.POST.get('material')
+
+
+            
+            # Validar y crear/obtener el departamento
+            if nuevo_departamento or departamento_id:
+                if departamento_id == "":
+                    departamento = Departamento.objects.create(nombre=nuevo_departamento)
+                else:
+                    departamento = get_object_or_404(Departamento, id=departamento_id)
+                    # Crear o seleccionar la persona
+
+            if persona_id == "":
+                persona = Personas.objects.create(
+                    nombre=nombre,
+                    cedula=cedula,
+                    departamento=departamento
+                )
+            else:
+                persona = get_object_or_404(Personas, id=persona_id)
+            
+            
+            material = Material.objects.get(id=material_id)
+            
+            # Validar cantidad disponible
+            if cantidad > material.cantidad:
+                messages.error(request, f"La cantidad solicitada excede la disponible ({material.cantidad}).")
+                return redirect("entregar_material")
+            
+            # Obtener el analista
+            analista = User.objects.get(id=analista_id)
+            # Crear el préstamo
+            entrega = Prestamos(
+                material=material,
+                analista=analista,
+                cantidad=cantidad,
+                descripcion=descripcion,
+                persona=persona
+            )
+            entrega.save()
+
+            # Descontar la cantidad y guardar el material
+            material.cantidad -= cantidad
+            material.save()
+
+            # Registrar la acción en el log
+            UserActionLog.objects.create(
+                user=request.user,
+                action='entrega',
+                details=f'Entregó {cantidad} de {material.descripcion}'
+            )
+
+            messages.success(request, "El préstamo se ha registrado correctamente.")
+            return redirect("entregar_material")
+
+        except Exception as e:
+            # Manejo genérico de errores
+            print(f"Error: {e}")
+            messages.error(request, "Ocurrió un error al procesar la solicitud.")
+            return redirect("entregar_material")
+
+    return render(request, "extends/entrega.html")
+
+
+# FORMULARIO PARA ENTREGA DE MATERIALES
+# @login_required
+# def entregar_material(request):
+
+#     materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
+#     departamentos = Departamento.objects.all()
+#     personas = Personas.objects.all()
+
+#     if request.method == "POST":
+#         nuevo_departamento = request.POST.get('nuevo_dep')
+#         departamento_id = request.POST.get('departamento')
+#         material_id = request.POST.get('material')
+#         analista_id = request.POST.get('analista')
+#         descripcion = request.POST.get('descripcion')
+#         cantidad = int(request.POST.get('cantidad'))
+#         persona_id = request.POST.get('persona')
+#         nombre = request.POST.get("nombre")
+#         cedula = request.POST.get("cedula")
+        
+#         if nuevo_departamento or departamento_id:
+#             if departamento_id == "nuevo":
+#                 departamento = Departamento.objects.create(nombre=nuevo_departamento)
+#             else:
+#                 departamento = get_object_or_404(Departamento, id=departamento_id)
+
+#         # Crear o seleccionar la persona
+#         if persona_id == "nueva":
+#             persona = Personas.objects.create(
+#                 nombre=nombre,
+#                 cedula=cedula,
+#                 departamento=departamento
+#             )
+#         else:
+#             persona = get_object_or_404(Personas, id=persona_id)
+            
+#         material = Material.objects.get(id=material_id)
+
+#         # Validar si la cantidad solicitada es mayor que la cantidad disponible
+#         if cantidad > material.cantidad:
+#             messages.error(request, f"La cantidad solicitada excede la cantidad disponible. Solo hay {material.cantidad} disponible.")
+#             return redirect("entregar_material")
+
+#         analista = User.objects.get(id=analista_id)
+
+#         # Crear el préstamo
+#         entrega = Entrega(
+#             material=material,
+#             analista=analista,
+#             cantidad=cantidad,
+#             descripcion=descripcion,
+#             persona=persona
+#         )
+#         entrega.save()
+
+#         # Descontar la cantidad y guardar el cambio
+#         material.cantidad -= cantidad  # Restar la cantidad solicitada
+#         material.save()  # Guardar el cambio en la base de datos
+
+#         UserActionLog.objects.create(
+#             user=request.user,
+#             action='entrega',
+#             details=f'Entregó {cantidad} de {material.descripcion}')
+        
+#         messages.success(request, "El préstamo se ha registrado correctamente.")
+#         return redirect("entregar_material")  # Redirige a una página de lista o de éxito
+    
+#     return render(request, "extends/entrega.html", {"materiales": materiales, "departamentos":departamentos, "personas":personas})
+#-------------------------------------------------------------------------------------------

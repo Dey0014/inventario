@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
   <link rel="stylesheet" href="{% static '@sweetalert2/theme-bulma/bulma.css' %}" />
+  <link rel="stylesheet" href="{% static 'datatable/ccs/datatables.min.css' %}" />
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
 </head>
@@ -51,23 +52,24 @@
               <a class="nav-link dropdown-toggle ts" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                 aria-label="Prueba Desplegable 1">usuarios</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'registrar_usuario' %}">Registrar Usuario</a></li>
                 <li><a class="dropdown-item" href="{% url 'users_list' %}">Lista de Usuarios</a></li>
+                <li><a class="dropdown-item" href="{% url 'registrar_usuario' %}">Registrar Usuario</a></li>
               </ul>
             </li>
             <li class="nav-item dropdown">
               <a class="ts nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                 aria-label="Prueba Desplegable 1">Entregas</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'entregar_material' %}">control de Entregas</a></li>
+                <li><a class="dropdown-item" href="{% url 'material_list' %}">Lista de Materiales</a></li>
                 <li><a class="dropdown-item" href="{% url 'entrega_list' %}">Lista de entregas</a></li>
               </ul>
             </li>
             <li class="nav-item dropdown">
               <a class="ts nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                aria-label="Prueba Desplegable 2">Material</a>
+                aria-label="Prueba Desplegable 2">Prestamos</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'material_list' %}">Lista de Materiales</a></li>
+                <li><a class="dropdown-item" href="{% url 'ListaHerramientas' %}">Lista de herramientas</a></li>
+                <li><a class="dropdown-item" href="{% url 'herramientas_prestadas' %}">Prestamos activos</a></li>
               </ul>
             </li>
             <li class="nav-item">
@@ -90,15 +92,16 @@
   
   <!-- ----- content end ----- -->
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var contenidoDiv = document.getElementById("ver");
-      if (contenidoDiv.innerHTML.trim() === "") {
-        contenidoDiv.classList.add("hidden");
-      }
-    });
-  </script>
-  
+
+
+  <script src="{% static 'sweetalert2/dist/sweetalert2.min.js' %}"></script>
+  <script src="{% static 'jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'select2/js/select2.min.js' %}"></script>
+  <script src="{% static 'js/js.js' %}"></script>
+  <script src="{% static 'datatable/js/datatables.min.js' %}"></script>
+  <script src="{% static 'pdfmaker/pdfmake.min.js' %}"></script>
+  <script src="{% static 'pdfmaker/vfs_fonts.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const solicitudesPendientes = JSON.parse('{{ solicitudes_pendientes|escapejs }}');
@@ -113,7 +116,7 @@
                 <tr>
                   <td>${solicitud.id}</td>
                   <td>${solicitud.persona__nombre}</td>
-                  <td>${solicitud.material_solicitado__descripcion}</td>
+                  <td>${ solicitud.articulo_solicitado }</td>
                   <td>
                     <a 
                       id="solicitud-${solicitud.id}" 
@@ -129,19 +132,22 @@
             .join('');
   
           Swal.fire({
-            html: `
-            <div id="contenido" class="bg-light rounded " style="box-shadow: rgb(55 84 116) -1px 1px 15px 0px;">
-                <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
-                  Solicitudes
+            html: 
+            `
+                <div style="box-shadow: rgb(55 84 116) -1px 1px 15px 0px;">
+                <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+                  <p class="fs-2 m-0">Solicitudes</p>
+                  <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" autocomplete="off" style="width: 200px;">
                 </div>
-                <div class=" table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
-                  <table class="table table-hover text-center ">
+                </div>
+                <div class="bg-light rounded rounded-top-0 table-responsive p-2 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+                  <table class="tablasApp table table-hover text-center ">
                     <thead>
                       <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Material</th>
-                        <th scope="col">Acción</th>
+                        <th scope="col-1">ID</th>
+                        <th scope="col-2">Nombre</th>
+                        <th scope="col-4">Material</th>
+                        <th scope="col-1">Acción</th>
                       </tr>
                     </thead>
                     <tbody class="table-group-divider">
@@ -149,16 +155,61 @@
                     </tbody>
                   </table>
                 </div>
-              </div>
+                </div>
             `,
   width: '1200px', // Deja que el contenido determine el ancho
-  padding: 0, // Elimina el relleno predeterminado
   background: 'transparent', // Fondo transparente
   showCloseButton: false, // Opcional: Ocultar el botón de cierre si no lo necesitas
   showConfirmButton: false, // Ocultar botón de confirmación
   customClass: {
-    popup: 'p-0 border-0 shadow-none', // Elimina bordes y sombras
+    popup: ' shadow-none', // Elimina bordes y sombras
   },
+  didOpen: () => {
+    $(document).ready(function() {
+    // Inicializar DataTables en todas las tablas con la clase "tablasApp"
+    $('.tablasApp').each(function(index) {
+        var tablaElement = $(this);
+
+        // Si ya está inicializada, la destruimos antes de crearla de nuevo
+        if ($.fn.DataTable.isDataTable(tablaElement)) {
+            tablaElement.DataTable().destroy();
+        }
+        var tabla = $(this).DataTable({
+            "paging": true,         // Permite la paginación
+            "ordering": true,       // Habilita la ordenación
+            "info": false,          // Deshabilita la información
+            "searching": true,      // Habilitamos la búsqueda interna
+            "lengthChange": false,  // Deshabilita la opción de cambiar el número de registros por página
+            "pageLength": 10,       // Muestra 10 registros por página
+            "language": {
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "▶",
+                    "previous": "◀"
+                },
+                "zeroRecords": "No se encontraron resultados"
+            },
+            "initComplete": function(settings, json) {
+                $(".dt-search").hide();  // Ocultamos el filtro de búsqueda interno
+            },
+        });
+
+        // Seleccionamos el campo de búsqueda externo con el ID generado dinámicamente
+        $('.searchInput').on('keyup', function() {
+            tabla.search($(this).val()).draw();  // Filtra los resultados de la tabla basado en el valor del input
+        });
+    });
+
+    // Evento para limpiar los buscadores cuando se cambia de tab
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
+        $('.searchInput').val(''); // Borra el contenido de todos los buscadores
+        $('.tablasApp').each(function() {
+            $(this).DataTable().search('').draw(); // Restablece la búsqueda de todas las tablas
+        });
+    });
+});
+        },
 });
   
           attachSolicitudEventHandlers(solicitudesPendientes);
@@ -186,21 +237,16 @@
       // Mostrar detalles de la solicitud
       function showSolicitudDetails(solicitud, solicitudId) {
         Swal.fire({
-          title: 'Detalles de la Solicitud',
           html: `
             <div style="text-align: left; margin: 10px;">
+              <p class="hidden"><strong>Persona:</strong> ${solicitud.articulo_id}</p>
               <p><strong>Persona:</strong> ${solicitud.persona__nombre}</p>
-              <p><strong>Material Solicitado:</strong> ${solicitud.material_solicitado__descripcion}</p>
+              <p><strong>Material Solicitado:</strong> ${solicitud.articulo_solicitado}</p>
               <p><strong>Cantidad:</strong> ${solicitud.cantidad}</p>
               <p><strong>Departamento:</strong> ${solicitud.persona__departamento__nombre}</p>
               <div class="mt-3">
                 <label for="motivo" class="form-label"><strong>Justificación:</strong></label>
-                <textarea 
-                  id="motivo" 
-                  class="form-control border border-primary" 
-                  rows="3" 
-                  placeholder="Escribe la justificación aquí...">
-                </textarea>
+                <textarea id="motivo" class="form-control border border-primary" rows="3" placeholder="Escribe la justificación aquí..."></textarea>
               </div>
             </div>
           `,
@@ -225,7 +271,63 @@
           }
         });
       }
-  
+      
+      // Función para descartar la solicitud
+      function descartarSolicitud(id) {
+        Swal.fire({
+          title: '¿Estás seguro?',
+          text: "Esta acción eliminará la solicitud de forma permanente.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+        }).then(result => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Eliminando Solicitud...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          // Realiza la solicitud AJAX para eliminar
+          $.ajax({
+            url: `/inventario/descartar_solicitud/${id}/`, // Endpoint para descartar la solicitud
+            type: 'DELETE', // Método HTTP DELETE
+            headers: {
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Token CSRF
+            },
+            success: function (response) {
+              if (response.success) {
+                Swal.fire({
+                          title: 'Solicitud Eliminada',
+                          text: `La solicitud con ID ${id} ha sido eliminada correctamente.`,
+                          icon: 'success',
+                          showConfirmButton: false, // Oculta el botón "OK"
+                          timer: 1000 // Cierra automáticamente en 1 segundo
+                      }).then(() => {
+                          location.reload(); // Recarga la página después de que la alerta desaparezca
+                      });
+              } else {
+                Swal.fire({
+                  title: 'Error',
+                  text: response.message || 'No se pudo eliminar la solicitud.',
+                  icon: 'error',
+                });
+              }
+            },
+            error: function (xhr) {
+              Swal.fire({
+                title: 'Error',
+                text: xhr.responseJSON?.message || 'Hubo un error en el servidor.',
+                icon: 'error',
+              });
+            },
+          });
+        },
+      });
+    }
+  });
+}
+
       // Función para aprobar la solicitud
       function aprobarSolicitud(id, motivo) {
     Swal.fire({
@@ -244,11 +346,15 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        Swal.fire({
-                            title: 'Solicitud Aprobada',
-                            text: `La solicitud con ID ${id} fue aprobada con motivo: ${motivo}`,
-                            icon: 'success',
-                        });
+                      Swal.fire({
+                          title: 'Solicitud Aprobada',
+                          text: `La solicitud con ID ${id} fue aprobada con motivo: ${motivo}`,
+                          icon: 'success',
+                          showConfirmButton: false, // Oculta el botón "OK"
+                          timer: 1000 // Cierra automáticamente en 1 segundo
+                      }).then(() => {
+                          location.reload(); // Recarga la página después de que la alerta desaparezca
+                      });
                     } else {
                         Swal.fire({
                             title: 'Error',
@@ -269,45 +375,15 @@
     });
 }
     })
+    
   </script>
 
+{% else %}
 
-  <script src="{% static 'sweetalert2/dist/sweetalert2.min.js' %}"></script>
-  <script src="{% static 'jquery/jquery.min.js' %}"></script>
-  <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'select2/js/select2.min.js' %}"></script>
-  <script src="{% static 'js/js.js' %}"></script>
+<script> window.location.href = "{% url 'login' %}" </script>
 
-  <script>
+{% endif %}
 
-    // Detectar cambio en el select de persona
-    $('#persona').on('change.select2', function() {
-        var nuevaPersonaForm = document.getElementById('nuevaPersonaForm');
-        if (this.value === "nueva") {
-            nuevaPersonaForm.classList.remove('hidden');
-    
-        } else {
-            nuevaPersonaForm.classList.add('hidden');
-    
-        }
-    });
-    
-    // Detectar cambio en el select de departamento
-    $('#departamento').on('change.select2', function() {
-        var nuevoDepartamentoForm = document.getElementById('nuevoDepartamentoForm');
-        if (this.value === "nuevo") {
-            nuevoDepartamentoForm.classList.remove('hidden');
-        } else {
-            nuevoDepartamentoForm.classList.add('hidden');
-        }
-    });
-    </script>
-    {% else %}
-    <script>
-      window.location.href = "{% url 'login' %}"
-    </script>
-
-    {% endif %}
 </body>
 
 </html>
