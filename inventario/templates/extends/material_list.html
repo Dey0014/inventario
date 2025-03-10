@@ -61,27 +61,27 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center">
+      <table class="tablasApp table table-hover text-center" data-name="Material de Electricidad">
         <thead>
             <tr>
               <th class="col-1">Código</th>
-                <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-5">Descripción</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for ele in electricidad %}
           <tr>
-            <td class="">{{ ele.codigo }}</td>
-            <td class="">{{ ele.descripcion }}</td>
-            <td class="">{{ ele.cantidad }}</td>
-            <td class="">{{ ele.coordinador.username | title}}</td>
-            <td class="">{{ ele.fecha_ingreso }}</td>
-            <td class="">{{ ele.tipo_material }}</td>
+            <td class="">{{ ele.codigo | upper}}</td>
+            <td class="text-start"">{{ ele.descripcion }}</td>
+            <td class="">{{ ele.tipo_material | upper}}</td>
+            <td class="hidden">{{ ele.coordinador.username | title}}</td>
+            <td class="">{{ ele.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+            <td class="text-center">{{ ele.cantidad }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ ele.id }}"
@@ -115,27 +115,27 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center">
+      <table class="tablasApp table table-hover text-center" data-name="Material de Plomeria">
         <thead>
             <tr>
               <th class="col-1">Código</th>
-                <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-5">Descripción</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for plo in plomeria %}
           <tr>
-            <td class="">{{ plo.codigo }}</td>
-            <td class="">{{ plo.descripcion }}</td>
-            <td class="">{{ plo.cantidad }}</td>
-            <td class="">{{ plo.coordinador.username | title}}</td>
-            <td class="">{{ plo.fecha_ingreso }}</td>
-            <td class="">{{ plo.tipo_material }}</td>
+            <td class="">{{ plo.codigo | upper}}</td>
+            <td class="text-start">{{ plo.descripcion }}</td>
+            <td class="">{{ plo.tipo_material | upper}}</td>
+            <td class="hidden">{{ plo.coordinador.username | title}}</td>
+            <td class="">{{ plo.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+            <td class="text-center">{{ plo.cantidad }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ plo.id }}"
@@ -169,27 +169,27 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center">
+      <table class="tablasApp table table-hover text-center" data-name="Material de Electromecanica">
         <thead>
             <tr>
               <th class="col-1">Código</th>
-                <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-5">Descripción</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for elm in electromecanica %}
           <tr>
-            <td class="">{{ elm.codigo }}</td>
-            <td class="">{{ elm.descripcion }}</td>
-            <td class="">{{ elm.cantidad }}</td>
-            <td class="">{{ elm.coordinador.username | title}}</td>
-            <td class="">{{ elm.fecha_ingreso }}</td>
-            <td class="">{{ elm.tipo_material }}</td>
+            <td class="">{{ elm.codigo | upper}}</td>
+            <td class="text-start">{{ elm.descripcion }}</td>
+            <td class="">{{ elm.tipo_material | upper}}</td>
+            <td class="hidden">{{ elm.coordinador.username | title}}</td>
+            <td class="">{{ elm.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+            <td class="text-center">{{ elm.cantidad }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ elm.id }}"
@@ -223,27 +223,27 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-        <table class="tablasApp table table-hover text-center">
+        <table class="tablasApp table table-hover text-center" data-name="Material de Papeleria">
           <thead>
             <tr>
               <th class="col-1">Código</th>
-                <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-4">Fecha de Ingreso</th>
+              <th class="col-5">Descripción</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-4">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
           </thead>
           <tbody class="table-group-divider">
             {% for ppl in papeleria %}
             <tr>
-              <td class="">{{ ppl.codigo }}</td>
-              <td class="">{{ ppl.descripcion }}</td>
-              <td class="">{{ ppl.cantidad }}</td>
-              <td class="">{{ ppl.coordinador.username | title}}</td>
-              <td class="">{{ ppl.fecha_ingreso }}</td>
-              <td class="">{{ ppl.tipo_material }}</td>
+              <td class="">{{ ppl.codigo | upper}}</td>
+              <td class="text-start">{{ ppl.descripcion }}</td>
+              <td class="">{{ ppl.tipo_material | upper}}</td>
+              <td class="hidden">{{ ppl.coordinador.username | title}}</td>
+              <td class="">{{ ppl.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+              <td class="text-center">{{ ppl.cantidad }}</td>
               <td>
                 <a title="datos" class="info" 
                   data-id="{{ ppl.id }}"
@@ -282,22 +282,22 @@
               <tr>
                 <th class="col-1">Código</th>
                 <th class="col-5">Descripción</th>
-                <th class="col-1">Cantidad</th>
-                <th class="col-1">Coordinador</th>
-                <th class="col-3">Fecha de Ingreso</th>
                 <th class="col-1">Tipo</th>
+                <th class="col-1 hidden">Coordinador</th>
+                <th class="col-3">Fecha de Ingreso</th>
+                <th class="col-1">Cantidad</th>
                 <th class="col-1">Acción</th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
               {% for LIM in limpieza %}
               <tr>
-                <td class="">{{ LIM.codigo }}</td>
-                <td class="">{{ LIM.descripcion }}</td>
-                <td class="">{{ LIM.cantidad }}</td>
-                <td class="">{{ LIM.coordinador.username | title}}</td>
-                <td class="">{{ LIM.fecha_ingreso }}</td>
-                <td class="">{{ LIM.tipo_material }}</td>
+                <td class="">{{ LIM.codigo | upper}}</td>
+                <td class="text-start">{{ LIM.descripcion }}</td>
+                <td class="">{{ LIM.tipo_material | upper}}</td>
+                <td class="hidden">{{ LIM.coordinador.username | title}}</td>
+                <td class="">{{ LIM.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+                <td class="text-center">{{ LIM.cantidad }}</td>
                 <td>
                   <a title="datos" class="info" 
                     data-id="{{ LIM.id }}"
@@ -331,27 +331,27 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center">
+      <table class="tablasApp table table-hover text-center" data-name="Material de Pintura">
         <thead>
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for pin in pinturas %}
           <tr>
-            <td class="">{{ pin.codigo }}</td>
-            <td class="">{{ pin.descripcion }}</td>
-            <td class="">{{ pin.cantidad }}</td>
-            <td class="">{{ pin.coordinador.username | title}}</td>
-            <td class="">{{ pin.fecha_ingreso }}</td>
-            <td class="">{{ pin.tipo_material }}</td>
+            <td class="">{{ pin.codigo | upper}}</td>
+            <td class="text-start">{{ pin.descripcion }}</td>
+            <td class="">{{ pin.tipo_material | upper}}</td>
+            <td class="hidden">{{ pin.coordinador.username | title}}</td>
+            <td class="">{{ pin.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+            <td class="text-center">{{ pin.cantidad }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ pin.id }}"
@@ -385,27 +385,27 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center">
+      <table class="tablasApp table table-hover text-center" data-name="Material de Resguardos">
         <thead>
             <tr>
               <th class="col-1">Código</th>
-                <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-5">Descripción</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
           {% for res in resguardos %}
           <tr>
-            <td class="">{{ res.codigo }}</td>
-            <td class="">{{ res.descripcion }}</td>
-            <td class="">{{ res.cantidad }}</td>
-            <td class="">{{ res.coordinador.username | title}}</td>
-            <td class="">{{ res.fecha_ingreso }}</td>
-            <td class="">{{ res.tipo_material }}</td>
+            <td class="">{{ res.codigo | upper}}</td>
+            <td class="text-start">{{ res.descripcion }}</td>
+            <td class="">{{ res.tipo_material | upper}}</td>
+            <td class="hidden">{{ res.coordinador.username | title}}</td>
+            <td class="">{{ res.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+            <td class="text-center">{{ res.cantidad }}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ res.id }}"
@@ -440,27 +440,27 @@
   
       <div class="table-responsive p-4 pt-0 pb-0" >
         <div class="tab-content card-tabs border-top-0">
-        <table class="tablasApp table table-hover text-center">
+        <table class="tablasApp table table-hover text-center" data-name="Material de Prueba">
           <thead>
             <tr>
               <th class="col-1">Código</th>
-                <th class="col-5">Descripción</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-5">Descripción</th>
               <th class="col-1">Tipo</th>
+              <th class="col-1 hidden">Coordinador</th>
+              <th class="col-3">Fecha de Ingreso</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1">Acción</th>
             </tr>
           </thead>
           <tbody class="table-group-divider">
             {% for pru in prueba %}
             <tr>
-              <td class="">{{ pru.codigo }}</td>
-              <td class="">{{ pru.descripcion }}</td>
-              <td class="">{{ pru.cantidad }}</td>
-              <td class="">{{ pru.coordinador.username | title}}</td>
-              <td class="">{{ pru.fecha_ingreso }}</td>
-              <td class="">{{ pru.tipo_material }}</td>
+              <td class="">{{ pru.codigo | upper}}</td>
+              <td class="text-start">{{ pru.descripcion }}</td>
+              <td class="">{{ pru.tipo_material | upper}}</td>
+              <td class="hidden">{{ pru.coordinador.username | title}}</td>
+              <td class="">{{ pru.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+              <td class="text-center">{{ pru.cantidad }}</td>
               <td>
                 <a title="datos" class="info" 
                   data-id="{{ pru.id }}"

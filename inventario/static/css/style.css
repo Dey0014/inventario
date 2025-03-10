@@ -5,12 +5,12 @@
 }
 
 body{
-    font-family: math;
+    font-family: system-ui;
     font-size: 17px;
 }
 
 body.formulario_solicitud{
-    font-family: math;
+    font-family: system-ui;
     font-size: 17px;
 }
 
@@ -39,7 +39,7 @@ body nav.colornav{
 }
 
 body.login{
-    font-family: math;
+    font-family: system-ui;
     padding-top: 0px;
     background-color: rgb(77 135 199);
     font-size: 17px;

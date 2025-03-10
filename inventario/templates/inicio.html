@@ -114,9 +114,9 @@
             .map(
               solicitud => `
                 <tr>
-                  <td>${solicitud.id}</td>
-                  <td>${solicitud.persona__nombre}</td>
-                  <td>${ solicitud.articulo_solicitado }</td>
+                  <td class="text-center" >${solicitud.id}</td>
+                  <td class="text-start">${ solicitud.articulo_solicitado }</td>
+                  <td class="">${solicitud.persona__nombre}</td>
                   <td>
                     <a 
                       id="solicitud-${solicitud.id}" 
@@ -144,10 +144,10 @@
                   <table class="tablasApp table table-hover text-center ">
                     <thead>
                       <tr>
-                        <th scope="col-1">ID</th>
-                        <th scope="col-2">Nombre</th>
-                        <th scope="col-4">Material</th>
-                        <th scope="col-1">Acción</th>
+                        <th class="col-1">ID</th>
+                        <th class="col-2">Material</th>
+                        <th class="col-1">Solicitante</th>
+                        <th class="col-1">Acción</th>
                       </tr>
                     </thead>
                     <tbody class="table-group-divider">
@@ -176,7 +176,7 @@
         }
         var tabla = $(this).DataTable({
             "paging": true,         // Permite la paginación
-            "ordering": true,       // Habilita la ordenación
+            "ordering": false,       // Habilita la ordenación
             "info": false,          // Deshabilita la información
             "searching": true,      // Habilitamos la búsqueda interna
             "lengthChange": false,  // Deshabilita la opción de cambiar el número de registros por página

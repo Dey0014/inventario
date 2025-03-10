@@ -412,9 +412,9 @@ def material_list(request):
     materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
     herramientas = Herramientas.objects.all().order_by('descripcion')
     limpieza = Material.objects.filter(eliminado=False, tipo_material="LIM" ).order_by('descripcion')
-    papeleria = Material.objects.filter(eliminado=False, tipo_material="ppl" ).order_by('descripcion')
-    pinturas = Material.objects.filter(eliminado=False, tipo_material="pin" ).order_by('descripcion')
-    resguardos = Material.objects.filter(eliminado=False, tipo_material="res" ).order_by('descripcion')
+    papeleria = Material.objects.filter(eliminado=False, tipo_material="PPL" ).order_by('descripcion')
+    pinturas = Material.objects.filter(eliminado=False, tipo_material="PIN" ).order_by('descripcion')
+    resguardos = Material.objects.filter(eliminado=False, tipo_material="RES" ).order_by('descripcion')
     electromecanica = Material.objects.filter(eliminado=False, tipo_material="ELM" ).order_by('descripcion')
     plomeria = Material.objects.filter(eliminado=False, tipo_material="PLO" ).order_by('descripcion')
     electricidad = Material.objects.filter(eliminado=False,  tipo_material__in=["ELE", "CABLE"]).order_by('descripcion')
@@ -553,7 +553,7 @@ def entregar_material_prueba(request, pk):
             # Validar cantidad disponible
             if cantidad > material.cantidad:
                 messages.error(request, f"La cantidad solicitada excede la disponible ({material.cantidad}).")
-                return redirect("entregar_material")
+                return redirect("entregar_material_prueba")
             
             # Obtener el analista
             analista = User.objects.get(id=analista_id)
@@ -571,21 +571,16 @@ def entregar_material_prueba(request, pk):
             material.cantidad -= cantidad
             material.save()
 
-            # Registrar la acción en el log
-            UserActionLog.objects.create(
-                user=request.user,
-                action='entrega',
-                details=f'Entregó {cantidad} de {material.descripcion}'
-            )
+
 
             messages.success(request, "El préstamo se ha registrado correctamente.")
-            return redirect("entregar_material")
+            return redirect("material_list")
 
         except Exception as e:
             # Manejo genérico de errores
             print(f"Error: {e}")
             messages.error(request, "Ocurrió un error al procesar la solicitud.")
-            return redirect("entregar_material")
+            return redirect("material_list")
 
     return render(request, "extends/entrega.html")
 #---------------------------------------------------------------------
