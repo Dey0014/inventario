@@ -1,13 +1,13 @@
 {% extends "inicio.html" %} 
 {% block content %}
 
-<div class="rounded m-5 mt-0"  id="myTabContent">
+<div class="rounded m-5 mt-0 col-md-6"  id="myTabContent">
 
     <div class="rounded-top blue_gradient text-left p-2 fs-2" style="background-color: rgb(55 84 116); color: rgb(255 255 255 / 55%);">
         Registro de Usuario
     </div>
     <div class=" rounded-top-0 rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
-        <form method="post" class="needs-validation" novalidate>
+        <form method="post" >
             {% csrf_token %}
             
             <div class="mb-3">
@@ -50,7 +50,16 @@
                     <option value="Analista">Analista</option>
                 </select>
             </div>
-
+            {% if messages %}
+            {% for message in messages %}
+                <div class="alert 
+                    {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} 
+                    alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
             {% if form.errors %}
             <div class="alert alert-danger">
                 <ul class="mb-0">

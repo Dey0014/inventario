@@ -1,0 +1,64 @@
+personas y departamentos
+<!-- 
+        <div class="row mb-3" id="inputPeople">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="showNewPeople"><i class="bi bi-person-plus"></i></a>
+            </div>
+            <div class="mb-3">
+                <div class="col-12">
+                <label for="persona" class="form-label">Seleccione Persona:</label>
+                <select id="persona" name="persona" class="form-control select2">
+                <option value="" selected disabled></option>
+                    {% for person in personas %}
+                    <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+            </div>
+        </div>
+        
+        <div id="newPeopleForm" style="display: none;">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="closeNewPeople"><i class="bi bi-backspace"></i></a>
+            </div>
+            <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombre" class="form-label">Nombre y Apellido:</label>
+                <input id="nombre" name="nombre" type="text" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="cedula" class="form-label">Cédula:</label>
+                <input id="cedula" name="cedula" type="number" class="form-control">
+            </div>
+            </div>
+
+        Select Departamento 
+            <div id="inputDepartment">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="showNewDepartment"><i class="bi bi-person-plus"></i></a>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                <label for="departamento" class="form-label">Seleccione Departamento:</label>
+                <select id="departamento" name="departamento" class="form-control select2">
+                    <option value=""></option>
+                    {% for dept in departamentos %}
+                        <option value="{{ dept.id }}">{{ dept.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        </div>
+
+            Nuevo Departamento Input 
+            <div id="newDepartmentForm" style="display: none;">
+            <div class="d-flex justify-content-end">
+                <a href="#" id="closeNewDepartment"><i class="bi bi-backspace"></i></a>
+            </div>
+            <div class="col-12">
+                <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
+                <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control text-center">
+            </div>
+            </div>
+        </div> 
+-->

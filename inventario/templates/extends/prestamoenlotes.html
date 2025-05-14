@@ -1,0 +1,152 @@
+{% extends "inicio.html" %} 
+{% block content %}
+<div id="contenido" class="rounded m-5 col-md-11 bg-light " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
+    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+        <p class="fs-2 m-0">Prestamo de Herramientas en lote</p>
+    </div>
+    <div class=" rounded-top-0 rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
+        <div class="row g-3 align-items-center justify-content-center m-3">
+
+            <div id="personas-container" class="col-3">
+                <select id="personas" name="personas"  class="form-control per">
+                    <option value="" selected disabled></option>
+                    {% for persona in personas %}
+                    <option value="{{ persona.id }}" data-persona="{{persona.nombre}} ({{ persona.cedula }})">{{ persona.nombre }} ({{ persona.cedula }})</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <div id="herramientas-container" class="col-3">
+                <select id="herramienta" name="articulo" class="form-control herselec">
+                    <option value="" selected disabled></option>
+                    {% for her in herramientas %}
+                    <option value="{{ her.id }}" data-condicion="{{her.condicion}}" data-nombre="{{ her.descripcion }}" data-max="{{ her.cantidad }}">{{ her.descripcion }} ({{ her.cantidad }})</option>
+                {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-3">
+                <input id="cantidad" name="cantidad" style="border-color: rgba(0, 0, 0, 0.300);" type="number" min="1" class="form-control  text-center" placeholder="Cantidad" >
+            </div>
+            <div class="col-3">
+                <button type="button" id="agregar-item" class="btn " style="width: 100%;background-color: rgb(77 135 199);color: white;">Agregar a la lista</button>
+            </div>
+            <div class="col-12">
+                <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+            </div>
+        </div>
+        <div class="row g-2 align-items-center justify-content-center m-3">
+
+            <!-- Tabla de artículos seleccionados -->
+            <h3 class="mt-4">Lista de Prestamo</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Herramienta</th>
+                        <th>Cantidad</th>
+                        <th>Condicion</th>
+                        <th>Descripción</th>
+                        <th>Nombre - CI</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lote-herramientas">
+                <!-- Los artículos agregados aparecerán aquí -->
+                </tbody>
+            </table>
+        
+            <!-- Formulario oculto para enviar la solicitud -->
+            <form id="solicitud-form" method="post" action="{% url 'registrar_prestamos_lote' %}">
+                {% csrf_token %}
+                <input type="hidden" name="items_json" id="items-json">
+                <input type="hidden" name="persona" id="persona-id">
+                <button type="submit" class="btn" style="background-color: rgb(77 135 199);color: white;">Registrar Solicitud</button>
+            </form>
+        
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('solicitud-form').addEventListener('submit', function(e) {
+        const personaSelect = document.getElementById('personas');
+        const personaId = personaSelect.options[personaSelect.selectedIndex].value;
+
+        if (!personaId) {
+            e.preventDefault();
+            alert('Selecciona una persona para el préstamo.');
+            return;
+        }
+
+        document.getElementById('persona-id').value = personaId;
+    });
+</script>
+
+<script>
+    let loteHerramientas = [];
+
+    document.getElementById('agregar-item').addEventListener('click', function() {
+        // Detectar cuál select está visible
+        let select = document.getElementById('herramienta');
+        let selectp = document.getElementById('personas');
+        let descripcion = document.getElementById('descripcion').value;
+        let cantidad = document.getElementById('cantidad').value;
+        let selectedOption = select.options[select.selectedIndex];
+        let persona = selectp.options[selectp.selectedIndex];
+
+        if (!selectedOption.value || cantidad <= 0) {
+            alert('Selecciona un artículo y una cantidad válida.');
+            return;
+        }
+        if (!persona.value) {
+            alert('Selecciona una persona.');
+            return;
+        }
+        if (!descripcion) {
+            alert('Introduce una descripción.');
+            return;
+        }
+
+        // Verificar si la cantidad no excede el máximo
+
+        let herramienta = {
+            id: selectedOption.value,
+            personaId: persona.value,
+            personaNombre: persona.textContent,
+            nombre: selectedOption.getAttribute('data-nombre'),
+            condicion: selectedOption.getAttribute('data-condicion'),
+            cantidad: cantidad,
+            descripcion: descripcion,
+        };
+
+        // Agregar a la lista
+        loteHerramientas.push(herramienta);
+        actualizarTabla();
+    });
+
+    function actualizarTabla() {
+        let tbody = document.getElementById('lote-herramientas');
+        tbody.innerHTML = '';
+
+        loteHerramientas.forEach((art, index) => {
+            let fila = `<tr>
+                            <td>${art.nombre}</td>
+                            <td>${art.cantidad}</td>
+                            <td>${art.condicion}</td>
+                            <td>${art.descripcion}</td>
+                            <td>${art.personaNombre}</td>
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarItem(${index})">Eliminar</button></td>
+                        </tr>`;
+            tbody.innerHTML += fila;
+        });
+
+        // Actualizar input oculto para envío
+        document.getElementById('items-json').value = JSON.stringify(loteHerramientas);
+    }
+
+    function eliminarItem(index) {
+        loteHerramientas.splice(index, 1); // Usar la lista correcta
+        actualizarTabla();
+    }
+
+</script>
+{% endblock %}

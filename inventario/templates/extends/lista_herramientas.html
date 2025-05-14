@@ -1,9 +1,7 @@
 {% extends "inicio.html" %} 
 {% load static %}
 {% block content %}
-<div class="rounded m-5 mt-0"  id="myTabContent">
-
-
+<div class="rounded m-5 mt-0 col-md-11"  id="myTabContent">
 
 <div class="tab-content lista_materiales rounded bg-light" id="myTabContent">
     <!-- panel de HERRAMIENTAS -->
@@ -12,7 +10,7 @@
             <p class="fs-2 m-0">HERRAMIENTAS</p>
             <div style="display: flex;">
             <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
-            <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
+            <a class="agregar-herramientas" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
             </div>
         </div>
 
@@ -21,10 +19,10 @@
             <table class="tablasApp  table table-hover text-center">
         <thead class=text-center>
         <tr>
-            <th class="col-1">#</th>
+            <th class="col-1 ">id</th>
             <th class="col-4">descripcion</th>
             <th class="col-1">cantidad</th>
-            <th class="col-2">coordinador</th>
+            <th class="hidden">coordinador</th>
             <th class="col-4">fecha ingreso</th>
             <th class="col-1">condicion</th>
             <th class="col-1">Acción</th>
@@ -32,11 +30,11 @@
         </thead>
         <tbody>
         {% for her in herramientas %}
-        <tr>
+        <tr style="{% if her.cantidad <= her.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ her.id }}</td>
             <td class="">{{ her.descripcion }}</td>
             <td class="">{{ her.cantidad }}</td>
-            <td class="">{{ her.coordinador }}</td>
+            <td class="hidden">{{ her.coordinador }}</td>
             <td class="">{{ her.fecha_ingreso }}</td>
             <td class="">{{ her.condicion }}</td>
             <td>
@@ -47,6 +45,7 @@
                 data-coordinador="{{ her.coordinador.username | title }}"
                 data-fecha="{{ her.fecha_ingreso }}"
                 data-condicion="{{ her.condicion  }}"
+                data-cantidad-minima="{{ her.cantidad_minima }}"
                 style="font-size: 24px; margin-right: 6px;">
                 <i class="bi bi-three-dots"></i>
             </a>
@@ -62,137 +61,207 @@
 </div>
 <button id="printBtn" class="btn btn-primary boton-flotante">Descargar PDF</button>
 
+<script>
+document.querySelectorAll('.agregar-herramientas').forEach(function(element) {
+    element.addEventListener('click', function() {
+    Swal.fire({
+        title: 'Agregar Herramienta',
+        html: `
+        <form id="material-form">
+            <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción:</label>
+            <input type="text" name="descripcion" id="descripcion" maxlength="250" required class="form-control">
+            </div>
+            <div class="mb-3">
+            <label for="cantidad" class="form-label">Cantidad a agregar:</label>
+            <input type="number" name="cantidad" id="cantidad" min="0" required class="form-control">
+            </div>
+            <div class="mb-3">
+            <label for="condicion" class="form-label">Condicion:</label>
+            <select name="condicion" id="condicion" class="form-control select2">
+            {% for valor, nombre in condiciones %}
+                <option value="{{ valor }}">{{ nombre }}</option>
+            {% endfor %}
+            </select>
+            </div>
+        </form>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        preConfirm: () => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+            url: "{% url 'agregar_herramientas' %}",
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                descripcion: $('#descripcion').val(),
+                cantidad: $('#cantidad').val(),
+                condicion: $('#condicion').val(),
+            },
+            success: function(response) {
+                if (!response.success) {
+                Swal.showValidationMessage(response.message);
+                }
+                resolve(response);
+            },
+            error: function(xhr, status, error) {
+                Swal.showValidationMessage(`Error: ${error}`);
+            }
+            });
+        });
+        },
+    }).then((result) => {
+        if (result.isConfirmed) {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Herramientas agregado!',
+            text: 'El Herramientas se ha registrado correctamente.',
+        }).then(() => {
+            window.location.href = "{% url 'ListaHerramientas' %}";
+        });
+        }
+    });
+    });
+});
+</script>
 
 <!-- boton de mas informacion y acciones en las herramientas -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const ajustesButtonsH = document.querySelectorAll('.infoH');
     ajustesButtonsH.forEach(button => {
-      button.addEventListener('click', function () {
+    button.addEventListener('click', function () {
         const pk = this.getAttribute('data-id');
         const descripcion = this.getAttribute('data-descripcion');
         const cantidad = this.getAttribute('data-cantidad');
+        const cantidad_minima = this.getAttribute('data-cantidad-minima');
         const coordinador = this.getAttribute('data-coordinador');
         const fecha = this.getAttribute('data-fecha');
         const condicion = this.getAttribute('data-condicion');
         
         Swal.fire({
-          title: `<strong>Detalles de Herramienta</strong>`,
-          icon: "info",
-          html: `
-            <p><b>Descripción:</b> ${descripcion}</p>
+        title: `<strong>${descripcion}</strong>`,
+        icon: "info",
+        html: `
             <p><b>Cantidad:</b> ${cantidad}</p>
             <p><b>Coordinador:</b> ${coordinador}</p>
             <p><b>Fecha de Ingreso:</b> ${fecha}</p>
             <p><b>condicion:</b> ${condicion}</p>
-          `,
-          showCloseButton: false,
-          showCancelButton: false,
-          showConfirmButton: false,
-          focusConfirm: false,
-          footer: `
-                  <div class="flex-d">
-                  <div>
-                  <button id="edit-material" class="swal2-confirm col-4 swal2-styled">Editar</button>
-                  <button id="delete-material" class="swal2-confirm col-4 swal2-styled">Eliminar</button>
-                  </div>
-                  <div>
-                  <button id="cantidad-material" class="swal2-confirm col-4 swal2-styled">Cantidad</button>
-                  <button id="entrega-material" class="swal2-confirm col-4 swal2-styled">Entregar</button>
-                  </div>
-                  </div>
-          `
+        `,
+        showCloseButton: false,
+        showCancelButton: false,
+        showConfirmButton: false,
+        focusConfirm: false,
+        footer: `
+                <div class="flex-d">
+                <div>
+                <button id="edit-herramienta" class="swal2-confirm col-4 swal2-styled">Editar</button>
+                <button id="delete-herramienta" class="swal2-confirm col-4 swal2-styled">Eliminar</button>
+                </div>
+                <div>
+                <button id="cantidad-herramienta" class="swal2-confirm col-4 swal2-styled">Cantidad</button>
+                <button id="entrega-herramienta" class="swal2-confirm col-4 swal2-styled">Entregar</button>
+                </div>
+                </div>
+        `
         });
 
-      document.getElementById('entrega-material').addEventListener('click', function() {
+    document.getElementById('entrega-herramienta').addEventListener('click', function() {
         Swal.fire({
-          title: 'Modificar Cantidad de la herramienta',
-          html: ` 
-          <div class="p-5">
-          <form method="post">
-              {% csrf_token %}
-
-              <div class="mb-3">
-                  <label for="material" class="form-label">Material:</label>
-                  <select name="material" id="material" class="form-control select2" autofocus>
-                      {% for mat in materiales %}
-                          <option value="{{ mat.id }}">{{ mat.descripcion }} (Disponible: {{ mat.cantidad }})</option>
-                      {% endfor %}
-                  </select>
-              </div>
-
-              <div class="mb-3">
-                  <label for="analista" class="form-label">Analista:</label>
-                  <div class="form-control" id="id_analista">{{ user.username }}</div>
-                  <input type="hidden" name="analista" value="{{ user.id }}">
-              </div>
-
-              <div class="mb-3">
-                  <label for="persona" class="form-label">Seleccione Persona:</label>
-                  <select id="persona" name="persona" class="form-control select2">
-                      <option selected>Seleccione una persona</option>
-                      <option value="nueva">Nueva persona</option>
-                      {% for person in personas %}
-                      <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
-                      {% endfor %}
-                  </select>
-              </div>
-
-              <div id="nuevaPersonaForm" class="hidden">
-                  <div class="row">
-                      <div class="col-md-6 mb-3">
-                          <label for="nombre" class="form-label">Nombre y Apellido:</label>
-                          <input id="nombre" name="nombre" type="text" class="form-control">
-                      </div>
-                      <div class="col-md-6 mb-3">
-                          <label for="cedula" class="form-label">Cédula:</label>
-                          <input id="cedula" name="cedula" type="number" class="form-control">
-                      </div>
-                  </div>
-
-                  <!-- Select Departamento -->
-                  <div class="row mb-3">
-                      <div class="col-12">
-                          <label for="departamento" class="form-label">Seleccione Departamento:</label>
-                          <select id="departamento" name="departamento" class="form-control select2">
-                              <option value="">Seleccione un departamento</option>
-                              <option value="nuevo">Nuevo departamento</option>
-                              {% for dept in departamentos %}
-                                  <option value="{{ dept.id }}">{{ dept.nombre }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
-                  </div>
-
-                  <!-- Nuevo Departamento Input -->
-                  <div id="nuevoDepartamentoForm" class="hidden">
-                      <div class="col-12">
-                          <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
-                          <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
-                      </div>
-                  </div>
-              </div>
-
-
-              <div class="mb-3">
-                  <label for="descripcion" class="form-label">Descripción:</label>
-                  <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
-              </div>
-
-              <div class="mb-3">
-                  <label for="cantidad" class="form-label">Cantidad:</label>
-                  <input type="number" name="cantidad" id="cantidad" class="form-control" required>
-              </div>
+        title: 'Entregar herramienta',
+        html: ` 
+        <div class="p-5">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="material" class="form-label">Herramientas:</label>
+                <input  value="${descripcion}" type="text" class="form-control">
+                <input type="hidden" id="herramienta" name="herramienta" value="${pk}">
+            </div>
+            <div class="mb-3">
+                <label for="analista" class="form-label">Analista:</label>
+                <div class="form-control">{{ user.username }}</div>
+                <input type="hidden" id="id_analista" name="analista" value="{{ user.id }}">
+            </div>
+            <div class="mb-3">
+                <label for="persona" class="form-label">Seleccione Persona:</label>
+                <select id="persona" name="persona" class="form-control select2">
+                    <option selected>Seleccione una persona</option>
+                    <option value="nueva">Nueva persona</option>
+                    {% for person in personas %}
+                    <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción:</label>
+                <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="cantidad" class="form-label">Cantidad:</label>
+                <input type="number" name="cantidad" id="cantidad" class="form-control" required>
+            </div>
             </form>
             </div>
-          
-          `
-        })
-      })
+        `
+        ,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        width: '600px',
+        preConfirm: () => {
+        const E_Herramienta = document.getElementById('herramienta').value;
+        const E_Analista = document.getElementById('id_analista').value
+          // Verificar si persona está seleccionada, si no, verificar nombre, cedula y departamento
+        const E_Persona = document.getElementById('persona') && document.getElementById('persona').value ? document.getElementById('persona').value : '';
+        const E_Descripcion = document.getElementById('descripcion') ? document.getElementById('descripcion').value : '';
+        const E_Cantidad = document.getElementById('cantidad').value;
+
+        if (!E_Cantidad) { 
+            Swal.showValidationMessage('ingrese una cantidad valida.');
+            return false;
+        } 
+        else if (!E_Descripcion){
+            Swal.showValidationMessage('ingrese una justificacion.');
+            return false;
+        }
+          // Llamada AJAX para enviar los datos al servidor
+        $.ajax({
+            type: "POST",
+            url: `../Prestamo_herramientas/${pk}/`,  
+            data: {
+            herramienta: E_Herramienta,
+            analista: E_Analista,
+            persona: E_Persona,
+            descripcion: E_Descripcion,
+            cantidad: E_Cantidad,
+            csrfmiddlewaretoken: "{{ csrf_token }}", 
+            },
+            success: function (response) {
+                    Swal.fire({
+                        title: 'Guardado!',
+                        text: 'El material ha sido actualizado',
+                        icon: 'success',
+                        showConfirmButton: false, // Oculta el botón "OK"
+// Recarga la página después de que la alerta desaparezca
+                    });
+                },
+            error: function (xhr, status, error) {
+            Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+            }
+        });
+        }
+    });
+});
 
 
 
-      document.getElementById('cantidad-material').addEventListener('click', function() {
+
+
+    document.getElementById('cantidad-herramienta').addEventListener('click', function() {
     Swal.fire({
         title: 'Modificar Cantidad de la herramienta',
         html: `
@@ -222,17 +291,37 @@
                         id="id_cantidad_a_restar"
                     />
                 </div>
+                <div class="form-group">
+                    <label for="id_justificacion">Justificación:</label>
+                    <input
+                        type="text"
+                        name="justificacion"
+                        class="form-control"
+                        id="id_justificacion"
+                        required
+                    />
+                </div>
             </form>
         `,
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         preConfirm: () => {
-            return new Promise((resolve) => {
-                const form = $('#modificar-cantidad-form');
-                const formData = form.serialize();
 
+        const justificacion = document.getElementById('id_justificacion').value;
+
+        if (!justificacion) {
+            Swal.showValidationMessage('¡La justificación es requerida!');
+            return false; // ¡Aquí detienes la promesa!
+        }
+
+        return new Promise((resolve, reject) => {
+            const form = $('#modificar-cantidad-form');
+            const formData = form.serializeArray().reduce((obj, item) => {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
                 $.ajax({
-                  type: 'POST',
+                type: 'POST',
                     url: `../modificarCantidadesHerramientas/${pk}/`,
                     data: {
                         csrfmiddlewaretoken: '{{ csrf_token }}',  // Token CSRF
@@ -267,7 +356,7 @@
     
 });
 
-      document.getElementById('delete-material').addEventListener('click', function () {
+    document.getElementById('delete-herramienta').addEventListener('click', function () {
         Swal.fire({
         title: "¿Estas seguro?",
         html: `
@@ -288,7 +377,7 @@
             Swal.showValidationMessage("Por favor ingrese un motivo para la eliminación");
         }
         return motivo;
-      }
+    }
     }).then((result) => {
         if (result.isConfirmed) {
             const motivo = result.value; 
@@ -314,38 +403,49 @@
                     'Error!',
                     'There was a problem deleting the material.',
                     'error'
-          );
+        );
         }
-      });
+    });
     }
     setInterval("location.reload()",1000);
-  });
+});
 });
 
-      document.getElementById('edit-material').addEventListener('click', function () {
+    document.getElementById('edit-herramienta').addEventListener('click', function () {
         Swal.fire({
-          title: 'Editar Herramienta',
-          html: `
+        title: 'Editar Herramienta',
+        html: `
 
-          <div class="form-group">
+        <div class="form-group">
             <label for="edit-descripcion" class="col-form-label">Descripción:</label>
             <input id="edit-descripcion" type="text" class="form-control" value="${descripcion}">
-          </div>
-          <div class="form-group">
+        </div>
+        <div class="form-group">
+            <label for="edit-cantidad" class="col-form-label">Cantidad Minima:</label>
+            <input id="edit-cantidad" type="number" class="form-control" value="${cantidad_minima}">
+        </div>
+        <div class="form-group">
             <label for="edit-condicion" class="col-form-label">condicion:</label>
-            <input id="edit-condicion" type="text" class="form-control" value="${condicion}">
-          </div>
+            <select class="form-select text-center" id="edit-condicion" aria-label="Estado de la herramienta">
+                <option value="${condicion}" disabled selected>${condicion}</option>
+                <option value="Nuevo">Nuevo</option>
+                <option value="Bueno">Bueno</option>
+                <option value="Desgastado">Desgastado</option>
+                <option value="Dañado">Dañado</option>
+            </select>
+        </div>
         `,
-          showCancelButton: true,
-          confirmButtonText: 'Guardar',
-          cancelButtonText: 'Cancelar',
-          preConfirm: () => {
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
             const newDescripcion = document.getElementById('edit-descripcion').value;
             const newCondicion = document.getElementById('edit-condicion').value;
+            const newCantidadMinima = document.getElementById('edit-cantidad').value;
 
-            if (!newDescripcion || !newCondicion) {
-              Swal.showValidationMessage('Todos los campos son obligatorios');
-              return false;
+            if (!newDescripcion || !newCondicion || !newCantidadMinima) {
+            Swal.showValidationMessage('Todos los campos son obligatorios');
+            return false;
             }
             $.ajax({
                 type: "POST",
@@ -353,6 +453,7 @@
                 data: {
                     descripcion: newDescripcion,
                     condicion: newCondicion,
+                    cantidad_minima: newCantidadMinima,
                     csrfmiddlewaretoken: "{{ csrf_token }}", 
                 },
                 success: function (response) {
@@ -365,36 +466,36 @@
             setInterval("location.reload()",1000);
 
             return false; 
-          }
+        }
         });
-      });
     });
-  });
+    });
+});
 });
 
 </script>
 
 <!-- este escrip sirve para que el ultimo tab en el que estaba quede activo cuando recarge la pagina -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
       // Obtener el último tab guardado en localStorage
-      let lastTab = localStorage.getItem("activeTab");
-  
+    let lastTab = localStorage.getItem("activeTab");
+
       // Si hay un tab guardado, activarlo
-      if (lastTab) {
-          let tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
-          if (tabElement) {
-              let tab = new bootstrap.Tab(tabElement);
-              tab.show();
-          }
-      }
-  
+    if (lastTab) {
+        let tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
+        if (tabElement) {
+            let tab = new bootstrap.Tab(tabElement);
+            tab.show();
+        }
+    }
+
       // Escuchar el evento cuando se cambia de pestaña y guardar el ID
-      document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-          tab.addEventListener("shown.bs.tab", function (event) {
-              localStorage.setItem("activeTab", event.target.getAttribute("data-bs-target"));
-          });
-      });
-  });
-  </script>
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+        tab.addEventListener("shown.bs.tab", function (event) {
+            localStorage.setItem("activeTab", event.target.getAttribute("data-bs-target"));
+        });
+    });
+});
+</script>
 {% endblock %}

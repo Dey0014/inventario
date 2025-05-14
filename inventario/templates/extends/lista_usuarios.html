@@ -1,6 +1,6 @@
 {% extends "inicio.html" %}
 {% block content %}
-<div class="rounded m-5 mt-0"  id="myTabContent">
+<div class="rounded m-5 mt-0 col-md-11"  id="myTabContent">
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
         <p class="fs-2 m-0">Lista de usuarios</p>
         <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput"  style="width: 200px;">
@@ -8,13 +8,14 @@
     
     <div class="rounded-top-0 rounded table-responsive p-4 pt-0 pb-0 tab-content card-tabs border-top-0 bg-light">
         <table class="tablasApp table table-hover text-center">
-            <thead >
+            <thead>
                 <tr>
                     <th class="col-2">Username</th>
                     <th class="col-2">Email</th>
                     <th class="col-2">Fecha de creación</th>
                     <th class="col-2">Grupos</th>
-                    <th class="col-2">Acción</th>
+                    <th class="col-2">Estado</th>
+                    <th class="col-2">Editar</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -22,23 +23,32 @@
                 <tr>
                     <td>{{ user.username | title }}</td>
                     <td>{{ user.email  }}</td>
-                    <td>{{ user.date_joined }}</td>
-                    <td>
-                        {% for group in user.groups.all %}
-                        {{ group.name | title}}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
+                    <td>{{ user.date_joined |date:"d/m/Y g:i a"}}</td>
+                    <td>{{ user.groups.first.name}}</td>
                     <td>
                         {% if user.is_active %}
-                        <a href="{% url 'desactivar_usuario' user.id %}" class="btn btn-danger">
-                            <i class="bi bi-dash-circle-fill"></i>
+                        <a href="{% url 'desactivar_usuario' user.id %}" class="btn btn-primary">
+                            <i>Activo</i>
                         </a>
                         {% else %}
-                        <a href="{% url 'activar_usuario' user.id %}" class="btn btn-secondary">
-                            <i class="bi bi-dash-circle"></i>
+                        <a href="{% url 'activar_usuario' user.id %}" class="btn btn-danger">
+                            <i> Desactivado </i>
                         </a>
-                        {% endif %}
+                        
                     </td>
+                    {% endif %}
+
+                    <td>
+                        <a title="datos" class="info" 
+                            data-id="{{ user.id }}"
+                            data-username="{{ user.username}}"
+                            data-email="{{ user.email  }}"
+                            data-group="{{user.groups.first.name}}"
+                            style="font-size: 24px; margin-right: 6px;">
+                            <i class="bi bi-three-dots"></i>
+                        </a>
+                    </td>
+
                 </tr>
                 {% endfor %}
             </tbody>
@@ -46,4 +56,87 @@
 
     </div>
 </div>
+{% if 'coordinadores' in request.user.groups.all|join:', ' %} 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ajustesButtons = document.querySelectorAll('.info');
+        ajustesButtons.forEach(button => {
+        button.addEventListener('click', function () {
+        const pk = this.getAttribute('data-id');
+        const username = this.getAttribute('data-username');
+        const email = this.getAttribute('data-email');
+        const group = this.getAttribute('data-group');
+
+    Swal.fire({
+        title: 'Editar Usuarios',
+        html: `
+        <div class="form-group">
+        <label for="edit-username" class="col-form-label">Username:</label>
+        <input id="edit-username" type="text" class="form-control" value="${username}">
+        </div>
+        <div class="form-group">
+        <label for="edit-email" class="col-form-label">Email:</label>
+        <input id="edit-email" type="email" class="form-control" value="${email}">
+        </div>
+        <div class="form-group">
+        <label for="edit-group" class="col-form-label">Grupo:</label>
+        <input id="edit-group" type="text" class="form-control" value="${group}">
+        </div>
+        <div class="form-group">
+            <label for="edit-password" class="col-form-label">Nueva contraseña (opcional):</label>
+            <input id="edit-password" type="password" class="form-control">
+        </div>
+    `,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+        const newUsername = document.getElementById('edit-username').value;
+        const newEmail = document.getElementById('edit-email').value;
+        const newGroup = document.getElementById('edit-group').value;
+        const newPassword = document.getElementById('edit-password').value;
+
+        if (!newUsername || !newEmail || !newGroup) {
+            Swal.showValidationMessage('Todos los campos son obligatorios');
+            return false;
+        }
+         // Validar el dominio del correo
+    if (!newEmail.endsWith("@elsistema.org.ve")) {
+        Swal.showValidationMessage('El correo debe pertenecer al dominio @elsistema.org.ve');
+        return false;
+    }
+        $.ajax({
+            type: "POST",
+            url: `../editar_usuarios/${pk}/`,  
+            data: {
+                username: newUsername,
+                email: newEmail,
+                group: newGroup,
+                password: newPassword, 
+                csrfmiddlewaretoken: "{{ csrf_token }}", 
+            },
+            success: function (response) {
+                Swal.fire({
+                    title: 'Guardado',
+                    text: 'El Usuario ha sido actualizado',
+                    icon: 'success',
+                    showConfirmButton: false, // Oculta el botón "OK"
+                    timer: 1000 // Cierra automáticamente en 1 segundo
+                }).then(() => {
+                    location.reload(); // Recarga la página después de que la alerta desaparezca
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+            }
+        });
+
+        }
+    });
+    });
+});
+        })
+</script>
+{% endif%} 
+
 {% endblock %}

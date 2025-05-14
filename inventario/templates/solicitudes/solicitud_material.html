@@ -1,0 +1,355 @@
+{% extends "login.html" %}
+{% block content %}
+{% load static %}
+<body class="formulario_solicitud bluecolor">
+    <nav class="navbar navbar-expand-lg navbar-dark colornav fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" aria-label="Logo">
+                <img src="{% static 'img/logo_funda.png' %}" alt="Logo de la Empresa" class="logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="#" id="inbox-link" style="position: relative;">
+                            <div class="notification-icon" id="inbox-icon">
+                                <i class="ts bi bi-inbox" style="font-size: 2rem; cursor: pointer;"></i>
+                                {% if solicitudePorPersona > 0 %}
+                                    <span class="badge bg-danger" >
+                                        {{ solicitudePorPersona }}
+                                    </span>  <!-- Muestra la cantidad de solicitudes -->
+                                {% endif %}
+                                <div class="notification-dot {% if solicitudePorPersona > 0 %}has-requests{% endif %}"></div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                        {% csrf_token %}
+                            <button type="submit" class=" ts btn btn-link nav-link" aria-label="Cerrar sesión">
+                                Cerrar sesión <i class=" bi bi-door-closed"></i>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex justify-content-center">
+        <div id="contenido" class="card  bg-light col-10 shadow-lg">
+            <!--formulario de solicitudes-->
+
+            <div class="formulario text-center">
+                <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
+                    <h1 class="fs-2 m-0">Formulario de Solicitud</h1>
+                </div>
+
+                <!-- que quieres pedir materiales o herramientas -->
+                
+                <div class="row g-2 justify-content-center m-3">
+                    <div class="col-2">
+                        <input class="form-check-input"  style="border-color: rgba(0, 0, 0, 0.500);" type="radio" name="tipo" id="inlineRadio1" value="herramientas">
+                        <label class="form-check-label" for="inlineRadio1">
+                            Herramientas
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input class="form-check-input" checked style="border-color: rgba(0, 0, 0, 0.500);" type="radio" name="tipo" id="radioDefault2" value="material">
+                        <label class="form-check-label" for="radioDefault2">
+                            Materiales
+                        </label>
+                    </div>
+                </div> 
+
+                <div class="row g-2 align-items-center justify-content-center m-3">
+                    <div class="col-3">
+                    <!-- Contenedor de materiales -->
+                        <div id="materiales-container" >
+                            <select  id="material"  name="articulo" class="form-control matselec">
+                                <option value="" selected disabled></option>
+                                {% for mat in materiales %}
+                                <option value="{{ mat.id }}" data-nombre="{{ mat.descripcion }}"  data-max="{{ mat.cantidad }}" data-tipo="Material">{{ mat.descripcion }}({{ mat.cantidad }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Contenedor de herramientas -->
+                        <div id="herramientas-container" style="display: none;">
+                            <select id="herramienta" name="articulo" class="form-control herselec">
+                                <option value="" selected disabled></option>
+                                {% for her in herramientas %}
+                                <option value="{{ her.id }}" data-nombre="{{ her.descripcion }}" data-max="{{ her.cantidad }}" data-tipo="Herramienta">{{ her.descripcion }} ({{ her.cantidad }})</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <input id="encargado" name="encargado" style="border-color: rgba(0, 0, 0, 0.300);" type="text" min="1" class="form-control  text-center" placeholder="Encargado de retiro" >
+                    </div>
+
+                    <div class="col-3">
+                        <input id="cantidad" name="cantidad" style="border-color: rgba(0, 0, 0, 0.300);" type="number" min="1" class="form-control  text-center" placeholder="Cantidad" >
+                    </div>
+
+                    <div class="col-3">
+                        <button type="button" id="agregar-item" class="btn " style="width: 100%;background-color: rgb(77 135 199);color: white;">Agregar a la lista</button>
+                    </div>
+                    <div class="col-12">
+                      <textarea name="uso" id="uso" rows="2" style="border-color: rgba(0, 0, 0, 0.300);" class="form-control" placeholder="Especifica el uso del material"></textarea>
+                    </div>
+                    <div>
+
+    <!-- Tabla de artículos seleccionados -->
+    <h2>Lista de artículos</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Artículo</th>
+                <th>Cantidad</th>
+                <th>Acción</th>
+                <th>Encargado</th>
+                <th>Uso</th>
+            </tr>
+        </thead>
+        <tbody id="lista-articulos">
+        <!-- Los artículos agregados aparecerán aquí -->
+        </tbody>
+    </table>
+
+    <!-- Formulario oculto para enviar la solicitud -->
+    <form id="solicitud-form" method="post" action="{% url 'Solicitud' %}">
+        {% csrf_token %}
+        <input type="hidden" name="items_json" id="items-json">
+        <button type="submit" class="btn"  style="background-color: rgb(77 135 199);color: white;">Registrar Solicitud</button>
+    </form>
+
+</div>
+
+            <!-- Mensajes de feedback -->
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                <li class="alert {{ message.tags }} text-center">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+                </div>
+            </div>
+
+
+    </div>
+
+    <script>
+        let listaArticulos = [];
+    
+        document.getElementById('agregar-item').addEventListener('click', function() {
+            // Detectar cuál select está visible
+            let select;
+            if (document.getElementById('herramientas-container').style.display !== 'none') {
+                select = document.getElementById('herramienta');
+            } else if (document.getElementById('materiales-container').style.display !== 'none') {
+                select = document.getElementById('material');
+            } else {
+                alert('Selecciona un tipo de artículo primero.');
+                return;
+            }
+
+            let cantidad = document.getElementById('cantidad').value;
+            let selectedOption = select.options[select.selectedIndex];
+            let maxCantidad = parseInt(selectedOption.getAttribute('data-max'), 10);
+            if (!selectedOption.value || cantidad <= 0) {
+                alert('Selecciona un artículo y una cantidad válida.');
+                return;
+            }
+            if (cantidad > maxCantidad) {
+                alert('La cantidad solicitada excede la cantidad disponible.');
+                return;
+            }
+            if (!document.getElementById('encargado').value) {
+                alert('Especifica el encargado de retiro.');
+                return;
+            }
+            if (!document.getElementById('uso').value) {
+                alert('Especifica el uso del material.');
+                return;
+            }
+    
+            let articulo = {
+                id: selectedOption.value,
+                nombre: selectedOption.getAttribute('data-nombre'),
+                tipo: selectedOption.getAttribute('data-tipo'),
+                cantidad: cantidad,
+                encargado: document.getElementById('encargado').value,
+                uso: document.getElementById('uso').value
+            };
+    
+            // Agregar a la lista
+            listaArticulos.push(articulo);
+            actualizarTabla();
+        });
+    
+        function actualizarTabla() {
+            let tbody = document.getElementById('lista-articulos');
+            tbody.innerHTML = '';
+    
+            listaArticulos.forEach((art, index) => {
+                let fila = `<tr>
+                                <td>${art.tipo}</td>
+                                <td>${art.nombre}</td>
+                                <td>${art.cantidad}</td>
+                                <td>${art.encargado}</td>
+                                <td>${art.uso}</td>
+                                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarItem(${index})">Eliminar</button></td>
+                            </tr>`;
+                tbody.innerHTML += fila;
+            });
+    
+            // Actualizar input oculto para envío
+            document.getElementById('items-json').value = JSON.stringify(listaArticulos);
+        }
+    
+        function eliminarItem(index) {
+            listaArticulos.splice(index, 1);
+            actualizarTabla();
+        }
+    
+        // Manejar el cambio de tipo de artículo (Herramientas o Materiales)
+        document.querySelectorAll('input[name="tipo"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'herramientas') {
+                    document.getElementById('herramientas-container').style.display = 'block';
+                    document.getElementById('materiales-container').style.display = 'none';
+                } else if (this.value === 'material') {
+                    document.getElementById('herramientas-container').style.display = 'none';
+                    document.getElementById('materiales-container').style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+    
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const inboxIcon = document.getElementById('inbox-icon');
+  
+    inboxIcon.addEventListener('click', function () {
+      $.ajax({
+        url: '../obtener_solicitudes_pendientes/',  // Asegúrate que esta ruta esté bien definida
+        type: 'GET',
+        success: function (solicitudesPendientes) {
+          if (solicitudesPendientes.length > 0) {
+            const htmlContent = solicitudesPendientes.map((solicitud) => {
+              return `
+                <div class="solicitud-item" data-id="${solicitud.id}">
+                  <p><strong>Artículo:</strong> ${solicitud.articulo_solicitado}</p>
+                  <p><strong>Cantidad:</strong> ${solicitud.cantidad}</p>
+                  <p><strong>Tipo:</strong> ${solicitud.tipo}</p>
+                  <p><strong>Departamento:</strong> ${solicitud.solicitud__persona__departamento__nombre}</p>
+                  <button class="cancel-btn" data-id="${solicitud.id}">Cancelar</button>
+                </div>
+                <hr>
+              `;
+            }).join('');
+  
+            Swal.fire({
+              title: 'Solicitudes Pendientes',
+              html: htmlContent,
+              showCloseButton: true,
+              showConfirmButton: false,
+              didOpen: () => {
+                attachSolicitudEventHandlers(solicitudesPendientes);
+              }
+            });
+          } else {
+            Swal.fire({
+              title: 'Sin Solicitudes',
+              text: 'No tienes solicitudes pendientes',
+              icon: 'success',
+            });
+          }
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudieron obtener las solicitudes.',
+            icon: 'error',
+          });
+        }
+      });
+    });
+  
+    function attachSolicitudEventHandlers(solicitudesPendientes) {
+      $('.cancel-btn').on('click', function () {
+        const idSolicitud = $(this).data('id');
+        const solicitud = solicitudesPendientes.find(s => s.id === idSolicitud);
+        if (!solicitud) return;
+  
+        Swal.fire({
+          title: '¿Estás seguro?',
+          html: `¿Deseas cancelar la solicitud de <strong>${solicitud.articulo_solicitado}</strong>?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cancelar',
+          cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            cancelarSolicitud(solicitud.id);
+          };
+          location.reload();
+        });
+      });
+    }
+  
+    function cancelarSolicitud(idSolicitud) {
+      $.ajax({
+        url: `../eliminar_solicitud/${idSolicitud}/`,
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo cancelar la solicitud',
+            icon: 'error',
+          });
+        }
+      });
+    }
+  
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Chequea si la cookie empieza con el nombre dado
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  });
+  </script>
+  <script>
+    const sessionLifetime = 600;
+  
+    // Avisar 30 segundos antes
+    setTimeout(() => {
+      alert("Tu sesión está por expirar. Se recargará la página automáticamente.");
+    }, (sessionLifetime - 10) * 1000);
+  
+    // Recargar justo al expirar
+    setTimeout(() => {
+      location.reload();
+    }, sessionLifetime * 1000);
+  </script>
+  
+{% endblock %}

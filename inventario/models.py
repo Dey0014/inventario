@@ -5,12 +5,21 @@ from django.core.exceptions import ValidationError
 
 
 class Herramientas(models.Model):
+
+    CONDICION_CHOICES = [
+    ('Nuevo', 'Nuevo'),
+    ('Bueno', 'Bueno'),
+    ('Desgastado', 'Desgastado'),
+    ('Dañado', 'Dañado'),
+    ]
+        
     descripcion = models.CharField(max_length=250)
     cantidad = models.PositiveIntegerField(default=0)
     coordinador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_ingreso = models.DateTimeField(auto_now_add=True)
-    condicion = models.CharField(max_length=20, default='Bueno',)
+    condicion = models.CharField(max_length=20, choices=CONDICION_CHOICES, default='Nuevo',)
     prestamo = models.BooleanField(default=False, null=True, blank=True)
+    cantidad_minima = models.PositiveIntegerField(default=0)
 
     # auto_now_add=True
     def __str__(self):
@@ -31,13 +40,26 @@ class Herramientas(models.Model):
         self.cantidad -= cantidad_a_entregar
         self.save()
 
+PREFIJOS = {
+    'prueba': 'prueba',
+    'RES': 'RES',
+    'HER': 'HER',
+    'LIM': 'LIM',
+    'PPL': 'PPL',
+    'ELM': 'ELM',
+    'PLO': 'PLO',
+    'ELE': 'ELE',
+    'CABLE': 'CABLE',
+    'PIN': 'PIN',  # si vas a usar PIN como tipo personalizado
+}
+
 class Material(models.Model):
     TIPO_MATERIAL_CHOICES = [
-        ('FER', 'prueba'),
-        ('res', 'RESGUARDOS'),
+        ('prueba', 'prueba'),
+        ('RES', 'RESGUARDOS'),
         ('HER', 'HERRAMIENTAS'),
         ('LIM', 'MATERIAL DE LIMPIEZA Y BIOSEGURIDAD'),
-        ('ppl', 'PAPELERIA'),
+        ('PPL', 'PAPELERIA'),
         ('ELM', 'ELECTROMECANICA'),
         ('PLO', 'PLOMERIA'),
         ('ELE', 'ELECTRICIDAD'),
@@ -51,6 +73,7 @@ class Material(models.Model):
     coordinador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_ingreso = models.DateTimeField(auto_now_add=True)
     eliminado = models.BooleanField(default=False, null=True, blank=True)
+    cantidad_minima = models.PositiveIntegerField(default=0)
 
 # auto_now_add=True
     def __str__(self):
@@ -81,24 +104,36 @@ class Personas(models.Model):
     cedula = models.IntegerField()
     departamento = models.ForeignKey(Departamento, on_delete=models.SET_NULL, null=True, blank=True)
     ubicacion = models.CharField(max_length=150)
+
     
     def __str__(self):
         return f'{self.nombre} - {self.cedula}'
 
 class Solicitudes(models.Model):
-
     OPCIONES_ESTADO = [
         ('P', 'Pendiente'),
         ('A', 'Aprobada'),
     ]
     persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
-    articulo_id = models.PositiveIntegerField(default=0)
-    articulo_solicitado = models.CharField(150)
-    cantidad = models.PositiveIntegerField(default=0)
-    tipo = models.CharField(150)
+    estado = models.CharField(max_length=1, choices=OPCIONES_ESTADO, default='P')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Solicitud de {self.material_solicitado} por {self.persona}'
+        return f'Solicitud de {self.persona} - {self.fecha_creacion}'
+    
+
+class SolicitudItem(models.Model):
+    solicitud = models.ForeignKey(Solicitudes, on_delete=models.CASCADE, related_name="items")
+    articulo_id = models.PositiveIntegerField()
+    articulo_solicitado = models.CharField(max_length=150)
+    cantidad = models.PositiveIntegerField()
+    tipo = models.CharField(max_length=150)
+    encargado = models.CharField(max_length=150, null=True, blank=True)
+    uso = models.CharField(max_length=150, null=True, blank=True)
+
+
+    def __str__(self):
+        return f'{self.articulo_solicitado} - {self.cantidad}'
     
 class Entrega(models.Model):
     
@@ -108,19 +143,19 @@ class Entrega(models.Model):
     cantidad = models.PositiveIntegerField()
     fecha_entrega = models.DateTimeField(auto_now_add=True)
     descripcion = models.CharField(max_length=1000)
+    tipo = models.CharField(max_length=150)
 
 
     def __str__(self):
         return f'Préstamo de {self.cantidad} {self.material} a {self.persona}'
     
 class Prestamos(models.Model):
-    herramienta = models.CharField(max_length=150, null=True, blank=True)
-    herramienta_id = models.CharField(max_length=150, null=True, blank=True)
+    herramienta = models.ForeignKey(Herramientas, on_delete=models.SET_NULL, null=True, blank=True)
     persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
     analista = models.CharField(max_length=150)
     cantidad = models.PositiveBigIntegerField()
     fecha_prestamo = models.DateTimeField(auto_now_add=True)
-    descripcion = models.CharField(max_length=150)
+    descripcion = models.CharField(max_length=150,)
 
     def __str__(self):
         return f'prestamo de {self.cantidad} {self.herramienta} a {self.persona}'

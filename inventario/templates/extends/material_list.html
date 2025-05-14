@@ -1,7 +1,7 @@
 {% extends "inicio.html" %} 
 {% load static %}
 {% block content %}
-<div class="rounded m-5 mt-0"  id="myTabContent">
+<div class="rounded m-5 mt-0 col-md-11"  id="myTabContent">
 
   <ul class="nav nav-tabs" style="border-bottom: 0 !important;" id="myTab" role="tablist">
 
@@ -75,9 +75,9 @@
         </thead>
         <tbody class="table-group-divider">
           {% for ele in electricidad %}
-          <tr>
+          <tr style="{% if ele.cantidad <= ele.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ ele.codigo | upper}}</td>
-            <td class="text-start"">{{ ele.descripcion }}</td>
+            <td class="text-start">{{ ele.descripcion }}</td>
             <td class="">{{ ele.tipo_material | upper}}</td>
             <td class="hidden">{{ ele.coordinador.username | title}}</td>
             <td class="">{{ ele.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
@@ -88,6 +88,7 @@
                 data-codigo="{{ ele.codigo }}"
                 data-descripcion="{{ ele.descripcion }}"
                 data-cantidad="{{ ele.cantidad }}"
+                data-cantidad-minima="{{ ele.cantidad_minima }}"
                 data-coordinador="{{ ele.coordinador.username | title }}"
                 data-fecha="{{ ele.fecha_ingreso }}"
                 data-tipo="{{ ele.tipo_material }}"
@@ -129,7 +130,7 @@
         </thead>
         <tbody class="table-group-divider">
           {% for plo in plomeria %}
-          <tr>
+          <tr style="{% if plo.cantidad <= plo.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ plo.codigo | upper}}</td>
             <td class="text-start">{{ plo.descripcion }}</td>
             <td class="">{{ plo.tipo_material | upper}}</td>
@@ -142,6 +143,7 @@
                 data-codigo="{{ plo.codigo }}"
                 data-descripcion="{{ plo.descripcion }}"
                 data-cantidad="{{ plo.cantidad }}"
+                data-cantidad-minima="{{ plo.cantidad_minima }}"
                 data-coordinador="{{ plo.coordinador.username | title }}"
                 data-fecha="{{ plo.fecha_ingreso }}"
                 data-tipo="{{ plo.tipo_material }}"
@@ -183,7 +185,7 @@
         </thead>
         <tbody class="table-group-divider">
           {% for elm in electromecanica %}
-          <tr>
+          <tr style="{% if elm.cantidad <= elm.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ elm.codigo | upper}}</td>
             <td class="text-start">{{ elm.descripcion }}</td>
             <td class="">{{ elm.tipo_material | upper}}</td>
@@ -196,6 +198,7 @@
                 data-codigo="{{ elm.codigo }}"
                 data-descripcion="{{ elm.descripcion }}"
                 data-cantidad="{{ elm.cantidad }}"
+                data-cantidad-minima="{{ elm.cantidad_minima }}"
                 data-coordinador="{{ elm.coordinador.username | title }}"
                 data-fecha="{{ elm.fecha_ingreso }}"
                 data-tipo="{{ elm.tipo_material }}"
@@ -237,7 +240,7 @@
           </thead>
           <tbody class="table-group-divider">
             {% for ppl in papeleria %}
-            <tr>
+            <tr style="{% if ppl.cantidad <= ppl.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
               <td class="">{{ ppl.codigo | upper}}</td>
               <td class="text-start">{{ ppl.descripcion }}</td>
               <td class="">{{ ppl.tipo_material | upper}}</td>
@@ -250,6 +253,7 @@
                   data-codigo="{{ ppl.codigo }}"
                   data-descripcion="{{ ppl.descripcion }}"
                   data-cantidad="{{ ppl.cantidad }}"
+                  data-cantidad-minima="{{ ppl.cantidad_minima }}"
                   data-coordinador="{{ ppl.coordinador.username | title }}"
                   data-fecha="{{ ppl.fecha_ingreso }}"
                   data-tipo="{{ ppl.tipo_material }}"
@@ -291,7 +295,7 @@
             </thead>
             <tbody class="table-group-divider">
               {% for LIM in limpieza %}
-              <tr>
+              <tr style="{% if LIM.cantidad <= LIM.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
                 <td class="">{{ LIM.codigo | upper}}</td>
                 <td class="text-start">{{ LIM.descripcion }}</td>
                 <td class="">{{ LIM.tipo_material | upper}}</td>
@@ -304,6 +308,7 @@
                     data-codigo="{{ LIM.codigo }}"
                     data-descripcion="{{ LIM.descripcion }}"
                     data-cantidad="{{ LIM.cantidad }}"
+                    data-cantidad-minima="{{ LIM.cantidad_minima }}"
                     data-coordinador="{{ LIM.coordinador.username | title }}"
                     data-fecha="{{ LIM.fecha_ingreso }}"
                     data-tipo="{{ LIM.tipo_material }}"
@@ -345,7 +350,7 @@
         </thead>
         <tbody class="table-group-divider">
           {% for pin in pinturas %}
-          <tr>
+          <tr style="{% if pin.cantidad <= pin.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ pin.codigo | upper}}</td>
             <td class="text-start">{{ pin.descripcion }}</td>
             <td class="">{{ pin.tipo_material | upper}}</td>
@@ -358,6 +363,7 @@
                 data-codigo="{{ pin.codigo }}"
                 data-descripcion="{{ pin.descripcion }}"
                 data-cantidad="{{ pin.cantidad }}"
+                data-cantidad-minima="{{ pin.cantidad_minima }}"
                 data-coordinador="{{ pin.coordinador.username | title }}"
                 data-fecha="{{ pin.fecha_ingreso }}"
                 data-tipo="{{ pin.tipo_material }}"
@@ -399,7 +405,7 @@
         </thead>
         <tbody class="table-group-divider">
           {% for res in resguardos %}
-          <tr>
+          <tr style="{% if res.cantidad <= res.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ res.codigo | upper}}</td>
             <td class="text-start">{{ res.descripcion }}</td>
             <td class="">{{ res.tipo_material | upper}}</td>
@@ -412,6 +418,7 @@
                 data-codigo="{{ res.codigo }}"
                 data-descripcion="{{ res.descripcion }}"
                 data-cantidad="{{ res.cantidad }}"
+                data-cantidad-minima="{{ res.cantidad_minima }}"
                 data-coordinador="{{ res.coordinador.username | title }}"
                 data-fecha="{{ res.fecha_ingreso }}"
                 data-tipo="{{ res.tipo_material }}"
@@ -454,7 +461,7 @@
           </thead>
           <tbody class="table-group-divider">
             {% for pru in prueba %}
-            <tr>
+            <tr style="{% if pru.cantidad <= pru.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
               <td class="">{{ pru.codigo | upper}}</td>
               <td class="text-start">{{ pru.descripcion }}</td>
               <td class="">{{ pru.tipo_material | upper}}</td>
@@ -467,6 +474,7 @@
                   data-codigo="{{ pru.codigo }}"
                   data-descripcion="{{ pru.descripcion }}"
                   data-cantidad="{{ pru.cantidad }}"
+                  data-cantidad-minima="{{ pru.cantidad_minima }}"
                   data-coordinador="{{ pru.coordinador.username | title }}"
                   data-fecha="{{ pru.fecha_ingreso }}"
                   data-tipo="{{ pru.tipo_material }}"
@@ -496,7 +504,7 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
         <form id="material-form">
           <div class="mb-3">
             <label for="codigo" class="form-label">Código:</label>
-            <input type="text" name="codigo" id="codigo" maxlength="50" required class="form-control">
+            <input type="text" name="codigo" id="codigo" maxlength="50" class="form-control">
           </div>
           <div class="mb-3">
             <label for="descripcion" class="form-label">Descripción:</label>
@@ -568,7 +576,8 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
         const pk = this.getAttribute('data-id');
         const codigo = this.getAttribute('data-codigo');
         const descripcion = this.getAttribute('data-descripcion');
-        const cantidad = this.getAttribute('data-cantidad');
+        const cantidad = this.getAttribute('data-cantidad'); 
+        const cantidad_minima = this.getAttribute('data-cantidad-minima');
         const coordinador = this.getAttribute('data-coordinador');
         const fecha = this.getAttribute('data-fecha');
         const tipo = this.getAttribute('data-tipo');
@@ -847,14 +856,34 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
                         id="id_cantidad_a_restar"
                     />
                 </div>
+                <div class="form-group">
+                    <label for="id_justificacion">Justificación:</label>
+                    <input
+                        type="text"
+                        name="justificacion"
+                        class="form-control"
+                        id="id_justificacion"
+                        required
+                    />
+                </div>
             </form>
         `,
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         preConfirm: () => {
-            return new Promise((resolve) => {
-                const form = $('#modificar-cantidad-form');
-                const formData = form.serialize();
+        const justificacion = document.getElementById('id_justificacion').value;
+
+        if (!justificacion) {
+            Swal.showValidationMessage('¡La justificación es requerida!');
+            return false; // ¡Aquí detienes la promesa!
+        }
+
+        return new Promise((resolve, reject) => {
+            const form = $('#modificar-cantidad-form');
+            const formData = form.serializeArray().reduce((obj, item) => {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
                 $.ajax({
                   type: 'POST',
                     url: `../modificar_cantidades/${pk}/`,
@@ -960,6 +989,10 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
             <input id="edit-codigo" type="text" class="form-control" value="${codigo}">
           </div>
           <div class="form-group">
+            <label for="edit-cantidad" class="col-form-label">Cantidad Minima:</label>
+            <input id="edit-cantidad" type="number" class="form-control" value="${cantidad_minima}">
+          </div>
+          <div class="form-group">
             <label for="edit-descripcion" class="col-form-label">Descripción:</label>
             <input id="edit-descripcion" type="text" class="form-control" value="${descripcion}">
           </div>
@@ -974,9 +1007,10 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
           preConfirm: () => {
             const newCodigo = document.getElementById('edit-codigo').value;
             const newDescripcion = document.getElementById('edit-descripcion').value;
+            const newCantidadMinima = document.getElementById('edit-cantidad').value;
             const newTipo = document.getElementById('edit-tipo').value;
 
-            if (!newCodigo || !newDescripcion || !newTipo) {
+            if (!newCodigo || !newDescripcion || !newCantidadMinima || !newTipo) {
               Swal.showValidationMessage('Todos los campos son obligatorios');
               return false;
             }
@@ -986,6 +1020,7 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
                 data: {
                     codigo: newCodigo,
                     descripcion: newDescripcion,
+                    cantidad_minima: newCantidadMinima,
                     tipo: newTipo,
                     csrfmiddlewaretoken: "{{ csrf_token }}", 
                 },

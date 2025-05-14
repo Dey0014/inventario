@@ -13,67 +13,96 @@
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{% static 'sweetalert2/dist/sweetalert2.min.css' %}"/>
+  <style>
+    .login-container {
+        height: 100vh;
+    }
+    .card {
+        border-radius: 1rem;
+        border: none;
+    }
+    .card img {
+        border-radius: 1rem 0 0 1rem;
+    }
+    .form-container {
+        padding: 3rem;
+    }
+</style>
+
 </head>
 {% block content %}
 <body class="login">
 
-    <div class="container py-5 h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col col-xl-10">
-          <div class="card" style="border-radius: 1rem; border: none;">
-            <div class="row g-0">
-              <div class="col-md-6 col-lg-5 d-none d-md-block">
-                <img src="{% static 'img/cajas_etiquetadas.jpg' %}" alt="login form" class="img-fluid login"
-                  style="border-radius: 1rem 0 0 1rem" />
+  <div class="container login-container d-flex justify-content-center align-items-center">
+      <div class="col-10">
+
+          <div class="card shadow">
+              <div class="row g-0">
+                  <!-- Imagen Lateral -->
+                  <div class="col-md-5 d-none d-md-block">
+                      <img src="{% static 'img/cajas_etiquetadas.jpg' %}" alt="login form" class="img-fluid h-100">
+                  </div>
+
+                  <!-- Formulario de Inicio de Sesión -->
+                  <div class="col-md-7 d-flex align-items-center">
+                      <div class="card-body form-container text-black">
+                          <form method="post">
+                              {% csrf_token %}
+                              
+                              <!-- Título -->
+                              <div class="text-center mb-4">
+                                  <i class="bi bi-boxes fa-2x text-danger"></i>
+                                  <h1 class="fw-bold mb-0">Inventario Ferretería</h1>
+                              </div>
+
+                              <!-- Usuario -->
+                              <div class="mb-3">
+                                  <input type="text" name="username" class=" text-start form-control form-control-lg" style="border-color: rgba(0, 0, 0, 0.500);"
+                                        placeholder="Nombre de usuario o correo institucional" required>
+                              </div>
+
+                              <!-- Contraseña -->
+                              <div class="mb-3">
+                                  <div class="input-group">
+                                      <input type="password" name="password" id="id_password" 
+                                            class=" text-start form-control form-control-lg" style="border-color: rgba(0, 0, 0, 0.500);" placeholder="Contraseña" required>
+                                      <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                          <i class="bi bi-eye"></i>
+                                      </button>
+                                  </div>
+                              </div>
+
+                              <!-- Mensajes de error -->
+                              {% if messages %}
+                                  <ul class="text-danger">
+                                      {% for message in messages %}
+                                          <li>{{ message }}</li>
+                                      {% endfor %}
+                                  </ul>
+                              {% endif %}
+
+                              <!-- Botón de Ingresar -->
+                              <button class="btn btn-primary col-12" type="submit">Ingresar al Sistema</button>
+
+                              <!-- Olvidaste tu contraseña -->
+                              <div class="text-center mt-3">
+                                  <a href="#">¿Olvidaste tu contraseña?</a>
+                              </div>
+
+                              <!-- Línea divisoria -->
+                              <hr class="my-3">
+
+                              <!-- Solicitar Material -->
+                              <a class="btn btn-success col-12" href="/inventario/login_solicitud/" id="abrirFormulario">
+                                  Solicitar Material
+                              </a>
+                          </form>
+                      </div>
+                  </div>
               </div>
-              <div class="col-md-6 col-lg-7 d-flex align-items-center">
-                <div class="card-body p-4 p-lg-5 text-black">
-                  <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3" style="text-align: center;">
-                      <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219"></i>
-                      <span class="h1 fw-bold mb-0">Inventario Ferretería</span>
-                    </div>
-                    <div style="text-align: center;">
-                    <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px">
-                      Iniciar sesión en su cuenta
-                    </h5>
-                    </div>
-                    <div class="form-outline mb-4">
-                      <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username"
-                        maxlength="150" required="" id="id_username" class="form-control form-control-lg" />
-                      <label class="form-label" for="id_username">Nombre de usuario</label>
-                    </div>
-
-                    <div class="form-outline mb-4">
-                      <input type="password" name="password" autocomplete="current-password" required=""
-                        id="id_password" class="form-control form-control-lg" />
-                      <label class="form-label" for="id_password">Contraseña</label>
-                    </div>
-                    <!-- <a class="info" title="datos"><p>Formulario de solicitud</p></a> -->
-
-                    {% if messages %}
-                      <ul>
-                        {% for message in messages %}
-                          <li>{{ message }}</li>
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
-
-                    <div class="d-flex gap-2 row mx-auto">
-                      <button data-mdb-button-init="" class="btn btn-primary col-12" type="submit">
-                        Entrar
-                      </button>
-                      <a class="btn btn-primary col-12" href="/inventario/Solicitud/" id="abrirFormulario">Solicitar Material</a>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
       </div>
-    </div>
+  </div>
 
   {% endblock %}
 
@@ -164,4 +193,4 @@
 {% endif %}
 
 </body>
-</html>              
+</html>             

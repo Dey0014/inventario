@@ -10,8 +10,10 @@ body{
 }
 
 body.formulario_solicitud{
+    background-image: url(../img/prueba4.jpg);
     font-family: system-ui;
     font-size: 17px;
+    margin-top: 65px;
 }
 
 
@@ -35,7 +37,8 @@ body nav.colornav{
 }
 
 .hidden {
-    display: none;
+    visibility: collapse !important;
+    display: none !important;
 }
 
 body.login{
@@ -174,7 +177,9 @@ color: initial;                    /* Cambia el color de la letra */
     color: rgba(255, 255, 255, 0.55);
 }
 
-
+.navbar-container2 {
+    margin-bottom: 100px; /* el espacio que requiere la barra de navegacion */
+}
 
 .navbar-container {
     margin-bottom: 20px; /* el espacio que requiere la barra de navegacion */

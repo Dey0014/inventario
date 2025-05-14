@@ -6,7 +6,33 @@ $(".select2").select2({
     allowClear: true
 });
 });
+$(document).ready(function () {
+    $(".matselec").select2({
+        width: '100%',
+        placeholder: "Selecciona una Material",
+        allowClear: true
+    });
+});
 
+$(document).ready(function () {
+    $(".herselec").select2({
+        width: '100%',
+        placeholder: "Selecciona una Herramienta",
+        allowClear: true
+    });
+});
+
+
+
+
+
+$(document).ready(function () {
+    $(".per").select2({
+        width: '100%',
+        placeholder: "Selecciona una Persona",
+        allowClear: true
+    });
+});
 
 // ------------------------------------------
 $(document).ready(function() {
@@ -278,5 +304,19 @@ function obtenerBase64FromImage(url) {
     });
 }
 
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        var passwordField = document.getElementById("id_password");
+        var icon = this.querySelector("i");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    });
 
 //----------------------------------------------------

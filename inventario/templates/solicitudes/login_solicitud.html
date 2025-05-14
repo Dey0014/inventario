@@ -1,0 +1,55 @@
+{% extends "login.html" %}
+{% block content %}
+<body class="login">
+
+<div class="container login-container d-flex justify-content-center align-items-center">
+    <div class="col-6">
+        <div class="card shadow">
+            <div class="row g-0">
+                <div class="col-12 p-3 d-flex align-items-center">
+                    <div class="card-body form-container text-black">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Título -->
+                            <div class="text-center mb-4">
+                                <i class="bi bi-boxes fa-2x text-danger"></i>
+                                <h2 class="fw-bold mb-0">Solicitud de Articulos</h2>
+                            </div>
+
+                            <!-- Usuario -->
+                            <div class="mb-3">
+                                <input type="number" name="cedula" class=" text-start form-control form-control-lg" 
+                                    placeholder="Cédula" required>
+                            </div>
+
+                            <!-- Mensajes de error -->
+                            {% if messages %}
+                                <ul class="text-danger">
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                            <!-- Botón de Ingresar -->
+                            <button class="btn btn-primary col-12" type="submit">Ingresar</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}
+</body>

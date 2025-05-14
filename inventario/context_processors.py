@@ -1,20 +1,20 @@
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-from .models import Solicitudes
+from .models import *
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce
-
+from django.http import JsonResponse
 
 def solicitudes_pendientes(request):
     # Consultar solicitudes pendientes con detalles necesarios
-    solicitudes_pendientes = Solicitudes.objects.all().values(
+    solicitudes_pendientes = SolicitudItem.objects.all().values(
         'id',  # ID de la solicitud
         'articulo_solicitado',
         'articulo_id',  # Descripción combinada
         'cantidad',  # Cantidad solicitada
         'tipo',  # Tipo de solicitud
-        'persona__nombre',  # Nombre de la persona
-        'persona__departamento__nombre'  # Departamento de la persona
+        'solicitud__persona__nombre',  # Nombre de la persona
+        'solicitud__persona__departamento__nombre'  # Departamento de la persona
     )
     
     cantidad_solicitudes = solicitudes_pendientes.count()  # Contar el número de solicitudes
@@ -29,3 +29,4 @@ def solicitudes_pendientes(request):
         'cantidad_solicitudes': cantidad_solicitudes,  # Pasar la cantidad
         'solicitudes_pendientes': solicitudes_pendientes_json  # JSON serializado
     }
+

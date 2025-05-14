@@ -1,6 +1,6 @@
 {% extends "inicio.html" %} 
 {% block content %}
-<div class="rounded m-5 mt-0"  id="myTabContent">
+<div class="rounded m-5 mt-0 col-md-11"  id="myTabContent">
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
         <p class="fs-2 m-0">Lista de Entregas</p>
         <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput"  style="width: 200px;">
@@ -16,6 +16,7 @@
                     <th class="col-2">Nombre - CI</th>
                     <th class="col-1">Cantidad</th>
                     <th class="col-2">Descripción</th>
+                    <th class="col-1">Categoria</th>
                     <th class="col-3">Fecha de Préstamo</th>
                 </tr>
             </thead>
@@ -28,6 +29,7 @@
                     <td>{{ registro.persona | title}}</td>
                     <td>{{ registro.cantidad }}</td>
                     <td>{{ registro.descripcion }}</td>
+                    <td>{{ registro.tipo }}</td>
                     <td>{{ registro.fecha_entrega }}</td>
                 </tr>
                 {% endfor %}
