@@ -266,10 +266,10 @@ def registrar_entregas_lote(request):
                     tipo=item['tipo']
                 )
 
-
+    
                 UserActionLog.objects.create(
                     user=request.user,
-                    action='Prestamo',
+                    action='Entrega',
                     details=f'Entregó {item["cantidad"]} de {material.descripcion} a {persona.nombre} por motivo de {item["descripcion"]}'
                 )
                 # Actualizar la cantidad disponible del material

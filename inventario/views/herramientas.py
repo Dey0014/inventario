@@ -131,7 +131,7 @@ def devolucion_herramientas(request, pk):
 
             UserActionLog.objects.create(
                 user=request.user,
-                action="Entrega ",
+                action='Regreso',
                 details=f"Finalizo el Prestamo de {herramienta.descripcion}- {cantidad} unds a ({prestamo.persona.nombre}) "
             )
 

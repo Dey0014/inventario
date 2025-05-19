@@ -421,23 +421,6 @@
   }, sessionLifetime * 1000);
 </script>
 
-  <script>
-function checkSession() {
-    fetch("{% url 'check_session' %}")
-        .then(response => {
-            if (!response.ok) {
-                window.location.href = "{% url 'login' %}";  // Redirigir al login
-            }
-        })
-        .catch(() => {
-            window.location.href = "{% url 'login' %}";
-        });
-}
-
-// Ejecutar cada 20 segundos
-setInterval(checkSession, 20000);
-</script>
-</script>
 {% else %}
 
 <script> window.location.href = "{% url 'login' %}" </script>
