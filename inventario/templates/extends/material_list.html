@@ -1012,7 +1012,7 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
             const newCantidadMinima = document.getElementById('edit-cantidad').value;
             const newTipo = document.getElementById('edit-tipo').value;
 
-            if (!newCodigo || !newDescripcion || !newCantidadMinima || !newTipo) {
+            if (!newDescripcion || !newCantidadMinima || !newTipo) {
               Swal.showValidationMessage('Todos los campos son obligatorios');
               return false;
             }

@@ -78,6 +78,7 @@ def aprobar_solicitud(request, id):
                 # Registrar la entrega en el modelo Entrega
                 entrega = Entrega.objects.create(
                     material=material,
+                    tipo=material.tipo_material,
                     persona=solicitud.solicitud.persona,
                     analista=request.user.username,  # Asume que el usuario actual es el analista
                     cantidad=solicitud.cantidad,
@@ -95,7 +96,7 @@ def aprobar_solicitud(request, id):
                 # Registrar la entrega en el modelo Entrega
                 Prestamo = Prestamos.objects.create(
                     herramienta=herramienta,
-                    persona=solicitud.persona,
+                    persona=solicitud.solicitud.persona,
                     analista=request.user.username,  # Asume que el usuario actual es el analista
                     cantidad=solicitud.cantidad,
                     descripcion=motivo,

@@ -26,7 +26,12 @@ urlpatterns = [
     path("registrar_entregas_lote/", registrar_entregas_lote, name="registrar_entregas_lote"),
 
 
-    # --------------Personas----------#
+    #---------------Personas----------#
+
+    path("registroDePersonas/", registroDePersonas, name="registroDePersonas"),
+    path('crear_departamento/', crear_departamento, name='crear_departamento'),
+
+    # --------------Usuarios----------#
 
     path("registrar_usuario/", registrar_usuario, name="registrar_usuario"),
     path('users_list/', users_list, name='users_list'),

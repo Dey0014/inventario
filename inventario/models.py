@@ -12,7 +12,7 @@ class Herramientas(models.Model):
     ('Desgastado', 'Desgastado'),
     ('Dañado', 'Dañado'),
     ]
-        
+    codigo = models.CharField(max_length=10, unique=True, blank=True)
     descripcion = models.CharField(max_length=250)
     cantidad = models.PositiveIntegerField(default=0)
     coordinador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -21,10 +21,16 @@ class Herramientas(models.Model):
     prestamo = models.BooleanField(default=False, null=True, blank=True)
     cantidad_minima = models.PositiveIntegerField(default=0)
 
-    # auto_now_add=True
+    def save(self, *args, **kwargs):
+        if not self.codigo:
+            last = Herramientas.objects.order_by('-id').first()
+            next_id = last.id + 1 if last else 1
+            self.codigo = f"HER{str(next_id).zfill(3)}"
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.descripcion} ({self.cantidad})'
-    
+
     
     def agregar_herramienta(self, cantidad_a_agregar):
         self.cantidad += cantidad_a_agregar

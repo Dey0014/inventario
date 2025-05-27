@@ -7,11 +7,13 @@ from django.http import JsonResponse
 
 def solicitudes_pendientes(request):
     # Consultar solicitudes pendientes con detalles necesarios
-    solicitudes_pendientes = SolicitudItem.objects.all().values(
+    solicitudes_pendientes = SolicitudItem.objects.filter(solicitud__estado = 'P').values(
         'id',  # ID de la solicitud
         'articulo_solicitado',
         'articulo_id',  # Descripción combinada
         'cantidad',  # Cantidad solicitada
+        'encargado',
+        'uso',
         'tipo',  # Tipo de solicitud
         'solicitud__persona__nombre',  # Nombre de la persona
         'solicitud__persona__departamento__nombre'  # Departamento de la persona

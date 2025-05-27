@@ -30,7 +30,7 @@ def agregar_material(request):
             UserActionLog.objects.create(
                 user=request.user,
                 action='Agrego Material',
-                details=f"Se agregaron {cantidad} del material {material.descripcion} con id ({material.id})",
+                details=f"Se agregaron {cantidad} del material {material.descripcion} con codigo ({material.codigo})",
             )
             return JsonResponse({'success': True, 'message': "Material registrado correctamente."})
         except Exception as e:
@@ -55,7 +55,7 @@ def eliminar_material(request, pk):
         UserActionLog.objects.create(
             user=request.user,
             action='Elimino Material',
-            details=f"Se elimino {material.descripcion} con el id {material.id} por el motivo de {motivo}",
+            details=f"Se elimino {material.descripcion} con el codigo {material.codigo} por el motivo de {motivo}",
         )
         # Marcar como eliminado
         material.delete()
@@ -74,6 +74,10 @@ def editar_material(request, pk):
         cantidad_minima = request.POST.get('cantidad_minima')
         tipo = request.POST.get('tipo')
 
+        if not codigo:
+            codigo=generar_codigo(tipo)
+            print(codigo)
+
         # Encuentra el material por su código o ID
         try:
             material = get_object_or_404(Material, pk=pk)
@@ -88,7 +92,7 @@ def editar_material(request, pk):
             UserActionLog.objects.create(
             user=request.user,
             action='Modifico Material',
-            details=f"Se modifico el material con el id {material.id} por el usuario {request.user}",
+            details=f"Se modifico el material con el codigo {material.codigo} por el usuario {request.user}",
             )
 
             return JsonResponse({'status': 'success'}, status=200)
@@ -155,7 +159,7 @@ def entregar_material_prueba(request, pk):
             UserActionLog.objects.create(
                 user=request.user,
                 action='entrega',
-                details=f'Entregó {cantidad} de {material.descripcion} a {persona.nombre} por motivo de {descripcion}'
+                details=f'Entregó {cantidad} de {material.descripcion} codigo {material.codigo} a {persona.nombre} por motivo de {descripcion}'
             )
             # Descontar la cantidad y guardar el material
             material.cantidad -= cantidad
@@ -190,25 +194,24 @@ def modificar_cantidades(request, pk):
             if cantidad_a_agregar:
                 cantidad_a_agregar = int(cantidad_a_agregar)
                 material.agregar_material(cantidad_a_agregar)
-                mensaje_agregar = f"Se agregaron {cantidad_a_agregar} unidades al material {material.descripcion}."
-
+                mensaje_agregar = f"Se agregaron {cantidad_a_agregar} unidades al material {material.descripcion} con el codigo {material.codigo}."
                 # Registrar la acción en el log
                 UserActionLog.objects.create(
                     user=request.user,
                     action='agregar material',
-                    details=f"Se agregó {cantidad_a_agregar} unidades a {material.descripcion} por motivo de {justificacion}.",
+                    details=f"Se agregó {cantidad_a_agregar} unidades a {material.descripcion} con el codigo {material.codigo} por motivo de {justificacion}.",
                 )
 
             if cantidad_a_restar:
                 cantidad_a_restar = int(cantidad_a_restar)
                 material.restar_material(cantidad_a_restar)
-                mensaje_restar = f"Se restaron {cantidad_a_restar} unidades al material {material.descripcion}."
+                mensaje_restar = f"Se restaron {cantidad_a_restar} unidades al material {material.descripcion} con el codigo {material.codigo}."
 
                 # Registrar la acción en el log
                 UserActionLog.objects.create(
                     user=request.user,
                     action='restar material',
-                    details=f"Se restaron {cantidad_a_restar} unidades al material {material.descripcion} por motivo de {justificacion}.",
+                    details=f"Se restaron {cantidad_a_restar} unidades al material {material.descripcion} con el codigo {material.codigo} por motivo de {justificacion}.",
                 )
             
             # Combinamos los mensajes de éxito para enviar en la respuesta JSON
@@ -254,7 +257,7 @@ def registrar_entregas_lote(request):
 
                 # Validar si hay suficiente cantidad disponible
                 if material.cantidad < int(item['cantidad']):
-                    return JsonResponse({'error': f"No hay suficiente cantidad de {material.descripcion}"}, status=400)
+                    return JsonResponse({'error': f"No hay suficiente cantidad de {material.descripcion} codigo {material.codigo}."}, status=400)
 
                 # Registrar el préstamo
                 Entrega.objects.create(
@@ -270,12 +273,19 @@ def registrar_entregas_lote(request):
                 UserActionLog.objects.create(
                     user=request.user,
                     action='Entrega',
-                    details=f'Entregó {item["cantidad"]} de {material.descripcion} a {persona.nombre} por motivo de {item["descripcion"]}'
+                    details=f'Entregó {item["cantidad"]} de {material.descripcion} codigo {material.codigo} a {persona.nombre} por motivo de {item["descripcion"]}'
                 )
                 # Actualizar la cantidad disponible del material
                 material.restar_material(int(item['cantidad']))
 
-            return JsonResponse({'success': 'Préstamos registrados correctamente'})
+            messages.success(request, "las entregas se han registrado correctamente.")
+            return redirect("entregas_lotes")
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+            # Manejo genérico de errores
+            print(f"Error: {e}")
+            messages.error(request, "Ocurrió un error al procesar la solicitud.")
+            return redirect("entregas_lotes")
+
+
+
+

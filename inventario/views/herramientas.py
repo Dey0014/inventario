@@ -21,7 +21,7 @@ def editar_herramienta(request, pk):
             UserActionLog.objects.create(
             user=request.user,
             action='Modifico Herramienta',
-            details=f"Se modifico la Herramienta con el id {herramienta.id} por el usuario {request.user}",
+            details=f"Se modifico la Herramienta con el codigo {herramienta.codigo} por el usuario {request.user}",
             )
 
             return JsonResponse({'status': 'success'}, status=200)
@@ -47,7 +47,7 @@ def eliminar_herramienta(request, pk):
         UserActionLog.objects.create(
             user=request.user,
             action='Elimino Herramienta',
-            details=f"Se elimino {herramienta.descripcion} con el id {herramienta.id} por el usuario {request.user}",
+            details=f"Se elimino {herramienta.descripcion} con el codigo {herramienta.codigo} por el usuario {request.user}",
         )
         # Marcar como eliminado
         herramienta.delete()
@@ -74,25 +74,25 @@ def modificarCantidadesHerramientas(request, pk):
             if cantidad_a_agregar:
                 cantidad_a_agregar = int(cantidad_a_agregar)
                 herramienta.agregar_herramienta(cantidad_a_agregar)
-                mensaje_agregar = f"Se agregaron {cantidad_a_agregar} unidades al material {herramienta.descripcion}."
+                mensaje_agregar = f"Se agregaron {cantidad_a_agregar} unidades a {herramienta.descripcion} con codigo {herramienta.codigo}."
 
                 # Registrar la acción en el log
                 UserActionLog.objects.create(
                     user=request.user,
                     action='agregar herramienta',
-                    details=f"Se agregó {cantidad_a_agregar} unidades a {herramienta.descripcion}por motivo de {justificacion}.",
+                    details=f"Se agregó {cantidad_a_agregar} unidades a {herramienta.descripcion} con codigo {herramienta.codigo} por motivo de {justificacion}.",
                 )
 
             if cantidad_a_restar:
                 cantidad_a_restar = int(cantidad_a_restar)
                 herramienta.restar_herramienta(cantidad_a_restar)
-                mensaje_restar = f"Se restaron {cantidad_a_restar} unidades al material {herramienta.descripcion}."
+                mensaje_restar = f"Se restaron {cantidad_a_restar} unidades a {herramienta.descripcion} con codigo {herramienta.codigo}."
 
                 # Registrar la acción en el log
                 UserActionLog.objects.create(
                     user=request.user,
                     action='restar herramienta',
-                    details=f"Se restaron {cantidad_a_restar} unidades al material {herramienta.descripcion}por motivo de {justificacion}.",
+                    details=f"Se restaron {cantidad_a_restar} unidades a {herramienta.descripcion} con codigo {herramienta.codigo} por motivo de {justificacion}.",
                 )
             
             # Combinamos los mensajes de éxito para enviar en la respuesta JSON
@@ -132,7 +132,7 @@ def devolucion_herramientas(request, pk):
             UserActionLog.objects.create(
                 user=request.user,
                 action='Regreso',
-                details=f"Finalizo el Prestamo de {herramienta.descripcion}- {cantidad} unds a ({prestamo.persona.nombre}) "
+                details=f"Finalizo el Prestamo de {herramienta.descripcion} ({herramienta.codigo}) - {cantidad} unds a ({prestamo.persona.nombre}) "
             )
 
             # Eliminar el préstamo activo
@@ -197,7 +197,7 @@ def Prestamo_herramientas(request, pk):
             UserActionLog.objects.create(
                 user=request.user,
                 action='entrega',
-                details=f'Entregó {cantidad} de {herramienta.descripcion} a {persona.nombre} por motivo de {descripcion}'
+                details=f'Entregó {cantidad} de {herramienta.descripcion} con codigo {herramienta.codigo} a {persona.nombre} por motivo de {descripcion}'
             )
 
             return redirect("herramientas_prestadas")
@@ -216,6 +216,7 @@ def agregar_herramientas(request):
         descripcion = request.POST.get('descripcion')
         cantidad = request.POST.get('cantidad')
         condicion = request.POST.get('condicion')
+        cantidad_min =request.POST.get('cantidad_minima')
 
 
         try:
@@ -224,14 +225,15 @@ def agregar_herramientas(request):
                 descripcion=descripcion,
                 coordinador=request.user,
                 cantidad=int(cantidad),
-                condicion=condicion
+                condicion=condicion,
+                cantidad_minima=cantidad_min
             )
 
                     # Registrar la acción en el log
             UserActionLog.objects.create(
                 user=request.user,
                 action='Agrego Herramienta',
-                details=f"Se agregaron {cantidad} de la Herramienta {herramienta.descripcion} con id ({herramienta.id})",
+                details=f"Se agregaron {cantidad} de la Herramienta {herramienta.descripcion} con el codigo ({herramienta.codigo})",
             )
             return JsonResponse({'success': True, 'message': "Material registrado correctamente."})
         except Exception as e:
@@ -279,12 +281,15 @@ def registrar_prestamos_lote(request):
                 UserActionLog.objects.create(
                     user=request.user,
                     action='Prestamo',
-                    details=f'Entregó {item["cantidad"]} de {herramienta.descripcion} a {persona.nombre} por motivo de {item["descripcion"]}'
+                    details=f'Entregó {item["cantidad"]} de {herramienta.descripcion} con codigo {herramienta.codigo} a {persona.nombre} por motivo de {item["descripcion"]}'
                 )
                 # Actualizar la cantidad disponible de la herramienta
                 herramienta.restar_herramienta(int(item['cantidad']))
 
-            return JsonResponse({'success': 'Préstamos registrados correctamente'})
+            messages.success(request, "El préstamo se ha registrado correctamente.")
+            return redirect("prestamolotes")
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+            # Manejo genérico de errores
+            print(f"Error: {e}")
+            messages.error(request, "Ocurrió un error al procesar la solicitud.")
+            return redirect("prestamolotes")

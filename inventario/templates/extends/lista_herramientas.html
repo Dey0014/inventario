@@ -19,19 +19,19 @@
             <table class="tablasApp  table table-hover text-center">
         <thead class=text-center>
         <tr>
-            <th class="col-1 ">id</th>
-            <th class="col-4">descripcion</th>
-            <th class="col-1">cantidad</th>
-            <th class="hidden">coordinador</th>
-            <th class="col-4">fecha ingreso</th>
-            <th class="col-1">condicion</th>
+            <th class="col-1 ">Codigo</th>
+            <th class="col-4">Descripcion</th>
+            <th class="col-1">Cantidad</th>
+            <th class="hidden">Coordinador</th>
+            <th class="col-4">Fecha ingreso</th>
+            <th class="col-1">Condicion</th>
             <th class="col-1">Acción</th>
         </tr>
         </thead>
         <tbody>
         {% for her in herramientas %}
         <tr style="{% if her.cantidad <= her.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
-            <td class="">{{ her.id }}</td>
+            <td class="">{{ her.codigo }}</td>
             <td class="">{{ her.descripcion }}</td>
             <td class="">{{ her.cantidad }}</td>
             <td class="hidden">{{ her.coordinador }}</td>
@@ -77,6 +77,10 @@ document.querySelectorAll('.agregar-herramientas').forEach(function(element) {
             <input type="number" name="cantidad" id="cantidad" min="0" required class="form-control">
             </div>
             <div class="mb-3">
+            <label for="cantidad_minima" class="form-label">Cantidad mínima:</label>
+            <input type="number" name="cantidad_minima" id="cantidad_minima" min="0" required class="form-control">
+            </div>
+            <div class="mb-3">
             <label for="condicion" class="form-label">Condicion:</label>
             <select name="condicion" id="condicion" class="form-control select2">
             {% for valor, nombre in condiciones %}
@@ -100,6 +104,7 @@ document.querySelectorAll('.agregar-herramientas').forEach(function(element) {
                 descripcion: $('#descripcion').val(),
                 cantidad: $('#cantidad').val(),
                 condicion: $('#condicion').val(),
+                cantidad_minima: $('#cantidad_minima').val(),
             },
             success: function(response) {
                 if (!response.success) {

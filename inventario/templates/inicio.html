@@ -52,6 +52,7 @@
               <a class="nav-link dropdown-toggle ts" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                 aria-label="Prueba Desplegable 1">usuarios</a>
               <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'registroDePersonas' %}">Registro de Personas</a></li>
                 <li><a class="dropdown-item" href="{% url 'users_list' %}">Lista de Usuarios</a></li>
                 <li><a class="dropdown-item" href="{% url 'registrar_usuario' %}">Registrar Usuario</a></li>
               </ul>
@@ -238,25 +239,28 @@
       // Mostrar detalles de la solicitud
       function showSolicitudDetails(solicitud, solicitudId) {
         Swal.fire({
-          html: `
-            <div style="text-align: left; margin: 10px;">
-              <p class="hidden"><strong>Persona:</strong> ${solicitud.articulo_id}</p>
-              <p><strong>Persona:</strong> ${solicitud.solicitud__persona__nombre}</p>
-              <p><strong>Material Solicitado:</strong> ${solicitud.articulo_solicitado}</p>
-              <p><strong>Cantidad:</strong> ${solicitud.cantidad}</p>
-              <p><strong>Departamento:</strong> ${solicitud.solicitud__persona__departamento__nombre}</p>
-              <div class="mt-3">
-                <label for="motivo" class="form-label"><strong>Justificación:</strong></label>
-                <textarea id="motivo" class="form-control border border-primary" rows="3" placeholder="Escribe la justificación aquí..."></textarea>
-              </div>
-                <div class="d-flex justify-content-end mt-3">
-                  <button type="button" class="btn btn-danger me-2" id="btn-descartar">Descartar</button>
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                  <button type="button" class="btn btn-success me-2" id="btn-aprobar">Aprobar</button>
-                </div>
+        html: `
+          <div style="text-align: left; margin: 10px; font-size: 16px;">
+            <div class="mb-2"><strong>Persona:</strong> ${solicitud.solicitud__persona__nombre}</div>
+            <div class="mb-2"><strong>Encargado:</strong> ${solicitud.encargado}</div>
+            <div class="mb-2"><strong>Uso del material:</strong> ${solicitud.uso}</div>
+            <div class="mb-2"><strong>Material solicitado:</strong> ${solicitud.articulo_solicitado}</div>
+            <div class="mb-2"><strong>Cantidad:</strong> ${solicitud.cantidad}</div>
+            <div class="mb-3"><strong>Departamento:</strong> ${solicitud.solicitud__persona__departamento__nombre}</div>
+            
+            <label for="motivo" class="form-label"><strong>Justificación:</strong></label>
+            <textarea id="motivo" class="form-control border border-primary" rows="4" placeholder="Escribe la justificación aquí..."></textarea>
+            
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-danger w-45" id="btn-descartar">
+                <i class="bi bi-x-circle"></i> Descartar
+              </button>
+              <button type="button" class="btn btn-success w-45" id="btn-aprobar">
+                <i class="bi bi-check-circle"></i> Aprobar
+              </button>
             </div>
-          `,
+          </div>
+        `,
           icon: 'info',
           width: '600px',
           showCloseButton: true,

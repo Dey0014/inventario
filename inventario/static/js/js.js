@@ -23,7 +23,13 @@ $(document).ready(function () {
 });
 
 
-
+$(document).ready(function () {
+    $(".selectDepartment").select2({
+        width: '100%',
+        placeholder: "Selecciona un Departamento",
+        allowClear: true
+    });
+});
 
 
 $(document).ready(function () {

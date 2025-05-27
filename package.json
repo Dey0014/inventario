@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@sweetalert2/theme-bulma": "^5.0.18",
+    "pdfmake": "^0.2.18"
+  }
+}

@@ -1,0 +1,206 @@
+la pagina funciona con django python html css jquery tiene select2 y boostrap
+
+estoy tratando de hacer todas las vistas con vistas genericas y formularios de django
+
+tambien la permisologia de los usuarios se guia por los grupos que hice desde el admin de django
+
+el pip tiene instalado el 
+asgiref==3.8.1
+Django==5.0.7
+psycopg2-binary==2.9.9
+sqlparse==0.5.1
+_____________________________________
+repositorios que he instalado en local y carpetas
+curl -o select2.min.js https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js
+curl -o select2.min.css https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css
+mkdir -p static/bootstrap/css static/bootstrap/js static/jquery static/select2/js static/select2/css
+curl -o bootstrap.bundle.min.js https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+curl -o bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css
+curl -o jquery.min.js https://code.jquery.com/jquery-3.6.0.min.js
+curl -o sweetalert2.all.min.js https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js
+curl -o sweetalert2.min.css https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css
+
+por ahora 
+
+_____________________________________
+
+sacar del listado de entregas las solicitudes recurrentes de los materiales para su posterior analisis
+preguntar en que sentido osea cuando un departamento solicite mas de 10 veces un material por ejemplo un bombillo marcarlo como recurrentes
+
+las solicitudes quieren que les llegen por correo? osea que un departamento que solicita algo llene un formulario en la misma pagina y le de a un boton de enviar para que les llege un correo con lo que pide
+
+o que sea desde la misma pagina ? que si una lista con solicitudes y desde ahi ustedes le den aprovacion y si es asi
+
+modulo de solicitudes tengo pensado que esas solicitudes las toque un analista y se autocomplete el aprobar la entrega al departamento y con la cantidad del material que pidio
+
+y un reporte de consumo  semanar, quinsenal, semestral, etc. que permita calcular la media?
+
+falta el reporte en pdf y exel diario
+
+falta el edit de materiales
+
+montar el proyecto al git
+
+ponerle los estilos
+
+
+vistas descartadas
+--------------------------------------------------------------
+# FORMULARIO PARA ENTREGA DE MATERIALES
+# @login_required
+# def entregar_material(request):
+
+#     materiales = Material.objects.filter(cantidad__gt=0, eliminado=False)
+#     departamentos = Departamento.objects.all()
+#     personas = Personas.objects.all()
+
+#     if request.method == "POST":
+#         nuevo_departamento = request.POST.get('nuevo_dep')
+#         departamento_id = request.POST.get('departamento')
+#         material_id = request.POST.get('material')
+#         analista_id = request.POST.get('analista')
+#         descripcion = request.POST.get('descripcion')
+#         cantidad = int(request.POST.get('cantidad'))
+#         persona_id = request.POST.get('persona')
+#         nombre = request.POST.get("nombre")
+#         cedula = request.POST.get("cedula")
+        
+#         if nuevo_departamento or departamento_id:
+#             if departamento_id == "nuevo":
+#                 departamento = Departamento.objects.create(nombre=nuevo_departamento)
+#             else:
+#                 departamento = get_object_or_404(Departamento, id=departamento_id)
+
+#         # Crear o seleccionar la persona
+#         if persona_id == "nueva":
+#             persona = Personas.objects.create(
+#                 nombre=nombre,
+#                 cedula=cedula,
+#                 departamento=departamento
+#             )
+#         else:
+#             persona = get_object_or_404(Personas, id=persona_id)
+            
+#         material = Material.objects.get(id=material_id)
+
+#         # Validar si la cantidad solicitada es mayor que la cantidad disponible
+#         if cantidad > material.cantidad:
+#             messages.error(request, f"La cantidad solicitada excede la cantidad disponible. Solo hay {material.cantidad} disponible.")
+#             return redirect("entregar_material")
+
+#         analista = User.objects.get(id=analista_id)
+
+#         # Crear el préstamo
+#         entrega = Entrega(
+#             material=material,
+#             analista=analista,
+#             cantidad=cantidad,
+#             descripcion=descripcion,
+#             persona=persona
+#         )
+#         entrega.save()
+
+#         # Descontar la cantidad y guardar el cambio
+#         material.cantidad -= cantidad  # Restar la cantidad solicitada
+#         material.save()  # Guardar el cambio en la base de datos
+
+#         UserActionLog.objects.create(
+#             user=request.user,
+#             action='entrega',
+#             details=f'Entregó {cantidad} de {material.descripcion}')
+        
+#         messages.success(request, "El préstamo se ha registrado correctamente.")
+#         return redirect("entregar_material")  # Redirige a una página de lista o de éxito
+    
+#     return render(request, "extends/entrega.html", {"materiales": materiales, "departamentos":departamentos, "personas":personas})
+#-------------------------------------------------------------------------------------------
+
+# def solicitud_material(request):
+#     CI = request.session.get('persona_cedula')
+
+#     if request.method == "POST":
+#         persona_id = request.POST.get("persona")
+#         nombre = request.POST.get("nombre")
+#         cedula = request.POST.get("cedula")
+#         departamento_id = request.POST.get("departamento")
+#         nuevo_departamento = request.POST.get("nuevo_dep")
+#         articulo_id = request.POST.get("articulo")
+#         # Obtener la cantidad y manejar el caso en que esté vacía
+#         cantidad = request.POST.get('cantidad')
+#         if cantidad:  # Si no está vacío
+#             cantidad = int(cantidad)
+#         else:
+#             cantidad = 0  # O podrías establecer un valor predeterminado como 0, o mostrar un error
+    
+#         tipo = request.POST.get("tipo")
+
+#         if not cantidad:
+#             messages.error(request, "Por favor, ingrese una cantidad valida.")
+#             return redirect("Solicitud")
+#         # Verificar que todos los datos necesarios estén presentes
+#         if (tipo == "material" and not articulo_id) or (tipo == "herramientas" and not articulo_id):
+#             messages.error(request, "Por favor, complete todos los campos obligatorios.")
+#             return redirect("Solicitud")
+        
+        
+
+# # Validar si no se ha seleccionado un departamento ni se ha ingresado uno nuevo
+#         if nuevo_departamento or departamento_id:
+#                 # Crear o seleccionar el departamento
+#             if departamento_id == "":
+#                 departamento = Departamento.objects.create(nombre=nuevo_departamento)
+#             else:
+#                 departamento = get_object_or_404(Departamento, id=departamento_id)
+
+#         if persona_id:  # Si el usuario seleccionó una persona
+#             persona = Personas.objects.filter(id=persona_id).first()
+#             if not persona:
+#                 messages.error(request, "La persona seleccionada no existe.")
+#                 return redirect("Solicitud")
+#         else:  # Si no se seleccionó, crear una nueva
+#             persona = Personas.objects.create(
+#                 nombre=nombre,
+#                 cedula=cedula,
+#                 departamento=departamento
+#             )
+
+# # Obtener el material o herramienta solicitada
+#         articulo=None
+
+
+#         if tipo == "material":
+#             articulo = get_object_or_404(Material, id=articulo_id)
+#             articulo_nombre = articulo.descripcion
+#             articulo_id = articulo.id
+#         elif tipo == "herramientas":
+#             articulo = get_object_or_404(Herramientas, id=articulo_id)
+#             articulo_nombre = articulo.descripcion
+#             articulo_id = articulo.id
+
+#         # Crear la solicitud con el nombre del artículo
+#         Solicitudes.objects.create(
+#             tipo=tipo,
+#             persona=persona,
+#             articulo_solicitado=articulo_nombre,  # Guardar solo el nombre
+#             cantidad=cantidad,
+#             articulo_id = articulo_id
+#         )
+
+#         messages.success(request, "La solicitud se ha registrado correctamente.")
+#         return redirect("Solicitud")
+
+    
+
+#     if not CI:
+#         return render(request, 'solicitudes/solicitud_material.html', {'cantidad_solicitudes': 0})  # Si no hay cédula, no hay solicitudes
+    
+#     solicitudePorPersona = Solicitudes.objects.filter(persona__cedula=CI).count()
+
+#     context = {
+#         "solicitudePorPersona": solicitudePorPersona,
+#         "personas": Personas.objects.all(),
+#         "materiales": Material.objects.filter(cantidad__gt=0, eliminado=False),
+#         "herramientas": Herramientas.objects.filter(cantidad__gt=0),
+#         "departamentos": Departamento.objects.all()
+#     }
+#     return render(request, 'solicitudes/solicitud_material.html', context)

@@ -2,7 +2,7 @@
 {% block content %}
 <div id="contenido" class="rounded m-5 col-md-11 bg-light " style="box-shadow: 1px 1px 30px -10px;" id="myTabContent">
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
-        <p class="fs-2 m-0">Prestamo de Herramientas en lote</p>
+        <p class="fs-2 m-0">Prestamo de Materiales en lote</p>
     </div>
     <div class=" rounded-top-0 rounded table-responsive p-5 pt-2 pb-2 tab-content card-tabs border-top-0 bg-light">
         <div class="row g-3 align-items-center justify-content-center m-3">
@@ -38,11 +38,11 @@
         <div class="row g-2 align-items-center justify-content-center m-3">
 
             <!-- Tabla de artículos seleccionados -->
-            <h3 class="mt-4">Lista de Prestamo</h3>
+            <h3 class="mt-4">Lista de Entregas</h3>
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Materiale</th>
+                        <th>Materiales</th>
                         <th>Cantidad</th>
                         <th>Tipo</th>
                         <th>Descripción</th>
@@ -62,7 +62,27 @@
                 <input type="hidden" name="persona" id="persona-id">
                 <button type="submit" class="btn" style="background-color: rgb(77 135 199);color: white;">Registrar Entrega</button>
             </form>
-        
+         {% if messages %}
+            {% for message in messages %}
+                <div class="alert 
+                    {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} 
+                    alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
