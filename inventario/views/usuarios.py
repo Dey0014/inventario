@@ -5,7 +5,7 @@ def registrar_usuario(request):
     if request.method == "POST":
         form = RegistroUsuarioForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data["username"]
+            username = form.cleaned_data["username"].lower()
             password = form.cleaned_data["password"]
             email = form.cleaned_data["email"]
             tipo_usuario = form.cleaned_data["tipo_usuario"]

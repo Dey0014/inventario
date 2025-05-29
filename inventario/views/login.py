@@ -15,7 +15,7 @@ def login_view(request):            # Login de usuario
         return redirect("login")
     
     if request.method == "POST":
-        username_or_email = request.POST.get("username")
+        username_or_email = request.POST.get("username").lower()
         password = request.POST.get("password")
 
         if not username_or_email or not password:

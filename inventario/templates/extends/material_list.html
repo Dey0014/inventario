@@ -12,7 +12,7 @@
 
     <li class="nav-item" role="presentation">
       <a class="nav-link nav-link-tabs"  id="pestaña2" data-bs-toggle="tab" style="background-color: #f796468a;" data-bs-target="#pestaña2-pane"
-          type="button" role="tab" aria-controls="pestaña2-pane" aria-selected="true">PLOMERIA</a>
+          type="button" role="tab" aria-controls="pestaña2-pane" aria-selected="true">CIVIL</a>
     </li>
 
     <li class="nav-item" role="presentation">
@@ -28,11 +28,6 @@
     <li class="nav-item" role="presentation">
         <a class="nav-link nav-link-tabs"  id="pestaña5" data-bs-toggle="tab" data-bs-target="#pestaña5-pane" style="background-color: #8064a296;"
             type="button" role="tab" aria-controls="pestaña5" aria-selected="false">LIMPIEZA</a>
-    </li>
-
-    <li class="nav-item" role="presentation">
-      <a class="nav-link nav-link-tabs"  id="pestaña6" data-bs-toggle="tab" data-bs-target="#pestaña6-pane" style="background-color: #76933c8a;"
-          type="button" role="tab" aria-controls="pestaña6-pane" aria-selected="true">PINTURAS</a>
     </li>
 
     <li class="nav-item" role="presentation">
@@ -106,10 +101,10 @@
     </div>
   </div>
 
-  <!-- panel de PLOMERIA -->
+  <!-- panel de CIVIL -->
   <div class="tab-pane fade" id="pestaña2-pane" role="tabpanel" aria-labelledby="pestaña2" tabindex="0" >
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
-      <p class="fs-2 m-0">PLOMERIA</p>
+      <p class="fs-2 m-0">CIVIL</p>
       <div style="display: flex;">
         <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
         <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
@@ -118,7 +113,7 @@
 
     <div class="table-responsive p-4 pt-0 pb-0" >
       <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center" data-name="Material de Plomeria">
+      <table class="tablasApp table table-hover text-center" data-name="Material de Civil">
         <thead>
             <tr>
               <th class="col-1">Código</th>
@@ -131,24 +126,24 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-          {% for plo in plomeria %}
-          <tr style="{% if plo.cantidad <= plo.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
-            <td class="">{{ plo.codigo | upper}}</td>
-            <td class="text-start">{{ plo.descripcion }}</td>
-            <td class="">{{ plo.tipo_material | upper}}</td>
-            <td class="hidden">{{ plo.coordinador.username | title}}</td>
-            <td class="">{{ plo.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
-            <td class="text-center">{{ plo.cantidad }}</td>
+          {% for civ in civil %}
+          <tr style="{% if civ.cantidad <= civ.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
+            <td class="">{{ civ.codigo | upper}}</td>
+            <td class="text-start">{{ civ.descripcion }}</td>
+            <td class="">{{ civ.tipo_material | upper}}</td>
+            <td class="hidden">{{ civ.coordinador.username | title}}</td>
+            <td class="">{{ civ.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
+            <td class="text-center">{{ civ.cantidad }}</td>
             <td>
               <a title="datos" class="info" 
-                data-id="{{ plo.id }}"
-                data-codigo="{{ plo.codigo }}"
-                data-descripcion="{{ plo.descripcion }}"
-                data-cantidad="{{ plo.cantidad }}"
-                data-cantidad-minima="{{ plo.cantidad_minima }}"
-                data-coordinador="{{ plo.coordinador.username | title }}"
-                data-fecha="{{ plo.fecha_ingreso }}"
-                data-tipo="{{ plo.tipo_material }}"
+                data-id="{{ civ.id }}"
+                data-codigo="{{ civ.codigo }}"
+                data-descripcion="{{ civ.descripcion }}"
+                data-cantidad="{{ civ.cantidad }}"
+                data-cantidad-minima="{{ civ.cantidad_minima }}"
+                data-coordinador="{{ civ.coordinador.username | title }}"
+                data-fecha="{{ civ.fecha_ingreso }}"
+                data-tipo="{{ civ.tipo_material }}"
                 style="font-size: 24px; margin-right: 6px;">
                 <i class="bi bi-three-dots"></i>
               </a>
@@ -324,61 +319,6 @@
           </table>
           </div>
       </div>
-  </div>
-
-  <!-- panel de PINTURAS -->
-  <div class="tab-pane fade" id="pestaña6-pane" role="tabpanel" aria-labelledby="pestaña6" tabindex="0" >
-    <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
-      <p class="fs-2 m-0">PINTURAS</p>
-      <div style="display: flex;">
-        <input type="text" placeholder="Buscar" name="buscar" class="form-control searchInput" style="width: 200px;">
-        <a class="agregar-material" ><img src="{% static 'img/agregar-producto.png' %}"  title="agregar producto" class="btn mx-2 btn-primary"></a>
-      </div>
-    </div>
-
-    <div class="table-responsive p-4 pt-0 pb-0" >
-      <div class="tab-content card-tabs border-top-0">
-      <table class="tablasApp table table-hover text-center" data-name="Material de Pintura">
-        <thead>
-            <tr>
-              <th class="col-1">Código</th>
-              <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
-              <th class="col-1 hidden">Coordinador</th>
-              <th class="col-3">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
-              <th class="col-1">Acción</th>
-            </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          {% for pin in pinturas %}
-          <tr style="{% if pin.cantidad <= pin.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
-            <td class="">{{ pin.codigo | upper}}</td>
-            <td class="text-start">{{ pin.descripcion }}</td>
-            <td class="">{{ pin.tipo_material | upper}}</td>
-            <td class="hidden">{{ pin.coordinador.username | title}}</td>
-            <td class="">{{ pin.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
-            <td class="text-center">{{ pin.cantidad }}</td>
-            <td>
-              <a title="datos" class="info" 
-                data-id="{{ pin.id }}"
-                data-codigo="{{ pin.codigo }}"
-                data-descripcion="{{ pin.descripcion }}"
-                data-cantidad="{{ pin.cantidad }}"
-                data-cantidad-minima="{{ pin.cantidad_minima }}"
-                data-coordinador="{{ pin.coordinador.username | title }}"
-                data-fecha="{{ pin.fecha_ingreso }}"
-                data-tipo="{{ pin.tipo_material }}"
-                style="font-size: 24px; margin-right: 6px;">
-                <i class="bi bi-three-dots"></i>
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
-    </div>
   </div>
 
   <!-- panel de RESGUARDOS -->
@@ -1052,7 +992,6 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
 
 
 </script>
-
 
 <!-- este escrip sirve para que el ultimo tab en el que estaba quede activo cuando recarge la pagina -->
 <script>

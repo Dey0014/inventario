@@ -148,6 +148,7 @@ def entregar_material_prueba(request, pk):
             # Crear el préstamo
             entrega = Entrega(
                 material=material,
+                materialID=material,
                 analista=analista,
                 cantidad=cantidad,
                 descripcion=descripcion,
@@ -167,13 +168,11 @@ def entregar_material_prueba(request, pk):
 
 
 
-            messages.success(request, "El préstamo se ha registrado correctamente.")
             return redirect("material_list")
 
         except Exception as e:
             # Manejo genérico de errores
             print(f"Error: {e}")
-            messages.error(request, "Ocurrió un error al procesar la solicitud.")
             return redirect("material_list")
 
     return render(request, "extends/entrega.html")
@@ -266,7 +265,8 @@ def registrar_entregas_lote(request):
                     analista=request.user.username,
                     cantidad=item['cantidad'],
                     descripcion=item['descripcion'],
-                    tipo=item['tipo']
+                    tipo=item['tipo'],
+                    materialID=material
                 )
 
     

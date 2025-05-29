@@ -144,6 +144,7 @@ class SolicitudItem(models.Model):
 class Entrega(models.Model):
     
     material = models.CharField(max_length=150, null=True, blank=True)
+    materialID = models.ForeignKey(Material, on_delete=models.SET_NULL, null=True, blank=True)
     persona = models.ForeignKey(Personas, on_delete=models.SET_NULL, null=True, blank=True)
     analista = models.CharField(max_length=150)
     cantidad = models.PositiveIntegerField()

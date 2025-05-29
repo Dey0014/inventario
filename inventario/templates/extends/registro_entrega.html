@@ -17,7 +17,8 @@
                     <th class="col-1">Cantidad</th>
                     <th class="col-2">Descripción</th>
                     <th class="col-1">Categoria</th>
-                    <th class="col-3">Fecha de Préstamo</th>
+                    <th class="col-3">Fecha de Entrega</th>
+                    <th class="col-1">Reintegro</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -31,10 +32,84 @@
                     <td>{{ registro.descripcion }}</td>
                     <td>{{ registro.tipo }}</td>
                     <td>{{ registro.fecha_entrega }}</td>
+                    <td>
+                        <a title="datosMaterial" 
+                            class="reintegro" 
+                            data-entregaid="{{registro.id}}"
+                            data-id="{{ registro.materialID.id }}" 
+                            data-cantidad="{{ registro.cantidad }}" 
+                            style="font-size: 24px; margin-right: 6px;">
+                            <i class="bi bi-three-dots"></i>
+                        </a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded',function() {
+        const botonreintegro = document.querySelectorAll('.reintegro');
+        botonreintegro.forEach(button => {
+            button.addEventListener('click', function(){
+                const pk = this.getAttribute('data-id');
+                const cantidad = this.getAttribute('data-cantidad');
+                const registro =this.getAttribute('data-entregaid')
+
+                Swal.fire({
+                    title: 'Reintegro',
+                    icon: "info",
+                    html: `
+                        <h3>cantidad entregada ${cantidad}</h3>
+                        <p>indique cuando quiere se retorna y la justificacion</p>
+                        <form id="fromretorno">
+                            <div class="form-group">
+                                <label for="id_cantidad">Cantidad:</label>
+                                <input type="number" name="cantidad" min="1" max="${cantidad}" class="form-control" id="id_cantidad"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_justificacion">Justificación:</label>
+                                <input type="text" name="justificacion" class="form-control" id="id_justificacion" required/>
+                            </div>
+                        </form>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Guardar',
+                    preConfirm: () => {
+                        const cant = document.getElementById('id_cantidad').value;
+                        const justificacion = document.getElementById('id_justificacion').value;
+
+                        if (!justificacion) {
+                            Swal.showValidationMessage('¡La justificación es requerida!');
+                            return false; // ¡Aquí detienes la promesa!
+                        }
+                        if (!cant) {
+                            Swal.showValidationMessage('ingrese la cantidad!');
+                            return false; // ¡Aquí detienes la promesa!
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: `../retorno/${pk}/`,  
+                            data: {
+                                cantidad: cant,
+                                justificacion: justificacion,
+                                registro:registro,
+                                csrfmiddlewaretoken: "{{ csrf_token }}", 
+                            },
+                            success: function (response) {
+                                Swal.fire('Guardado', 'se ha retornado el Material', 'success');
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+                            }
+                        });
+                        setInterval("location.reload()",1000);
+                        return false; 
+                    }
+                })
+            })
+        })
+    })
+</script>
 {% endblock %}

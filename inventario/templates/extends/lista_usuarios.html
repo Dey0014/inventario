@@ -21,8 +21,8 @@
             <tbody class="table-group-divider">
                 {% for user in users.all %}
                 <tr>
-                    <td>{{ user.username | title }}</td>
-                    <td>{{ user.email  }}</td>
+                    <td>{{ user.username | upper }}</td>
+                    <td>{{ user.email | upper }}</td>
                     <td>{{ user.date_joined |date:"d/m/Y g:i a"}}</td>
                     <td>{{ user.groups.first.name}}</td>
                     <td>

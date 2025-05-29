@@ -24,7 +24,7 @@ urlpatterns = [
     path("entregar_material_prueba/<int:pk>/", entregar_material_prueba, name="entregar_material_prueba"),
     path("entregas_lotes/", entregas_lotes, name="entregas_lotes"),
     path("registrar_entregas_lote/", registrar_entregas_lote, name="registrar_entregas_lote"),
-
+    path("retorno/<int:pk>/", retorno, name="retorno"),
 
     #---------------Personas----------#
 

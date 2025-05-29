@@ -8,21 +8,18 @@ def material_list(request):
     herramientas = Herramientas.objects.all().order_by('descripcion')
     limpieza = Material.objects.filter(eliminado=False, tipo_material="LIM" ).order_by('descripcion')
     papeleria = Material.objects.filter(eliminado=False, tipo_material="PPL" ).order_by('descripcion')
-    pinturas = Material.objects.filter(eliminado=False, tipo_material="PIN" ).order_by('descripcion')
     resguardos = Material.objects.filter(eliminado=False, tipo_material="RES" ).order_by('descripcion')
     electromecanica = Material.objects.filter(eliminado=False, tipo_material="ELM" ).order_by('descripcion')
-    plomeria = Material.objects.filter(eliminado=False, tipo_material="PLO" ).order_by('descripcion')
     electricidad = Material.objects.filter(eliminado=False,  tipo_material__in=["ELE", "CABLE"]).order_by('descripcion')
+    civil = Material.objects.filter(eliminado=False,  tipo_material__in=["PIN", "PLO"]).order_by('descripcion')
     prueba = Material.objects.filter(eliminado=False,  tipo_material= "prueba" ).order_by('descripcion')
     tipos = Material.TIPO_MATERIAL_CHOICES
 
     context = {
         "limpieza": limpieza,
         "papeleria": papeleria,
-        "pinturas": pinturas,
         "resguardos":resguardos,
         "electromecanica":electromecanica,
-        "plomeria":plomeria,
         "electricidad":electricidad,
         "prueba":prueba,
         "tipos":tipos,
@@ -30,6 +27,7 @@ def material_list(request):
         "materiales":materiales,
         "departamentos":departamentos,
         "personas":personas,
+        "civil":civil,
     }
 
     return render(request, "extends/material_list.html", context)
