@@ -202,8 +202,6 @@ $('#printBtn').click(function() {
 $('#pruebasss').click(async function() {
     try {
         var logoBase64 = await obtenerBase64FromImage('/static/img/logo.png'); // Esperar a que la imagen se convierta
-
-
         var tableData = [];
         var table = $('.tablasApp:visible').DataTable();
 
