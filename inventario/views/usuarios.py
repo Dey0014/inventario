@@ -110,3 +110,41 @@ def editar_usuarios(request, pk):
         return JsonResponse({"success": True, "message": "Usuario actualizado correctamente."})
 
     return JsonResponse({"success": False, "message": "Método no permitido."}, status=400)
+
+
+@login_required
+def registroDePersonas(request):
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        cedula = request.POST.get('cedula')
+        departamentoid = request.POST.get('departamento')
+        ubicacion = request.POST.get('ubicacion')
+
+        departamento = Departamento.objects.get(id=departamentoid)
+
+        persona = Personas.objects.create(
+                nombre=nombre,
+                cedula=cedula,
+                departamento=departamento,
+                ubicacion=ubicacion
+            )
+    departamentos = Departamento.objects.all() 
+    return render(request, "extends/registrar_personas.html", { 'departamentos': departamentos })
+
+@csrf_exempt
+def crear_departamento(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        nombre = data.get('nombre', '').strip()
+        if nombre:
+            departamento = Departamento.objects.create(nombre=nombre)
+            return JsonResponse({'id': departamento.id, 'nombre': departamento.nombre})
+        else:
+            return JsonResponse({'error': 'Nombre vacío'}, status=400)
+    else:
+        # Si entra un GET u otro método, devuelve error adecuado
+        return HttpResponseNotAllowed(['POST'])
+    
+
+    

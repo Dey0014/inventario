@@ -4,7 +4,7 @@ from inventario.imp import *            #importaciones están en imp.py
 def editar_herramienta(request, pk):
     if request.method == 'POST':
         descripcion = request.POST.get('descripcion')
-        condicion = request.POST.get('condicion')
+        condicion = request.POST.get('condicion') or 'Bueno'
         cantidadMinima = request.POST.get('cantidad_minima')
 
 
@@ -115,28 +115,31 @@ def modificarCantidadesHerramientas(request, pk):
 @login_required
 def devolucion_herramientas(request, pk):
     if request.method == "POST":
+        # Obtener los datos enviados por AJAX
+        cantidad = int(request.POST.get('cantidad'))
+        herramienta_id = request.POST.get('herramientaId')
+        justificacion =request.POST.get('justificacion')
+        condicion = request.POST.get('condicion')
+
+        # Obtener el préstamo y la herramienta
+        prestamo = Prestamos.objects.get(id=pk)
+        herramienta = Herramientas.objects.get(id=herramienta_id)
+
         try:
-            
-            # Obtener los datos enviados por AJAX
-            cantidad = int(request.POST.get('cantidad'))
-            herramienta_id = request.POST.get('herramientaId')
-
-            # Obtener el préstamo y la herramienta
-            prestamo = Prestamos.objects.get(id=pk)
-            herramienta = Herramientas.objects.get(id=herramienta_id)
-
             # Sumar la cantidad de la herramienta al inventario
             herramienta.cantidad += cantidad
+            herramienta.condicion = condicion
             herramienta.save()
-
+            prestamo.cantidad -= cantidad
+            prestamo.save()
             UserActionLog.objects.create(
                 user=request.user,
                 action='Regreso',
-                details=f"Finalizo el Prestamo de {herramienta.descripcion} ({herramienta.codigo}) - {cantidad} unds a ({prestamo.persona.nombre}) "
+                details=f" se retorno la cantidad de {cantidad} de la herramienta {herramienta.descripcion} ({herramienta.codigo}) hecha a ({prestamo.persona.nombre}) por motivo de {justificacion} en estado {condicion}."
             )
-
             # Eliminar el préstamo activo
-            prestamo.delete()
+            if prestamo.cantidad == 0:
+                prestamo.delete()
 
             return JsonResponse({"success": True})
 
@@ -169,13 +172,7 @@ def Prestamo_herramientas(request, pk):
 
             persona = get_object_or_404(Personas, id=persona_id)
             herramienta =   get_object_or_404(Herramientas, id=pk)
-            
 
-            
-            # Validar cantidad disponible
-            if cantidad > herramienta.cantidad:
-                messages.error(request, f"La cantidad solicitada excede la disponible ({herramientas.cantidad}).")
-                return redirect("Prestamo_herramientas")
             
             # Obtener el analista
             analista = User.objects.get(id=analista_id)
@@ -215,9 +212,8 @@ def agregar_herramientas(request):
     if request.method == "POST" :
         descripcion = request.POST.get('descripcion')
         cantidad = request.POST.get('cantidad')
-        condicion = request.POST.get('condicion')
+        condicion = request.POST.get('condicion') or 'Bueno'
         cantidad_min =request.POST.get('cantidad_minima')
-
 
         try:
             # Crear material

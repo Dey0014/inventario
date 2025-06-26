@@ -1,65 +1,71 @@
 from inventario.imp import *
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
 
-@login_required
-def registroDePersonas(request):
 
+
+# pdf julio
+def pdf_herramientas(request):
+    herramientas = Herramientas.objects.all()
+    usuario = request.user
+    logo_url = request.build_absolute_uri(static('img/logo.png'))
+    hoy = datetime.today()
+    fecha = hoy.strftime("%-d/%-m/%Y, %-I:%M:%S %p")
+
+
+    template = render_to_string('pdfs/reporte_herramientas.html', {
+    'herramientas': herramientas,
+    'request': request,
+    'logo': logo_url,
+    'fecha': fecha,
+    'usuario' :usuario
+    })
+
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="productos_filtrados_por_rango.pdf"'
+
+    pdf_file = HTML(string=template).write_pdf()
+    response.write(pdf_file)
+
+    return response
+
+def preview_reporte_herramientas(request):
+    herramientas = Herramientas.objects.all()
+    return render(request, 'pdfs/reporte_herramientas.html', {
+        'herramientas': herramientas,
+    })
+
+
+@csrf_exempt  # Si usas CSRF en producción, usa un token, pero para pruebas esto va bien
+def pdf_materiales(request):
     if request.method == 'POST':
-        nombre = request.POST.get('nombre')
-        cedula = request.POST.get('cedula')
-        departamentoid = request.POST.get('departamento')
-        ubicacion = request.POST.get('ubicacion')
-
-        departamento = Departamento.objects.get(id=departamentoid)
-
-        persona = Personas.objects.create(
-                nombre=nombre,
-                cedula=cedula,
-                departamento=departamento,
-                ubicacion=ubicacion
-            )
-    departamentos = Departamento.objects.all() 
-    return render(request, "extends/registrar_personas.html", { 'departamentos': departamentos })
-
-@csrf_exempt
-def crear_departamento(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        nombre = data.get('nombre', '').strip()
-        if nombre:
-            departamento = Departamento.objects.create(nombre=nombre)
-            return JsonResponse({'id': departamento.id, 'nombre': departamento.nombre})
-        else:
-            return JsonResponse({'error': 'Nombre vacío'}, status=400)
-    else:
-        # Si entra un GET u otro método, devuelve error adecuado
-        return HttpResponseNotAllowed(['POST'])
-    
-@login_required
-def retorno(request, pk):
-    if request.method == 'POST':
-        cantidad = int(request.POST.get('cantidad'))
-        justificacion = request.POST.get('justificacion')
-        registroid = int(request.POST.get('registro'))
-
-        # Encuentra el material por su código o ID
         try:
-            registro = get_object_or_404(Entrega, pk=registroid)
-            registro.cantidad -= cantidad
-            registro.save()
-            material = get_object_or_404(Material, pk=pk)
-            material.cantidad += cantidad
-            material.save()
+            data = json.loads(request.body)
+            titulo = data.get('titulo', 'Sin Título')
+            materiales = data.get('materiales', [])
+            usuario = request.user
+            hoy = datetime.today()
+            fecha = hoy.strftime("%-d/%-m/%Y, %-I:%M:%S %p")  # O puedes usar `datetime.now()`
+            logo_url = request.build_absolute_uri(static('img/logo.png'))
 
-            # Registrar la acción en el log
-            UserActionLog.objects.create(
-            user=request.user,
-            action='Retorno',
-            details=f" se regreso {cantidad} del material {material.descripcion} con el codigo {material.codigo} por motivo de {justificacion}.",
-            )
+            template = render_to_string('pdfs/reporte_materiales.html', {
+                'materiales': materiales,
+                'usuario': usuario,
+                'fecha': fecha,
+                'logo': logo_url,
+                'titulo':titulo
+            })
 
-            return JsonResponse({'status': 'success'}, status=200)
-        except Material.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Material no encontrado'}, status=404)
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'inline; filename="reporte_materiales.pdf"'
 
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=400)
+            pdf_file = HTML(string=template, base_url=request.build_absolute_uri()).write_pdf()
+            response.write(pdf_file)
+            return response
+
+        except Exception as e:
+            return HttpResponse(f"Error generando PDF: {e}", status=500)
+    else:
+        return HttpResponse("Método no permitido", status=405)

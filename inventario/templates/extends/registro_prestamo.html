@@ -35,8 +35,8 @@
                             <button class="btn btn-success entregar-btn" data-id="{{ prestamo.id }}" 
                                     data-herramienta="{{ prestamo.herramienta_id }}"
                                     data-cantidad="{{ prestamo.cantidad }}"
-                                    data-persona="{{ prestamo.persona | title}}">
-                                    
+                                    data-persona="{{ prestamo.persona}}"
+                                    data-condicion="{{prestamo.herramienta.condicion}}">
                                 Finalizar Préstamo
                             </button>
                     </td>
@@ -50,50 +50,71 @@
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.entregar-btn').forEach(button => {
         button.addEventListener('click', function () {
-            const prestamoId = this.dataset.id;
+            const pk = this.dataset.id;
             const herramientaId = this.dataset.herramienta;
             const cantidad = this.dataset.cantidad;
+            const condicion = this.dataset.condicion;
             const csrfToken = "{{ csrf_token }}";  
 
             Swal.fire({
-                title: "¿Confirmar entrega?",
-                text: `Se devolverán ${cantidad} unidades al inventario.`,
-                icon: "warning",
+                title: `cantidad entregada ${cantidad}`,
+                html: `
+                    <p>indique cuando quiere se retorna y la justificacion</p>
+                    <form id="fromretorno">
+                            <div class="form-group">
+                                <label for="id_cantidad">Cantidad:</label>
+                                <input type="number" name="cantidad" min="1" max="${cantidad}" class="form-control" id="id_cantidad"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_justificacion">Justificación:</label>
+                                <input type="text" name="justificacion" class="form-control" id="id_justificacion" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="condicion" class="col-form-label">Condicion:</label>
+                                <input id="condicion" type="text" class="form-control" value="${condicion}">
+                            </div>
+                    </form>
+                `,
+                icon: "info",
                 showCancelButton: true,
-                confirmButtonText: "Sí, entregar",
+                confirmButtonText: "Retornar",
                 cancelButtonText: "Cancelar",
+                preConfirm: () => {
+                        const cant = document.getElementById('id_cantidad').value;
+                        const justificacion = document.getElementById('id_justificacion').value;
+                        const condicion =  document.getElementById('condicion').value;
 
-
-
-                }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                    type: "POST",
-                    url: `../devolucion_herramientas/${prestamoId}/`,
-                    data: {
-                        cantidad: cantidad,
-                        herramientaId: herramientaId,
-                        csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
-                    },
-                    dataType: "json",  // Asegúrate de que la respuesta sea JSON
-                    success: function(response) {
-                        console.log(response);  // Verifica qué es lo que llega
-                        if (response.success) {
-                            Swal.fire('Guardado', 'El material ha sido actualizado', 'success').then(() => {
-                                location.reload();  // Recargar la página para actualizar la tabla
-                            });
-                        } else {
-                            Swal.fire('Error', response.error || 'Hubo un problema al guardar los cambios', 'error');
+                        if (!justificacion) {
+                            Swal.showValidationMessage('¡La justificación es requerida!');
+                            return false; // ¡Aquí detienes la promesa!
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire('Error', 'Hubo un problema con la solicitud', 'error');
+                        if (!cant) {
+                            Swal.showValidationMessage('ingrese la cantidad!');
+                            return false; // ¡Aquí detienes la promesa!
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: `../devolucion_herramientas/${pk}/`,  
+                            data: {
+                                herramientaId:herramientaId,
+                                cantidad: cant,
+                                justificacion: justificacion,
+                                condicion: condicion,
+                                csrfmiddlewaretoken: "{{ csrf_token }}", 
+                            },
+                            success: function (response) {
+                                Swal.fire('Guardado', 'se ha retornado la herramienta', 'success');
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+                            }
+                        });
+                        setInterval("location.reload()",1000);
+                        return false; 
                     }
-                });
-                }
-            });
-        });
-    });
-});
+                })
+            })
+        })
+    })
 </script>
 {% endblock %}

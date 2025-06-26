@@ -6,7 +6,7 @@
   <ul class="nav nav-tabs" style="border-bottom: 0 !important;" id="myTab" role="tablist">
 
     <li class="nav-item" role="presentation">
-      <a class="nav-link nav-link-tabs"  id="pestaña1" data-bs-toggle="tab" style="background-color: #92d0508f;" data-bs-target="#pestaña1-pane"
+      <a class="nav-link nav-link-tabs active"   id="pestaña1" data-bs-toggle="tab" style="background-color: #92d0508f;" data-bs-target="#pestaña1-pane"
           type="button" role="tab" aria-controls="pestaña1-pane" aria-selected="true">ELECTRICIDAD</a>
     </li>
 
@@ -47,7 +47,7 @@
 <div class="tab-content lista_materiales rounded bg-light" id="myTabContent">
 
   <!-- panel de ELECTRICIDAD -->
-  <div class="tab-pane fade" id="pestaña1-pane" role="tabpanel" aria-labelledby="pestaña1" tabindex="0" >
+  <div class="tab-pane fade active" id="pestaña1-pane" role="tabpanel" aria-labelledby="pestaña1" tabindex="0" >
     <div class="blue_gradient encabezado_lista d-flex align-items-center justify-content-between p-3">
       <p class="fs-2 m-0">ELECTRICIDAD</p>
       <div style="display: flex;">
@@ -63,10 +63,10 @@
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1 hidden">Coordinador</th>
               <th class="col-3">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
+              <th class="col-1">Tipo</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
@@ -75,10 +75,10 @@
           <tr style="{% if ele.cantidad <= ele.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ ele.codigo | upper}}</td>
             <td class="text-start">{{ ele.descripcion }}</td>
-            <td class="">{{ ele.tipo_material | upper}}</td>
-            <td class="hidden">{{ ele.coordinador.username | title}}</td>
-            <td class="">{{ ele.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
             <td class="text-center">{{ ele.cantidad }}</td>
+            <td class="hidden">{{ ele.coordinador.username | title}}</td>
+            <td class="">{{ ele.fecha_ingreso }}</td>
+            <td class="">{{ ele.tipo_material | upper}}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ ele.id }}"
@@ -118,10 +118,10 @@
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1 hidden">Coordinador</th>
               <th class="col-3">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
+              <th class="col-1">Tipo</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
@@ -130,10 +130,10 @@
           <tr style="{% if civ.cantidad <= civ.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ civ.codigo | upper}}</td>
             <td class="text-start">{{ civ.descripcion }}</td>
-            <td class="">{{ civ.tipo_material | upper}}</td>
-            <td class="hidden">{{ civ.coordinador.username | title}}</td>
-            <td class="">{{ civ.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
             <td class="text-center">{{ civ.cantidad }}</td>
+            <td class="hidden">{{ civ.coordinador.username | title}}</td>
+            <td class="">{{ civ.fecha_ingreso }}</td>
+            <td class="">{{ civ.tipo_material | upper}}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ civ.id }}"
@@ -173,10 +173,10 @@
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1 hidden">Coordinador</th>
               <th class="col-3">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
+              <th class="col-1">Tipo</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
@@ -185,10 +185,10 @@
           <tr style="{% if elm.cantidad <= elm.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ elm.codigo | upper}}</td>
             <td class="text-start">{{ elm.descripcion }}</td>
-            <td class="">{{ elm.tipo_material | upper}}</td>
-            <td class="hidden">{{ elm.coordinador.username | title}}</td>
-            <td class="">{{ elm.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
             <td class="text-center">{{ elm.cantidad }}</td>
+            <td class="hidden">{{ elm.coordinador.username | title}}</td>
+            <td class="">{{ elm.fecha_ingreso }}</td>
+            <td class="">{{ elm.tipo_material | upper}}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ elm.id }}"
@@ -228,10 +228,10 @@
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1 hidden">Coordinador</th>
               <th class="col-4">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
+              <th class="col-1">Tipo</th>
               <th class="col-1">Acción</th>
             </tr>
           </thead>
@@ -240,10 +240,10 @@
             <tr style="{% if ppl.cantidad <= ppl.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
               <td class="">{{ ppl.codigo | upper}}</td>
               <td class="text-start">{{ ppl.descripcion }}</td>
-              <td class="">{{ ppl.tipo_material | upper}}</td>
-              <td class="hidden">{{ ppl.coordinador.username | title}}</td>
-              <td class="">{{ ppl.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
               <td class="text-center">{{ ppl.cantidad }}</td>
+              <td class="hidden">{{ ppl.coordinador.username | title}}</td>
+              <td class="">{{ ppl.fecha_ingreso }}</td>
+              <td class="">{{ ppl.tipo_material | upper}}</td>
               <td>
                 <a title="datos" class="info" 
                   data-id="{{ ppl.id }}"
@@ -283,10 +283,10 @@
               <tr>
                 <th class="col-1">Código</th>
                 <th class="col-5">Descripción</th>
-                <th class="col-1">Tipo</th>
+                <th class="col-1">Cantidad</th>
                 <th class="col-1 hidden">Coordinador</th>
                 <th class="col-3">Fecha de Ingreso</th>
-                <th class="col-1">Cantidad</th>
+                <th class="col-1">Tipo</th>
                 <th class="col-1">Acción</th>
               </tr>
             </thead>
@@ -295,10 +295,10 @@
               <tr style="{% if LIM.cantidad <= LIM.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
                 <td class="">{{ LIM.codigo | upper}}</td>
                 <td class="text-start">{{ LIM.descripcion }}</td>
-                <td class="">{{ LIM.tipo_material | upper}}</td>
-                <td class="hidden">{{ LIM.coordinador.username | title}}</td>
-                <td class="">{{ LIM.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
                 <td class="text-center">{{ LIM.cantidad }}</td>
+                <td class="hidden">{{ LIM.coordinador.username | title}}</td>
+                <td class="">{{ LIM.fecha_ingreso }}</td>
+                <td class="">{{ LIM.tipo_material | upper}}</td>
                 <td>
                   <a title="datos" class="info" 
                     data-id="{{ LIM.id }}"
@@ -338,10 +338,10 @@
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1 hidden">Coordinador</th>
               <th class="col-3">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
+              <th class="col-1">Tipo</th>
               <th class="col-1">Acción</th>
             </tr>
         </thead>
@@ -350,10 +350,10 @@
           <tr style="{% if res.cantidad <= res.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
             <td class="">{{ res.codigo | upper}}</td>
             <td class="text-start">{{ res.descripcion }}</td>
-            <td class="">{{ res.tipo_material | upper}}</td>
-            <td class="hidden">{{ res.coordinador.username | title}}</td>
-            <td class="">{{ res.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
             <td class="text-center">{{ res.cantidad }}</td>
+            <td class="hidden">{{ res.coordinador.username | title}}</td>
+            <td class="">{{ res.fecha_ingreso }}</td>
+            <td class="">{{ res.tipo_material | upper}}</td>
             <td>
               <a title="datos" class="info" 
                 data-id="{{ res.id }}"
@@ -394,10 +394,10 @@
             <tr>
               <th class="col-1">Código</th>
               <th class="col-5">Descripción</th>
-              <th class="col-1">Tipo</th>
+              <th class="col-1">Cantidad</th>
               <th class="col-1 hidden">Coordinador</th>
               <th class="col-3">Fecha de Ingreso</th>
-              <th class="col-1">Cantidad</th>
+              <th class="col-1">Tipo</th>
               <th class="col-1">Acción</th>
             </tr>
           </thead>
@@ -406,10 +406,10 @@
             <tr style="{% if pru.cantidad <= pru.cantidad_minima %}background-color: #ab1c1c8a;{% endif %}">
               <td class="">{{ pru.codigo | upper}}</td>
               <td class="text-start">{{ pru.descripcion }}</td>
-              <td class="">{{ pru.tipo_material | upper}}</td>
-              <td class="hidden">{{ pru.coordinador.username | title}}</td>
-              <td class="">{{ pru.fecha_ingreso |date:"d/m/Y g:i a"}}</td>
               <td class="text-center">{{ pru.cantidad }}</td>
+              <td class="hidden">{{ pru.coordinador.username | title}}</td>
+              <td class="">{{ pru.fecha_ingreso }}</td>
+              <td class="">{{ pru.tipo_material | upper}}</td>
               <td>
                 <a title="datos" class="info" 
                   data-id="{{ pru.id }}"
@@ -434,7 +434,7 @@
   {% endif %}
 </div>
 
-<button id="pruebasss" class="btn btn-primary boton-flotante">Descargar PDF</button>
+<button id="printmateriales" class="btn btn-primary boton-flotante">Descargar PDF</button>
 
 <!-- agregar materiales -->
 <script>
@@ -720,6 +720,12 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
             Swal.showValidationMessage('ingrese una cantidad valida.');
             return false;
           } 
+          
+          if (E_Cantidad > cantidad ){
+            swal.showValidationMessage('la cantidad excede las herramientas disponibles')
+            return false;
+          }
+
           else if (!E_Descripcion){
             Swal.showValidationMessage('ingrese una justificacion.');
             return false;
@@ -1016,4 +1022,5 @@ document.querySelectorAll('.agregar-material').forEach(function(element) {
       });
   });
   </script>
+
 {% endblock %}

@@ -1,0 +1,125 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_javascript %}
+{% bootstrap_css %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+<style>
+
+    @page {
+        size: "A4";
+        margin: 80px 50px 50px 50px;
+        @bottom-center {
+            content: "Pagina " counter(page) " de " counter(pages) "\A\A Centro Nacional de Acción Social por la Música, Boulevard Amador Bendayán, Caracas 1050, Distrito Capital. tecnologia@elsistema.org.ve \A\A © Copyright  2024 EL SISTEMA";
+            white-space: pre;
+            color: rgba(0, 0, 0, 0.500);
+            font-size: 10px;
+            line-height: 0.75;
+            font-family: sans-serif;
+        }
+
+        @top-left {
+            content: element(figure);
+            margin-left: -5px;
+        }
+        @top-center {
+            content: element(header);
+        }
+        @top-right {
+            content: element(article);
+        }
+
+    }
+    .header{
+        font-size: 20px;
+        position: running(header);
+    }
+    .figure{
+        position: running(figure);
+    }
+    .logo{
+    max-height: 70px;
+    }
+    .article{
+        position: running(article);
+    }
+
+    body { 
+    font-family: Arial, sans-serif;
+    font-size: 12px; 
+    }
+
+    h1 { 
+        text-align: center;
+        margin-top: 20px; 
+    }
+
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+    }
+
+    td, th {
+    padding: 4px;
+    }
+
+    thead {
+    display: table-header-group;
+    }
+
+    tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+    }
+
+    tfoot {
+    display: table-footer-group;
+    }
+</style>
+
+</head>
+<body>
+    <div class="header">
+        Inventario de Herramientas
+    </div>
+
+    <div class="figure">
+        <img src="{{ logo }}" alt="Logo de la Empresa" class="logo">
+    </div>
+
+    <div class="article">
+        Generado por: <b>{{usuario| upper}}</b><br>
+        Fecha: <b>{{fecha}}</b><br>
+        Total de Registros: <b>{{herramientas | length }}</b>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover text-center">
+        <thead class=text-center>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Fecha ingreso</th>
+            <th>Condición</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for h in herramientas %}
+          <tr>
+            <td>{{ h.codigo }}</td>
+            <td>{{ h.descripcion }}</td>
+            <td>{{ h.cantidad }}</td>
+            <td>{{ h.fecha_ingreso|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}</td>
+            <td>{{ h.condicion }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</body>
+</html>

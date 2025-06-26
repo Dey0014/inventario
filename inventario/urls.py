@@ -62,5 +62,12 @@ urlpatterns = [
     path('obtener_solicitudes_pendientes/', obtener_solicitudes_pendientes, name='obtener_solicitudes_pendientes'),
     path('eliminar_solicitud/<int:pk>/', eliminar_solicitud, name='eliminar_solicitud'),
     
+    #----------------PDF-----------------#
+
+    path('herramientas/pdf/', pdf_herramientas, name='pdf_herramientas'),
+    path('herramientas/preview/', preview_reporte_herramientas, name='preview_herramientas'),
+
+    path('materiales/pdf_materiales/', pdf_materiales, name='pdf_materiales'),
+
 ]
 

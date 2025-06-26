@@ -138,10 +138,6 @@ def entregar_material_prueba(request, pk):
             
             material = Material.objects.get(id=material_id)
             
-            # Validar cantidad disponible
-            if cantidad > material.cantidad:
-                messages.error(request, f"La cantidad solicitada excede la disponible ({material.cantidad}).")
-                return redirect("entregar_material_prueba")
             
             # Obtener el analista
             analista = User.objects.get(id=analista_id)
@@ -285,6 +281,35 @@ def registrar_entregas_lote(request):
             print(f"Error: {e}")
             messages.error(request, "Ocurrió un error al procesar la solicitud.")
             return redirect("entregas_lotes")
+        
+@login_required
+def retorno(request, pk):
+    if request.method == 'POST':
+        cantidad = int(request.POST.get('cantidad'))
+        justificacion = request.POST.get('justificacion')
+        registroid = int(request.POST.get('registro'))
+
+        # Encuentra el material por su código o ID
+        try:
+            registro = get_object_or_404(Entrega, pk=registroid)
+            registro.cantidad -= cantidad
+            registro.save()
+            material = get_object_or_404(Material, pk=pk)
+            material.cantidad += cantidad
+            material.save()
+
+            # Registrar la acción en el log
+            UserActionLog.objects.create(
+            user=request.user,
+            action='Retorno',
+            details=f" se regreso {cantidad} del material {material.descripcion} con el codigo {material.codigo} por motivo de {justificacion}.",
+            )
+
+            return JsonResponse({'status': 'success'}, status=200)
+        except Material.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Material no encontrado'}, status=404)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=400)
 
 
 

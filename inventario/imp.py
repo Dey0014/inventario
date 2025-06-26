@@ -6,15 +6,18 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.shortcuts import redirect, render, get_object_or_404
-from datetime import datetime
+from datetime import datetime, date
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from functools import wraps
 import re
+from django.templatetags.static import static
+
+
 
 
 def generar_codigo(tipo_material):

@@ -149,164 +149,48 @@ $(document).ready(function() {
     });
 });
 //-------------------------------------------
-
-//funcion para imprimir las herramientas
-
-$('#printBtn').click(function() {
-    var tableData = [];
-    var table = $('.tablasApp').DataTable();
-    table.rows({ search: 'applied' }).every(function() {
-        var rowData = this.data();
-        
-        // Omitir la última columna (acción)
-        rowData = rowData.slice(0, -1); // Elimina la última columna de cada fila
-        
-        // Asegúrate de que cada celda tenga un valor válido (puedes reemplazar undefined por '-')
-        rowData = rowData.map(cell => cell !== undefined ? cell : '-');
-        
-        tableData.push(rowData);
-    });
-
-    console.log(tableData); // Comprobar los datos antes de pasarlos al PDF
-
-    var docDefinition = {
-        content: [
-            { text: 'Contenido de la Tabla', style: 'header' },
-            {
-                table: {
-                    headerRows: 1,
-                    body: [
-                        ['#', 'Descripción', 'Cantidad', 'Coordinador', 'Fecha de Ingreso', 'Condición'], // Sin la columna de acciones
-                        ...tableData
-                    ]
-                },
-                layout: 'lightHorizontalLines'
-            }
-        ],
-        styles: {
-            header: {
-                fontSize: 18,
-                bold: true,
-                alignment: 'center',
-                margin: [0, 20, 0, 20]
-            }
-        }
-    };
-
-    pdfMake.createPdf(docDefinition).download('tabla.pdf');
-});
+//----------------funcion para pasar los datos de materiales al pdf
 
 
-//-------------------------------------
 
-$('#pruebasss').click(async function() {
-    try {
-        var logoBase64 = await obtenerBase64FromImage('/static/img/logo.png'); // Esperar a que la imagen se convierta
-        var tableData = [];
-        var table = $('.tablasApp:visible').DataTable();
+$('#printmateriales').click(async function () {
+    const table = $('.tablasApp:visible').DataTable();
+    const usuario = $('#nombreUsuarioActivo').text() || 'Desconocido';
+    const fecha = new Date().toLocaleString('es-VE');
+    let titulotabla = $('.tablasApp:visible').attr('data-name') || 'Tabla Desconocida';
 
-        // Obtener el nombre de la tabla
-        var tableName = $('.tablasApp:visible').attr('data-name') || 'Tabla Desconocida';
-
-        table.rows({ search: 'applied' }).every(function() {
-            var rowData = this.data();
-            rowData = rowData.slice(0, -1); // Elimina la última columna
-            rowData = rowData.map(cell => cell !== undefined ? cell : '-');
-            tableData.push(rowData);
+    const materiales = [];
+    table.rows({ search: 'applied' }).every(function () {
+        let data = this.data();
+        materiales.push({
+            codigo: data[0],
+            descripcion: data[1],
+            tipo: data[5],
+            coordinador: data[3],
+            fecha_ingreso: data[4],
+            cantidad: data[2],
         });
-
-        console.log(tableData); // Verifica los datos antes de generar el PDF
-
-        var docDefinition = {
-            pageSize: 'A4', // Tamaño de la página
-            pageOrientation: 'landscape',
-            pageMargins: [40, 60, 40, 60], // Márgenes
-            content: [
-                {
-                    table: {
-                        headerRows: 1,
-                        widths: ['10%', '30%', '10%', '20%', '20%', '10%'], // Hace que la tabla ocupe el 100%
-                        body: [
-                            ['Código', 'Descripción', 'Cantidad', 'Coordinador', 'Fecha de Ingreso', 'Tipo'],
-                            ...tableData
-                        ],
-                        dontBreakRows: true, // Evita que las filas se dividan en páginas
-                    },
-                    layout: 'lightHorizontalLines'
-                }
-            ],
-            header: function(currentPage, pageCount, pageSize) {
-                return {
-                    columns: [
-                        {
-                            image: logoBase64, // Logo a la izquierda
-                            width: 80,
-                            alignment: 'left',
-                            margin: [10, 10]
-                        },
-                        {   
-                            text: tableName, // Nombre centrado correctamente
-                            alignment: 'center',
-                            fontSize: 22,
-                            bold: true,
-                            margin: [10, 10],
-                            width: '*'
-                        },
-                        {
-                            text: 'Usuario', // Usuario alineado a la derecha
-                            alignment: 'right',
-                            fontSize: 8,
-                            margin: [10, 10],
-                            width: 80
-                        }
-                    ],
-                    columnGap: 8, // Espaciado entre columnas
-                };
-            },
-            footer: function(currentPage, pageCount) {
-                return {
-                    text: `Página ${currentPage} de ${pageCount}\nCentro Nacional de Acción Social por la Música, Boulevard Amador Bendayán, Caracas 1050, Distrito Capital.\n© 2024 Copyright ELSISTEMA elsistema.org.ve`,
-                    alignment: 'center',
-                    fontSize: 8,
-                    margin: [15,10]
-                };
-            },
-            styles: {
-                header: {
-                    fontSize: 18,
-                    bold: true,
-                    alignment: 'center',
-                    margin: [0, 20, 0, 20]
-                }
-            }
-        };
-
-        // Generar y descargar el PDF
-        pdfMake.createPdf(docDefinition).download('tabla.pdf');
-    } catch (error) {
-        console.error("Error al cargar la imagen:", error);
-    }
-});
-
-function obtenerBase64FromImage(url) {
-    return new Promise((resolve, reject) => {
-        var img = new Image();
-        img.crossOrigin = "Anonymous"; // Evita problemas de CORS si la imagen está en otro dominio
-        img.onload = function() {
-            var canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            var dataURL = canvas.toDataURL('image/png');
-            resolve(dataURL);
-        };
-        img.onerror = function(error) {
-            reject(error);
-        };
-        img.src = url;
     });
-}
+
+    const res = await fetch('../materiales/pdf_materiales/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': "{{ csrf_token }}"  // si usas CSRF
+        },
+        body: JSON.stringify({
+            materiales: materiales,
+            usuario: usuario,
+            fecha: fecha,
+            titulo: titulotabla
+        })
+    });
+
+    // Abrir el PDF en una nueva pestaña
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, '_blank');
+});
 
     document.getElementById("togglePassword").addEventListener("click", function () {
         var passwordField = document.getElementById("id_password");

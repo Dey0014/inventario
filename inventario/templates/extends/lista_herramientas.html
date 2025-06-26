@@ -59,7 +59,10 @@
 
     </div>
 </div>
-<button id="printBtn" class="btn btn-primary boton-flotante">Descargar PDF</button>
+<a href="{% url 'pdf_herramientas' %}" class="btn btn-primary boton-flotante" target="_blank">
+  Descargar PDF
+</a>
+<!-- <button id="printBtn" class="btn btn-primary boton-flotante">Descargar PDF</button> -->
 
 <script>
 document.querySelectorAll('.agregar-herramientas').forEach(function(element) {
@@ -82,11 +85,7 @@ document.querySelectorAll('.agregar-herramientas').forEach(function(element) {
             </div>
             <div class="mb-3">
             <label for="condicion" class="form-label">Condicion:</label>
-            <select name="condicion" id="condicion" class="form-control select2">
-            {% for valor, nombre in condiciones %}
-                <option value="{{ valor }}">{{ nombre }}</option>
-            {% endfor %}
-            </select>
+            <input type="text" name="condicion" id="condicion"  class="form-control">
             </div>
         </form>
         `,
@@ -148,52 +147,60 @@ document.addEventListener('DOMContentLoaded', function () {
         const condicion = this.getAttribute('data-condicion');
         
         Swal.fire({
-        title: `<strong>${descripcion}</strong>`,
         icon: "info",
         html: `
-            <p><b>Cantidad:</b> ${cantidad}</p>
-            <p><b>Coordinador:</b> ${coordinador}</p>
-            <p><b>Fecha de Ingreso:</b> ${fecha}</p>
-            <p><b>condicion:</b> ${condicion}</p>
+        <div class="p-2">
+            <h3>${descripcion} </h3>
+            <div class="mb-3"> 
+                <p><b>Cantidad:</b> ${cantidad}</p>
+            </div>
+            <div class="mb-3"> 
+                <p><b>Coordinador:</b> ${coordinador}</p>
+            </div>
+            <div class="mb-3"> 
+                <p><b>Fecha de Ingreso:</b> ${fecha}</p>
+            </div>
+            <div class="mb-3"> 
+                <p><b>condicion:</b> ${condicion}</p>
+            </div>
+        </div>
+        <div class="flex-d">
+            <div>
+                <button id="edit-herramienta" class="swal2-confirm col-4 swal2-styled">Editar</button>
+                <button id="delete-herramienta" class="swal2-confirm col-4 swal2-styled">Eliminar</button>
+            </div>
+            <div>
+                <button id="cantidad-herramienta" class="swal2-confirm col-4 swal2-styled">Cantidad</button>
+                <button id="entrega-herramienta" class="swal2-confirm col-4 swal2-styled">Entregar</button>
+            </div>
+        </div>
         `,
         showCloseButton: false,
         showCancelButton: false,
         showConfirmButton: false,
         focusConfirm: false,
-        footer: `
-                <div class="flex-d">
-                <div>
-                <button id="edit-herramienta" class="swal2-confirm col-4 swal2-styled">Editar</button>
-                <button id="delete-herramienta" class="swal2-confirm col-4 swal2-styled">Eliminar</button>
-                </div>
-                <div>
-                <button id="cantidad-herramienta" class="swal2-confirm col-4 swal2-styled">Cantidad</button>
-                <button id="entrega-herramienta" class="swal2-confirm col-4 swal2-styled">Entregar</button>
-                </div>
-                </div>
-        `
         });
 
     document.getElementById('entrega-herramienta').addEventListener('click', function() {
         Swal.fire({
-        title: 'Entregar herramienta',
+        icon: "info",
         html: ` 
-        <div class="p-5">
+        <div class="p-2">
         <form method="post">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="material" class="form-label">Herramientas:</label>
-                <input  value="${descripcion}" type="text" class="form-control">
+            <h3>${descripcion} </h3>
+            <p>cantidad disponible (${cantidad})</p>
+            <div class="mb-3">  
                 <input type="hidden" id="herramienta" name="herramienta" value="${pk}">
             </div>
             <div class="mb-3">
                 <label for="analista" class="form-label">Analista:</label>
-                <div class="form-control">{{ user.username }}</div>
+                <div style="border-color: rgba(0, 0, 0, 0.500);" class="form-control">{{ user.username }}</div>
                 <input type="hidden" id="id_analista" name="analista" value="{{ user.id }}">
             </div>
             <div class="mb-3">
                 <label for="persona" class="form-label">Seleccione Persona:</label>
-                <select id="persona" name="persona" class="form-control select2">
+                <select style="border-color: rgba(0, 0, 0, 0.500);" id="persona" name="persona" class="form-control select2">
                     <option selected>Seleccione una persona</option>
                     <option value="nueva">Nueva persona</option>
                     {% for person in personas %}
@@ -204,11 +211,11 @@ document.addEventListener('DOMContentLoaded', function () {
             
             <div class="mb-3">
                 <label for="descripcion" class="form-label">Descripción:</label>
-                <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+                <textarea style="border-color: rgba(0, 0, 0, 0.500);" name="descripcion" id="descripcion" rows="1" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
             </div>
             <div class="mb-3">
                 <label for="cantidad" class="form-label">Cantidad:</label>
-                <input type="number" name="cantidad" id="cantidad" class="form-control" required>
+                <input type="number" style="border-color: rgba(0, 0, 0, 0.500);" name="cantidad" id="cantidad" class="form-control" required>
             </div>
             </form>
             </div>
@@ -225,14 +232,20 @@ document.addEventListener('DOMContentLoaded', function () {
         const E_Descripcion = document.getElementById('descripcion') ? document.getElementById('descripcion').value : '';
         const E_Cantidad = document.getElementById('cantidad').value;
 
-        if (!E_Cantidad) { 
+        if (!E_Cantidad ) { 
             Swal.showValidationMessage('ingrese una cantidad valida.');
             return false;
         } 
-        else if (!E_Descripcion){
+        if (E_Cantidad > cantidad ){
+            swal.showValidationMessage('la cantidad excede las herramientas disponibles')
+            return false;
+        }
+
+        if (!E_Descripcion){
             Swal.showValidationMessage('ingrese una justificacion.');
             return false;
         }
+
           // Llamada AJAX para enviar los datos al servidor
         $.ajax({
             type: "POST",
@@ -248,10 +261,12 @@ document.addEventListener('DOMContentLoaded', function () {
             success: function (response) {
                     Swal.fire({
                         title: 'Guardado!',
-                        text: 'El material ha sido actualizado',
+                        text: 'se registro el prestamo con exito',
                         icon: 'success',
                         showConfirmButton: false, // Oculta el botón "OK"
-// Recarga la página después de que la alerta desaparezca
+                        timer: 1000 // Cierra automáticamente en 1 segundo
+                    }).then(() => {
+                        location.reload(); // Recarga la página después de que la alerta desaparezca
                     });
                 },
             error: function (xhr, status, error) {
@@ -430,14 +445,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <input id="edit-cantidad" type="number" class="form-control" value="${cantidad_minima}">
         </div>
         <div class="form-group">
-            <label for="edit-condicion" class="col-form-label">condicion:</label>
-            <select class="form-select text-center" id="edit-condicion" aria-label="Estado de la herramienta">
-                <option value="${condicion}" disabled selected>${condicion}</option>
-                <option value="Nuevo">Nuevo</option>
-                <option value="Bueno">Bueno</option>
-                <option value="Desgastado">Desgastado</option>
-                <option value="Dañado">Dañado</option>
-            </select>
+            <label for="edit-condicion" class="col-form-label">Condicion:</label>
+            <input id="edit-condicion" type="text" class="form-control" value="${condicion}">
         </div>
         `,
         showCancelButton: true,
@@ -448,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const newCondicion = document.getElementById('edit-condicion').value;
             const newCantidadMinima = document.getElementById('edit-cantidad').value;
 
-            if (!newDescripcion || !newCondicion || !newCantidadMinima) {
+            if (!newDescripcion || !newCantidadMinima) {
             Swal.showValidationMessage('Todos los campos son obligatorios');
             return false;
             }

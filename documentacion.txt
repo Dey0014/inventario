@@ -204,3 +204,223 @@ vistas descartadas
 #         "departamentos": Departamento.objects.all()
 #     }
 #     return render(request, 'solicitudes/solicitud_material.html', context)
+
+
+
+
+
+sweetalert2 que ya no se usa
+
+ document.getElementById('entrega-material').addEventListener('click', function() {
+      Swal.fire({
+        title: `${descripcion} (Disponible: ${cantidad})`,
+        html: `
+        <div class="p-0">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <input type="hidden" id="material" value="${pk}">
+              <input type="hidden" id="id_analista" name="analista" value="{{ user.id }}">
+
+              <div id="inputPeople">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="showNewPeople"><i class="bi bi-person-plus"></i></a>
+                </div>
+                <div class="mb-3">
+                  <div class="col-12">
+                    <label for="persona" class="form-label">Seleccione Persona:</label>
+                    <select id="persona" name="persona" class="form-control selectPeople">
+                    <option value="" selected disabled>Seleccione una persona</option>
+                      {% for person in personas %}
+                        <option value="{{ person.id }}">{{ person.nombre }} - {{ person.cedula }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="newPeopleForm" style="display: none;">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="closeNewPeople"><i class="bi bi-backspace"></i></a>
+                </div>
+                <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="nombre" class="form-label">Nombre y Apellido:</label>
+                  <input id="nombre" name="nombre" type="text" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="cedula" class="form-label">Cédula:</label>
+                  <input id="cedula" name="cedula" type="number" class="form-control">
+                </div>
+              </div>
+
+            <!-- Select Departamento -->
+              <div id="inputDepartment">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="showNewDepartment"><i class="bi bi-person-plus"></i></a>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <label for="departamento" class="form-label">Seleccione Departamento:</label>
+                    <select id="departamento" name="departamento" class="form-control selectDepartment">
+                      <option value="">Seleccione un departamento</option>
+                        {% for dept in departamentos %}
+                          <option value="{{ dept.id }}">{{ dept.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+            <!-- Nuevo Departamento Input -->
+              <div id="newDepartmentForm" style="display: none;">
+                <div class="d-flex justify-content-end">
+                  <a href="#" id="closeNewDepartment"><i class="bi bi-backspace"></i></a>
+                </div>
+                <div class="col-12">
+                  <label for="nuevo_dep" class="form-label">Nombre del nuevo departamento:</label>
+                  <input id="nuevo_dep" name="nuevo_dep" type="text" class="form-control">
+                </div>
+              </div>
+            </div>
+
+
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripción:</label>
+              <textarea name="descripcion" id="descripcion" rows="4" class="form-control" placeholder="Introduzca el motivo y el Piso..."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="cantidad" class="form-label">Cantidad:</label>
+              <input type="number" name="cantidad" id="cantidad" class="form-control" min='1' max='${cantidad}' required>
+            </div>
+          </form>
+        </div>
+        `
+        ,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        width: '600px',
+        didOpen: () => {
+        // Inicializa Select2 para las personas
+        $('.selectPeople').select2({
+        placeholder: 'Seleccione una persona',
+        width: '100%', // Ajusta el ancho
+        dropdownParent: $('.swal2-popup') // Se asegura de que el dropdown funcione correctamente en SweetAlert2
+        });
+        //--------------------------------------
+        // Inicializa Select2 para los nuevos departamentos
+        $('.selectDepartment').select2({
+        placeholder: 'Seleccione un departamento',
+        width: '100%', // Ajusta el ancho
+        dropdownParent: $('.swal2-popup') // Se asegura de que el dropdown funcione correctamente en SweetAlert2
+        });
+        //--------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 personas
+        const inputPeople = document.getElementById('inputPeople');
+        const newPeopleForm = document.getElementById('newPeopleForm');
+        const showNewPeople = document.getElementById('showNewPeople');
+        const closeNewPeople = document.getElementById('closeNewPeople');
+        //-------------------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 departamentos
+        const inputDepartment = document.getElementById('inputDepartment')
+        const newDepartmentForm = document.getElementById('newDepartmentForm')
+        const showNewDepartment = document.getElementById('showNewDepartment')
+        const closeNewDepartment = document.getElementById('closeNewDepartment')
+        //-------------------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 personas
+        showNewPeople.addEventListener('click', () => {
+        inputPeople.style.display = 'none';
+        newPeopleForm.style.display = 'block';
+        });
+
+        closeNewPeople.addEventListener('click', () => {
+        newPeopleForm.style.display = 'none';
+        inputPeople.style.display = 'block';
+        });
+        //-------------------------------------------------
+
+        // Mostrar el formulario y ocultar Select2 departamentos
+        showNewDepartment.addEventListener('click', ()=>{
+        inputDepartment.style.display = 'none';
+        newDepartmentForm.style.display = 'block';
+        })
+
+        closeNewDepartment.addEventListener('click', () => {
+        newDepartmentForm.style.display = 'none';
+        inputDepartment.style.display = 'block';
+        });
+        //-------------------------------------------------
+        },
+
+        preConfirm: () => {
+          const E_Material = document.getElementById('material').value;
+          const E_Analista = document.getElementById('id_analista').value
+
+          // Verificar si persona está seleccionada, si no, verificar nombre, cedula y departamento
+          const E_Persona = document.getElementById('persona') && document.getElementById('persona').value ? document.getElementById('persona').value : '';
+          const E_Nombre = document.getElementById('nombre') && document.getElementById('nombre').value ? document.getElementById('nombre').value : '';
+          const E_Cedula = document.getElementById('cedula') && document.getElementById('cedula').value ? document.getElementById('cedula').value : '';
+          const E_Departamento = document.getElementById('departamento') && document.getElementById('departamento').value ? document.getElementById('departamento').value : '';
+          const E_NuevoDepartamento = document.getElementById('nuevo_dep') && document.getElementById('nuevo_dep').value ? document.getElementById('nuevo_dep').value : '';
+          const E_Descripcion = document.getElementById('descripcion') ? document.getElementById('descripcion').value : '';
+          const E_Cantidad = document.getElementById('cantidad').value;
+
+          // Condición para saber si se ha seleccionado una persona o se están ingresando los datos manualmente
+          const validPersona = E_Persona || (E_Nombre && E_Cedula && E_Departamento);
+          const validDepartamento = E_Departamento || E_NuevoDepartamento; // Asegurarse de que uno de los dos esté presente
+
+          if (!E_Cantidad) { 
+            Swal.showValidationMessage('ingrese una cantidad valida.');
+            return false;
+          } 
+          else if (!E_Descripcion){
+            Swal.showValidationMessage('ingrese una justificacion.');
+            return false;
+          }
+          // if (!E_Analista || 
+          //     !validPersona ||  // Se valida que se complete una de las dos opciones (Persona o Datos manuales)
+          //     !E_Descripcion || !E_Cantidad || 
+          //     !validDepartamento) { // Se valida que el departamento o nuevo departamento esté completo
+          //     Swal.showValidationMessage('Todos los campos son obligatorios y deben cumplir las condiciones.');
+          //     return false;
+          // }
+
+          // Llamada AJAX para enviar los datos al servidor
+          $.ajax({
+            type: "POST",
+            url: `../entregar_material_prueba/${pk}/`,  
+            data: {
+              material: E_Material,
+              analista: E_Analista,
+              persona: E_Persona,
+              nombre: E_Nombre,
+              cedula: E_Cedula,
+              departamento: E_Departamento,
+              nuevo_dep: E_NuevoDepartamento,
+              descripcion: E_Descripcion,
+              cantidad: E_Cantidad,
+              csrfmiddlewaretoken: "{{ csrf_token }}", 
+            },
+            success: function (response) {
+                    Swal.fire({
+                        title: 'Guardado!',
+                        text: 'El material ha sido actualizado',
+                        icon: 'success',
+                        showConfirmButton: false, // Oculta el botón "OK"
+                        timer: 1000 // Cierra automáticamente en 1 segundo
+                    }).then(() => {
+                        location.reload(); // Recarga la página después de que la alerta desaparezca
+                    });
+                  },
+            error: function (xhr, status, error) {
+              Swal.fire('Error', 'Hubo un problema al guardar los cambios', 'error');
+            }
+          });
+        }
+      });
+    });
+
